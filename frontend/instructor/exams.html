@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản lý đề thi - Giảng viên</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50">
+<nav class="bg-white shadow-md sticky top-0 z-40">
+    <div class="max-w-7xl mx-auto px-4 flex items-center justify-between h-16">
+        <a href="../index.html" class="text-2xl font-bold text-blue-600">🎓 E-Learning</a>
+        <div class="flex items-center gap-4">
+            <a href="courses.html" class="text-gray-600 hover:text-blue-600">Khóa học</a>
+            <span id="instructor-name" class="text-gray-700 font-medium"></span>
+            <button onclick="Auth.logout()" class="px-4 py-2 text-red-500 border border-red-500 rounded-lg text-sm">Đăng xuất</button>
+        </div>
+    </div>
+</nav>
+<div class="max-w-7xl mx-auto px-4 py-8">
+    <h1 class="text-3xl font-bold mb-6 text-gray-800">📝 Quản lý đề thi</h1>
+
+    <!-- Chọn khóa học -->
+    <div class="bg-white rounded-xl shadow p-4 mb-6 flex gap-4 items-center">
+        <label class="text-sm font-medium text-gray-700">Chọn khóa học:</label>
+        <select id="course-select" onchange="loadExams()" class="flex-1 border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
+            <option value="">-- Chọn khóa học --</option>
+        </select>
+        <button onclick="openCreateExam()" class="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm hover:bg-blue-700">+ Tạo đề thi</button>
+    </div>
+
+    <!-- Danh sách đề thi -->
+    <div id="exams-list" class="space-y-4">
+        <div class="text-center py-16 text-gray-400">
+            <div class="text-4xl mb-3">📋</div>
+            <div>Chọn khóa học để xem đề thi</div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal tạo đề thi -->
+<div id="exam-modal" class="hidden fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+        <div class="p-6 border-b flex justify-between">
+            <h2 class="text-xl font-bold">📝 Tạo đề thi mới</h2>
+            <button onclick="closeExamModal()" class="text-gray-400 hover:text-gray-600 text-2xl">✕</button>
+        </div>
+        <div class="p-6 space-y-4">
+            <div><label class="text-sm font-medium text-gray-700 mb-1 block">Tên đề thi</label>
+                <input type="text" id="exam-title" class="w-full border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="VD: Kiểm tra giữa kỳ"></div>
+            <div class="grid grid-cols-3 gap-4">
+                <div><label class="text-sm font-medium text-gray-700 mb-1 block">Thời gian (phút)</label>
+                    <input type="number" id="exam-duration" value="30" min="5" class="w-full border rounded-lg px-3 py-2 focus:outline-none"></div>
+                <div><label class="text-sm font-medium text-gray-700 mb-1 block">Số câu hỏi</label>
+                    <input type="number" id="exam-questions" value="10" min="1" class="w-full border rounded-lg px-3 py-2 focus:outline-none"></div>
+                <div><label class="text-sm font-medium text-gray-700 mb-1 block">Điểm đạt (%)</label>
+                    <input type="number" id="exam-pass" value="60" min="1" max="100" class="w-full border rounded-lg px-3 py-2 focus:outline-none"></div>
+            </div>
+            <label class="flex items-center gap-2 cursor-pointer">
+                <input type="checkbox" id="exam-random" checked class="rounded">
+                <span class="text-sm text-gray-700">Ngẫu nhiên câu hỏi mỗi lần thi</span>
+            </label>
+            <!-- Thêm câu hỏi -->
+            <div class="border-t pt-4">
+                <div class="flex justify-between items-center mb-3">
+                    <h3 class="font-bold text-gray-800">Ngân hàng câu hỏi</h3>
+                    <button onclick="addQuestion()" class="bg-green-600 text-white px-3 py-1 rounded-lg text-sm hover:bg-green-700">+ Thêm câu hỏi</button>
+                </div>
+                <div id="questions-list" class="space-y-3"></div>
+            </div>
+        </div>
+        <div class="p-6 border-t flex gap-3">
+            <button onclick="saveExam()" class="flex-1 bg-blue-600 text-white py-3 rounded-lg font-bold hover:bg-blue-700">💾 Lưu đề thi</button>
+            <button onclick="closeExamModal()" class="flex-1 border text-gray-600 py-3 rounded-lg hover:bg-gray-50">Hủy</button>
+        </div>
+    </div>
+</div>
+
+<script src="../js/config.js"></script>
+<script>
+if (!Auth.requireLogin()) {}
+const user = Auth.getUser();
+if (!['instructor','admin'].includes(user?.role)) { alert('Không có quyền!'); location.href='../index.html'; }
+document.getElementById('instructor-name').textContent = user?.full_name || '';
+
+let questionCount = 0;
+
+async function loadMyCourses() {
+    try {
+        const data = await API.get('/courses/my-courses/');
+        const courses = data?.results || data || [];
+        const sel = document.getElementById('course-select');
+        courses.forEach(c => sel.innerHTML += `<option value="${c.id}">${c.title}</option>`);
+    } catch {}
+}
+
+async function loadExams() {
+    const courseId = document.getElementById('course-select').value;
+    if (!courseId) return;
+    try {
+        const data = await API.get(`/exams/courses/${courseId}/`);
+        const exams = data?.results || data || [];
+        const list = document.getElementById('exams-list');
+        if (!exams.length) {
+            list.innerHTML = '<div class="text-center py-12 text-gray-400"><div class="text-4xl mb-3">📭</div><div>Khóa học này chưa có đề thi</div></div>';
+            return;
+        }
+        list.innerHTML = exams.map(e => `
+            <div class="bg-white rounded-xl shadow p-5">
+                <div class="flex justify-between items-start">
+                    <div>
+                        <h3 class="font-bold text-gray-800 text-lg">${e.title}</h3>
+                        <div class="flex gap-4 text-sm text-gray-500 mt-1">
+                            <span>⏱ ${e.duration_minutes} phút</span>
+                            <span>❓ ${e.total_questions} câu</span>
+                            <span>✅ Đạt: ${e.pass_score}%</span>
+                            <span class="px-2 py-0.5 rounded-full ${e.is_active?'bg-green-100 text-green-700':'bg-gray-100 text-gray-600'}">${e.is_active?'Đang mở':'Đã đóng'}</span>
+                        </div>
+                        ${e.my_best_score !== null ? `<div class="text-xs text-blue-600 mt-1">Điểm cao nhất: ${e.my_best_score}%</div>` : ''}
+                    </div>
+                    <div class="flex gap-2">
+                        <button onclick="location.href='../exam.html?id=${e.id}'" class="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm hover:bg-blue-700">▶ Xem đề</button>
+                        <button onclick="viewResults(${e.id})" class="border border-gray-300 text-gray-600 px-4 py-2 rounded-lg text-sm hover:bg-gray-50">📊 Kết quả</button>
+                    </div>
+                </div>
+            </div>`).join('');
+    } catch {}
+}
+
+function openCreateExam() {
+    const courseId = document.getElementById('course-select').value;
+    if (!courseId) { UI.showAlert('Vui lòng chọn khóa học trước!', 'warning'); return; }
+    questionCount = 0;
+    document.getElementById('questions-list').innerHTML = '';
+    document.getElementById('exam-modal').classList.remove('hidden');
+    addQuestion(); addQuestion(); addQuestion(); // Thêm sẵn 3 câu
+}
+function closeExamModal() { document.getElementById('exam-modal').classList.add('hidden'); }
+
+function addQuestion() {
+    questionCount++;
+    const div = document.createElement('div');
+    div.className = 'border rounded-xl p-4 bg-gray-50';
+    div.id = `q-${questionCount}`;
+    div.innerHTML = `
+        <div class="flex justify-between mb-2">
+            <span class="font-medium text-gray-700">Câu ${questionCount}</span>
+            <button onclick="this.closest('.border').remove()" class="text-red-400 hover:text-red-600 text-sm">✕ Xóa</button>
+        </div>
+        <input type="text" placeholder="Nội dung câu hỏi *" class="w-full border rounded-lg px-3 py-2 mb-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 q-content">
+        <select class="w-full border rounded-lg px-3 py-2 mb-2 text-sm focus:outline-none q-type" onchange="toggleOptions(this)">
+            <option value="multiple_choice">Trắc nghiệm (A B C D)</option>
+            <option value="true_false">Đúng / Sai</option>
+            <option value="fill_blank">Điền khuyết</option>
+        </select>
+        <div class="q-options grid grid-cols-2 gap-2">
+            <input type="text" placeholder="A. Đáp án A *" class="border rounded-lg px-3 py-2 text-sm focus:outline-none opt-a">
+            <input type="text" placeholder="B. Đáp án B *" class="border rounded-lg px-3 py-2 text-sm focus:outline-none opt-b">
+            <input type="text" placeholder="C. Đáp án C" class="border rounded-lg px-3 py-2 text-sm focus:outline-none opt-c">
+            <input type="text" placeholder="D. Đáp án D" class="border rounded-lg px-3 py-2 text-sm focus:outline-none opt-d">
+        </div>
+        <div class="mt-2">
+            <input type="text" placeholder="Đáp án đúng (a/b/c/d hoặc true/false) *" class="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500 q-answer border-green-300">
+        </div>`;
+    document.getElementById('questions-list').appendChild(div);
+}
+
+function toggleOptions(sel) {
+    const container = sel.closest('.border');
+    const opts = container.querySelector('.q-options');
+    if (sel.value === 'true_false') {
+        opts.innerHTML = '<div class="col-span-2 text-sm text-gray-500">Đáp án: nhập "true" hoặc "false"</div>';
+    } else if (sel.value === 'fill_blank') {
+        opts.innerHTML = '<div class="col-span-2 text-sm text-gray-500">Nhập đáp án đúng bên dưới</div>';
+    } else {
+        opts.innerHTML = `
+            <input type="text" placeholder="A. Đáp án A *" class="border rounded-lg px-3 py-2 text-sm focus:outline-none opt-a">
+            <input type="text" placeholder="B. Đáp án B *" class="border rounded-lg px-3 py-2 text-sm focus:outline-none opt-b">
+            <input type="text" placeholder="C. Đáp án C" class="border rounded-lg px-3 py-2 text-sm focus:outline-none opt-c">
+            <input type="text" placeholder="D. Đáp án D" class="border rounded-lg px-3 py-2 text-sm focus:outline-none opt-d">`;
+    }
+}
+
+async function saveExam() {
+    const courseId = document.getElementById('course-select').value;
+    const title = document.getElementById('exam-title').value.trim();
+    if (!title) { UI.showAlert('Nhập tên đề thi!', 'error'); return; }
+
+    // Tạo exam trước
+    try {
+        const exam = await API.post('/exams/create/', {
+            course: parseInt(courseId),
+            title,
+            duration_minutes: parseInt(document.getElementById('exam-duration').value),
+            total_questions: parseInt(document.getElementById('exam-questions').value),
+            pass_score: parseInt(document.getElementById('exam-pass').value),
+            is_random: document.getElementById('exam-random').checked,
+            is_active: true,
+        });
+
+        // Tạo từng câu hỏi
+        const qDivs = document.querySelectorAll('#questions-list .border');
+        for (const div of qDivs) {
+            const content = div.querySelector('.q-content')?.value?.trim();
+            const answer = div.querySelector('.q-answer')?.value?.trim();
+            if (!content || !answer) continue;
+            await API.post('/exams/questions/create/', {
+                exam: exam.id,
+                content,
+                question_type: div.querySelector('.q-type')?.value || 'multiple_choice',
+                option_a: div.querySelector('.opt-a')?.value || '',
+                option_b: div.querySelector('.opt-b')?.value || '',
+                option_c: div.querySelector('.opt-c')?.value || '',
+                option_d: div.querySelector('.opt-d')?.value || '',
+                correct_answer: answer,
+                points: 1,
+            });
+        }
+        UI.showAlert('Tạo đề thi thành công!', 'success');
+        closeExamModal();
+        loadExams();
+    } catch (err) {
+        UI.showAlert(err.data?.error || 'Lỗi tạo đề thi!', 'error');
+    }
+}
+
+async function viewResults(examId) {
+    try {
+        const data = await API.get(`/exams/${examId}/results/`);
+        const results = data?.results || data || [];
+        if (!results.length) { UI.showAlert('Chưa có sinh viên nào thi!', 'info'); return; }
+        const info = results.map(r => `${r.student_name}: ${r.score}% (${r.is_passed?'Đạt':'Chưa đạt'})`).join('\n');
+        alert(`Kết quả thi:\n\n${info}`);
+    } catch { UI.showAlert('Không thể tải kết quả!', 'error'); }
+}
+
+loadMyCourses();
+</script>
+</body>
+</html>

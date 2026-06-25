@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Khóa học của tôi - E-Learning</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50">
+<nav class="bg-white shadow-md sticky top-0 z-40">
+    <div class="max-w-7xl mx-auto px-4 flex items-center justify-between h-16">
+        <a href="index.html" class="text-2xl font-bold text-blue-600">🎓 E-Learning</a>
+        <div class="flex gap-3">
+            <a href="profile.html" class="text-gray-600 hover:text-blue-600">Hồ sơ</a>
+            <button onclick="Auth.logout()" class="px-4 py-2 text-red-500 border border-red-500 rounded-lg text-sm">Đăng xuất</button>
+        </div>
+    </div>
+</nav>
+<div class="max-w-7xl mx-auto px-4 py-8">
+    <h1 class="text-3xl font-bold mb-6 text-gray-800">📚 Khóa học của tôi</h1>
+    <div class="flex gap-4 mb-6">
+        <button onclick="filterTab('all')" id="tab-all" class="px-4 py-2 rounded-lg bg-blue-600 text-white text-sm font-medium">Tất cả</button>
+        <button onclick="filterTab('learning')" id="tab-learning" class="px-4 py-2 rounded-lg bg-white border text-gray-600 text-sm font-medium hover:bg-gray-50">Đang học</button>
+        <button onclick="filterTab('completed')" id="tab-completed" class="px-4 py-2 rounded-lg bg-white border text-gray-600 text-sm font-medium hover:bg-gray-50">Hoàn thành</button>
+    </div>
+    <div id="courses-grid" class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="col-span-full text-center py-20 text-gray-400"><div class="text-5xl mb-4">⏳</div>Đang tải...</div>
+    </div>
+</div>
+<script src="js/config.js"></script>
+<script>
+if (!Auth.requireLogin()) {}
+let allEnrollments = [];
+async function loadMyCourses() {
+    try {
+        const data = await API.get('/enrollments/my/');
+        allEnrollments = data?.results || data || [];
+        renderCourses(allEnrollments);
+    } catch { document.getElementById('courses-grid').innerHTML = '<div class="col-span-full text-center py-10 text-red-400">Không thể tải dữ liệu</div>'; }
+}
+function filterTab(tab) {
+    ['all','learning','completed'].forEach(t => {
+        document.getElementById('tab-'+t).className = 'px-4 py-2 rounded-lg text-sm font-medium ' + (t===tab ? 'bg-blue-600 text-white' : 'bg-white border text-gray-600 hover:bg-gray-50');
+    });
+    let filtered = allEnrollments;
+    if (tab === 'learning') filtered = allEnrollments.filter(e => !e.is_completed);
+    if (tab === 'completed') filtered = allEnrollments.filter(e => e.is_completed);
+    renderCourses(filtered);
+}
+function renderCourses(enrollments) {
+    const grid = document.getElementById('courses-grid');
+    if (!enrollments.length) {
+        grid.innerHTML = '<div class="col-span-full text-center py-20 text-gray-400"><div class="text-5xl mb-4">📭</div><div class="text-xl font-medium">Chưa có khóa học nào</div><a href="courses.html" class="mt-4 inline-block bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700">Khám phá khóa học</a></div>';
+        return;
+    }
+    grid.innerHTML = enrollments.map(e => {
+        const c = e.course_detail;
+        return `
+        <div class="bg-white rounded-xl shadow hover:shadow-md transition-all overflow-hidden">
+            <img src="${c?.thumbnail_url || 'https://via.placeholder.com/400x200/3b82f6/ffffff?text=Course'}" class="w-full h-40 object-cover" alt="">
+            <div class="p-4">
+                <h3 class="font-bold text-gray-800 mb-2 line-clamp-2">${c?.title || 'Khóa học'}</h3>
+                <p class="text-gray-500 text-sm mb-3">👨‍🏫 ${c?.instructor_name || ''}</p>
+                <div class="mb-3">
+                    <div class="flex justify-between text-xs text-gray-500 mb-1">
+                        <span>Tiến độ học</span><span class="font-medium ${e.progress>=100?'text-green-600':'text-blue-600'}">${e.progress}%</span>
+                    </div>
+                    <div class="bg-gray-200 rounded-full h-2">
+                        <div class="h-2 rounded-full ${e.progress>=100?'bg-green-500':'bg-blue-500'}" style="width:${e.progress}%"></div>
+                    </div>
+                </div>
+                ${e.is_completed ? '<div class="text-green-600 text-sm font-medium mb-3">🏆 Đã hoàn thành</div>' : ''}
+                <div class="flex gap-2">
+                    <a href="learn.html?course=${c?.id}" class="flex-1 bg-blue-600 text-white py-2 rounded-lg text-sm font-medium text-center hover:bg-blue-700">
+                        ${e.progress > 0 ? '▶ Tiếp tục học' : '▶ Bắt đầu học'}
+                    </a>
+                    <a href="course-detail.html?id=${c?.id}" class="px-3 py-2 border rounded-lg text-sm text-gray-600 hover:bg-gray-50">Chi tiết</a>
+                </div>
+            </div>
+        </div>`;
+    }).join('');
+}
+loadMyCourses();
+</script>
+</body>
+</html>

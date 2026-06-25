@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản lý người dùng - Admin</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100">
+<div class="flex h-screen">
+<aside class="w-64 bg-gray-900 text-white flex flex-col shrink-0">
+    <div class="p-4 border-b border-gray-700"><div class="text-xl font-bold text-blue-400">🎓 E-Learning</div><div class="text-xs text-gray-400 mt-1">Admin Panel</div></div>
+    <nav class="flex-1 p-4 space-y-1">
+        <a href="dashboard.html" class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-300 hover:bg-gray-700 text-sm">📊 Dashboard</a>
+        <a href="users.html" class="flex items-center gap-3 px-3 py-2 rounded-lg bg-blue-600 text-white text-sm">👥 Người dùng</a>
+        <a href="courses.html" class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-300 hover:bg-gray-700 text-sm">📚 Khóa học</a>
+        <a href="enrollments.html" class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-300 hover:bg-gray-700 text-sm">📋 Đăng ký</a>
+    </nav>
+    <div class="p-4 border-t border-gray-700">
+        <div id="admin-name" class="text-sm text-gray-300 mb-2"></div>
+        <button onclick="Auth.logout()" class="text-red-400 text-sm hover:text-red-300">🚪 Đăng xuất</button>
+    </div>
+</aside>
+<div class="flex-1 overflow-y-auto">
+    <div class="bg-white shadow px-6 py-4 flex justify-between items-center">
+        <h1 class="text-xl font-bold text-gray-800">👥 Quản lý người dùng</h1>
+        <a href="../index.html" class="text-blue-600 text-sm hover:underline">← Xem trang chủ</a>
+    </div>
+    <div class="p-6">
+        <!-- Filters -->
+        <div class="bg-white rounded-xl shadow p-4 mb-6 flex gap-4 flex-wrap">
+            <input type="text" id="search" placeholder="🔍 Tìm tên, email..." class="border rounded-lg px-3 py-2 text-sm flex-1 min-w-48 focus:outline-none focus:ring-2 focus:ring-blue-500" oninput="debounce()">
+            <select id="filter-role" onchange="loadUsers()" class="border rounded-lg px-3 py-2 text-sm focus:outline-none">
+                <option value="">Tất cả vai trò</option>
+                <option value="admin">Admin</option>
+                <option value="instructor">Giảng viên</option>
+                <option value="student">Sinh viên</option>
+            </select>
+            <select id="filter-status" onchange="loadUsers()" class="border rounded-lg px-3 py-2 text-sm focus:outline-none">
+                <option value="">Tất cả trạng thái</option>
+                <option value="true">Hoạt động</option>
+                <option value="false">Bị khóa</option>
+            </select>
+        </div>
+        <!-- Table -->
+        <div class="bg-white rounded-xl shadow overflow-hidden">
+            <table class="w-full text-sm">
+                <thead class="bg-gray-50 border-b">
+                    <tr>
+                        <th class="text-left px-4 py-3 font-medium text-gray-600">ID</th>
+                        <th class="text-left px-4 py-3 font-medium text-gray-600">Họ tên</th>
+                        <th class="text-left px-4 py-3 font-medium text-gray-600">Email</th>
+                        <th class="text-left px-4 py-3 font-medium text-gray-600">Điện thoại</th>
+                        <th class="text-left px-4 py-3 font-medium text-gray-600">Vai trò</th>
+                        <th class="text-left px-4 py-3 font-medium text-gray-600">Trạng thái</th>
+                        <th class="text-left px-4 py-3 font-medium text-gray-600">Ngày tạo</th>
+                        <th class="text-left px-4 py-3 font-medium text-gray-600">Hành động</th>
+                    </tr>
+                </thead>
+                <tbody id="users-tbody">
+                    <tr><td colspan="8" class="text-center py-8 text-gray-400">Đang tải...</td></tr>
+                </tbody>
+            </table>
+        </div>
+        <div id="pagination" class="mt-4 flex justify-center gap-2"></div>
+    </div>
+</div>
+</div>
+
+<!-- Modal sửa user -->
+<div id="edit-modal" class="hidden fixed inset-0 bg-black/50 z-50 flex items-center justify-center">
+    <div class="bg-white rounded-xl shadow-xl w-96 p-6">
+        <h2 class="text-lg font-bold mb-4">✏️ Chỉnh sửa người dùng</h2>
+        <input type="hidden" id="edit-id">
+        <div class="space-y-3">
+            <div><label class="text-sm font-medium text-gray-700">Họ tên</label>
+                <input type="text" id="edit-name" class="w-full border rounded-lg px-3 py-2 mt-1 focus:outline-none focus:ring-2 focus:ring-blue-500"></div>
+            <div><label class="text-sm font-medium text-gray-700">Vai trò</label>
+                <select id="edit-role" class="w-full border rounded-lg px-3 py-2 mt-1 focus:outline-none">
+                    <option value="student">Sinh viên</option>
+                    <option value="instructor">Giảng viên</option>
+                    <option value="admin">Admin</option>
+                </select></div>
+            <div><label class="text-sm font-medium text-gray-700">Trạng thái</label>
+                <select id="edit-status" class="w-full border rounded-lg px-3 py-2 mt-1 focus:outline-none">
+                    <option value="true">Hoạt động</option>
+                    <option value="false">Bị khóa</option>
+                </select></div>
+        </div>
+        <div class="flex gap-3 mt-6">
+            <button onclick="saveUser()" class="flex-1 bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 font-medium">Lưu</button>
+            <button onclick="closeModal()" class="flex-1 border text-gray-600 py-2 rounded-lg hover:bg-gray-50">Hủy</button>
+        </div>
+    </div>
+</div>
+
+<script src="../js/config.js"></script>
+<script>
+if (!Auth.requireLogin()) {}
+if (Auth.getUser()?.role !== 'admin') { alert('Không có quyền!'); location.href='../index.html'; }
+document.getElementById('admin-name').textContent = Auth.getUser()?.full_name || 'Admin';
+
+let searchTimeout;
+function debounce() { clearTimeout(searchTimeout); searchTimeout = setTimeout(loadUsers, 400); }
+
+async function loadUsers(page = 1) {
+    const search = document.getElementById('search').value;
+    const role = document.getElementById('filter-role').value;
+    const status = document.getElementById('filter-status').value;
+    let url = `/auth/admin/users/?page=${page}`;
+    if (search) url += `&search=${encodeURIComponent(search)}`;
+    if (role) url += `&role=${role}`;
+    if (status !== '') url += `&is_active=${status}`;
+    try {
+        const data = await API.get(url);
+        const users = data?.results || data || [];
+        const tbody = document.getElementById('users-tbody');
+        if (!users.length) { tbody.innerHTML = '<tr><td colspan="8" class="text-center py-8 text-gray-400">Không tìm thấy người dùng</td></tr>'; return; }
+        tbody.innerHTML = users.map(u => `
+            <tr class="border-b hover:bg-gray-50">
+                <td class="px-4 py-3 text-gray-500">#${u.id}</td>
+                <td class="px-4 py-3 font-medium">${u.full_name || u.username}</td>
+                <td class="px-4 py-3 text-gray-600">${u.email}</td>
+                <td class="px-4 py-3 text-gray-600">${u.phone || '—'}</td>
+                <td class="px-4 py-3">${UI.roleBadge(u.role)}</td>
+                <td class="px-4 py-3"><span class="px-2 py-1 rounded-full text-xs ${u.is_active ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}">${u.is_active ? '✓ Hoạt động' : '✗ Bị khóa'}</span></td>
+                <td class="px-4 py-3 text-gray-500">${UI.formatDate(u.created_at)}</td>
+                <td class="px-4 py-3">
+                    <button onclick="openEdit(${u.id},'${u.full_name||''}','${u.role}',${u.is_active})" class="text-blue-600 hover:underline text-xs mr-2">✏️ Sửa</button>
+                    <button onclick="toggleUser(${u.id},${u.is_active})" class="text-xs ${u.is_active ? 'text-red-500 hover:underline' : 'text-green-500 hover:underline'}">${u.is_active ? '🔒 Khóa' : '🔓 Mở'}</button>
+                </td>
+            </tr>`).join('');
+        // Pagination
+        if (data?.count) {
+            const total = Math.ceil(data.count / 10);
+            document.getElementById('pagination').innerHTML = Array.from({length: total}, (_,i) =>
+                `<button onclick="loadUsers(${i+1})" class="px-3 py-1 rounded border text-sm hover:bg-blue-50">${i+1}</button>`
+            ).join('');
+        }
+    } catch { document.getElementById('users-tbody').innerHTML = '<tr><td colspan="8" class="text-center py-8 text-red-400">Lỗi tải dữ liệu</td></tr>'; }
+}
+
+function openEdit(id, name, role, isActive) {
+    document.getElementById('edit-id').value = id;
+    document.getElementById('edit-name').value = name;
+    document.getElementById('edit-role').value = role;
+    document.getElementById('edit-status').value = String(isActive);
+    document.getElementById('edit-modal').classList.remove('hidden');
+}
+function closeModal() { document.getElementById('edit-modal').classList.add('hidden'); }
+
+async function saveUser() {
+    const id = document.getElementById('edit-id').value;
+    try {
+        await API.patch(`/auth/admin/users/${id}/`, {
+            full_name: document.getElementById('edit-name').value,
+            role: document.getElementById('edit-role').value,
+            is_active: document.getElementById('edit-status').value === 'true',
+        });
+        UI.showAlert('Cập nhật thành công!', 'success');
+        closeModal(); loadUsers();
+    } catch { UI.showAlert('Lỗi cập nhật!', 'error'); }
+}
+
+async function toggleUser(id, isActive) {
+    if (!confirm(isActive ? 'Khóa tài khoản này?' : 'Mở khóa tài khoản này?')) return;
+    try {
+        await API.patch(`/auth/admin/users/${id}/`, { is_active: !isActive });
+        UI.showAlert(isActive ? 'Đã khóa tài khoản' : 'Đã mở khóa tài khoản', 'success');
+        loadUsers();
+    } catch { UI.showAlert('Lỗi!', 'error'); }
+}
+
+loadUsers();
+</script>
+</body>
+</html>

@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Làm bài thi - E-Learning</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50">
+<div id="start-screen" class="min-h-screen flex items-center justify-center">
+    <div class="bg-white rounded-2xl shadow-xl max-w-lg w-full p-8 text-center">
+        <div class="text-6xl mb-4">📝</div>
+        <h1 id="exam-title" class="text-2xl font-bold text-gray-800 mb-2"></h1>
+        <p id="exam-desc" class="text-gray-500 mb-6"></p>
+        <div id="exam-info" class="grid grid-cols-3 gap-4 mb-6 bg-gray-50 rounded-xl p-4 text-sm"></div>
+        <button onclick="startExam()" class="w-full bg-blue-600 text-white py-3 rounded-xl font-bold hover:bg-blue-700 text-lg">🚀 Bắt đầu làm bài</button>
+        <a href="javascript:history.back()" class="block mt-3 text-gray-400 text-sm hover:underline">← Quay lại</a>
+    </div>
+</div>
+<div id="exam-screen" class="hidden min-h-screen">
+    <!-- Timer bar -->
+    <div class="bg-white shadow-md sticky top-0 z-40 px-6 py-3 flex justify-between items-center">
+        <div class="font-bold text-gray-800" id="exam-title-bar"></div>
+        <div class="flex items-center gap-4">
+            <div class="text-lg font-mono font-bold" id="timer-display">
+                <span class="text-red-500" id="timer-text">00:00</span>
+            </div>
+            <button onclick="confirmSubmit()" class="bg-green-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-green-700">Nộp bài</button>
+        </div>
+    </div>
+    <div class="max-w-4xl mx-auto p-6 flex gap-6">
+        <!-- Questions -->
+        <div class="flex-1 space-y-6" id="questions-container"></div>
+        <!-- Navigator -->
+        <div class="w-48 shrink-0">
+            <div class="bg-white rounded-xl shadow p-4 sticky top-20">
+                <div class="text-sm font-medium text-gray-700 mb-3">Bảng câu hỏi</div>
+                <div id="question-nav" class="grid grid-cols-5 gap-1"></div>
+                <div class="mt-4 text-xs text-gray-500 space-y-1">
+                    <div class="flex gap-2 items-center"><div class="w-4 h-4 bg-blue-600 rounded"></div>Đã trả lời</div>
+                    <div class="flex gap-2 items-center"><div class="w-4 h-4 bg-gray-200 rounded"></div>Chưa trả lời</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Result screen -->
+<div id="result-screen" class="hidden min-h-screen flex items-center justify-center">
+    <div class="bg-white rounded-2xl shadow-xl max-w-lg w-full p-8 text-center">
+        <div id="result-icon" class="text-6xl mb-4"></div>
+        <h2 class="text-2xl font-bold mb-2" id="result-title"></h2>
+        <div class="text-5xl font-bold my-4" id="result-score"></div>
+        <div id="result-details" class="grid grid-cols-3 gap-4 bg-gray-50 rounded-xl p-4 mb-6 text-sm"></div>
+        <div class="flex gap-3">
+            <button onclick="location.reload()" class="flex-1 border border-blue-600 text-blue-600 py-3 rounded-xl font-medium hover:bg-blue-50">Làm lại</button>
+            <button onclick="history.back()" class="flex-1 bg-blue-600 text-white py-3 rounded-xl font-medium hover:bg-blue-700">Quay lại</button>
+        </div>
+    </div>
+</div>
+<script src="js/config.js"></script>
+<script>
+if (!Auth.requireLogin()) {}
+const examId = new URLSearchParams(location.search).get('id');
+if (!examId) history.back();
+let examData = null, answers = {}, timerInterval = null, timeLeft = 0, startTime = Date.now();
+
+async function loadExam() {
+    try {
+        examData = await API.get(`/exams/${examId}/`);
+        document.getElementById('exam-title').textContent = examData.title;
+        document.getElementById('exam-title-bar').textContent = examData.title;
+        document.getElementById('exam-desc').textContent = examData.description || '';
+        document.getElementById('exam-info').innerHTML = `
+            <div><div class="text-2xl font-bold text-blue-600">${examData.total_questions}</div><div class="text-gray-500">Câu hỏi</div></div>
+            <div><div class="text-2xl font-bold text-orange-600">${examData.duration_minutes}</div><div class="text-gray-500">Phút</div></div>
+            <div><div class="text-2xl font-bold text-green-600">${examData.pass_score}%</div><div class="text-gray-500">Điểm đạt</div></div>`;
+    } catch { alert('Không thể tải bài thi.'); history.back(); }
+}
+
+function startExam() {
+    document.getElementById('start-screen').classList.add('hidden');
+    document.getElementById('exam-screen').classList.remove('hidden');
+    timeLeft = examData.duration_minutes * 60;
+    startTime = Date.now();
+    renderQuestions();
+    startTimer();
+}
+
+function renderQuestions() {
+    const qs = examData.questions || [];
+    document.getElementById('questions-container').innerHTML = qs.map((q, i) => `
+        <div class="bg-white rounded-xl shadow p-6" id="question-block-${q.id}">
+            <div class="flex gap-3 mb-4">
+                <span class="bg-blue-600 text-white rounded-full w-8 h-8 flex items-center justify-center font-bold shrink-0">${i+1}</span>
+                <p class="text-gray-800 font-medium">${q.content}</p>
+            </div>
+            ${q.question_type === 'multiple_choice' ? `
+            <div class="space-y-2">
+                ${['a','b','c','d'].map(opt => q['option_'+opt] ? `
+                <label class="flex items-center gap-3 p-3 border rounded-lg cursor-pointer hover:bg-blue-50 has-[:checked]:bg-blue-50 has-[:checked]:border-blue-500">
+                    <input type="radio" name="q_${q.id}" value="${opt}" onchange="selectAnswer(${q.id},'${opt}')" class="text-blue-600">
+                    <span class="font-medium text-blue-600 uppercase">${opt}.</span>
+                    <span>${q['option_'+opt]}</span>
+                </label>` : '').join('')}
+            </div>` : q.question_type === 'true_false' ? `
+            <div class="flex gap-4">
+                <label class="flex-1 flex items-center gap-2 p-3 border rounded-lg cursor-pointer hover:bg-blue-50"><input type="radio" name="q_${q.id}" value="true" onchange="selectAnswer(${q.id},'true')"> ✅ Đúng</label>
+                <label class="flex-1 flex items-center gap-2 p-3 border rounded-lg cursor-pointer hover:bg-red-50"><input type="radio" name="q_${q.id}" value="false" onchange="selectAnswer(${q.id},'false')"> ❌ Sai</label>
+            </div>` : `
+            <input type="text" placeholder="Nhập câu trả lời..." class="w-full border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                onchange="selectAnswer(${q.id}, this.value)">`}
+        </div>`).join('');
+
+    document.getElementById('question-nav').innerHTML = qs.map((q,i) =>
+        `<button onclick="scrollToQ(${q.id})" id="nav-${q.id}" class="w-8 h-8 rounded text-xs font-bold bg-gray-200 hover:bg-gray-300">${i+1}</button>`
+    ).join('');
+}
+
+function selectAnswer(qId, val) {
+    answers[qId] = val;
+    const nav = document.getElementById(`nav-${qId}`);
+    if (nav) nav.className = 'w-8 h-8 rounded text-xs font-bold bg-blue-600 text-white';
+}
+
+function scrollToQ(qId) {
+    document.getElementById(`question-block-${qId}`)?.scrollIntoView({behavior:'smooth', block:'center'});
+}
+
+function startTimer() {
+    timerInterval = setInterval(() => {
+        timeLeft--;
+        const m = Math.floor(timeLeft/60).toString().padStart(2,'0');
+        const s = (timeLeft%60).toString().padStart(2,'0');
+        document.getElementById('timer-text').textContent = `${m}:${s}`;
+        if (timeLeft <= 60) document.getElementById('timer-text').className = 'text-red-600 font-bold animate-pulse';
+        if (timeLeft <= 0) { clearInterval(timerInterval); submitExam(); }
+    }, 1000);
+}
+
+function confirmSubmit() {
+    const answered = Object.keys(answers).length;
+    const total = (examData.questions||[]).length;
+    if (confirm(`Bạn đã trả lời ${answered}/${total} câu. Nộp bài?`)) submitExam();
+}
+
+async function submitExam() {
+    clearInterval(timerInterval);
+    document.getElementById('exam-screen').classList.add('hidden');
+    try {
+        const timeSpent = Math.floor((Date.now()-startTime)/1000);
+        const strAnswers = {};
+        Object.entries(answers).forEach(([k,v]) => strAnswers[k] = v);
+        const result = await API.post(`/exams/${examId}/submit/`, { answers: strAnswers, time_spent: timeSpent });
+        showResult(result.result);
+    } catch { alert('Lỗi nộp bài. Vui lòng thử lại.'); location.reload(); }
+}
+
+function showResult(r) {
+    document.getElementById('result-screen').classList.remove('hidden');
+    document.getElementById('result-icon').textContent = r.is_passed ? '🏆' : '😢';
+    document.getElementById('result-title').textContent = r.is_passed ? 'Chúc mừng! Bạn đã đạt!' : 'Chưa đạt. Cố gắng hơn nhé!';
+    document.getElementById('result-title').className = 'text-2xl font-bold mb-2 ' + (r.is_passed?'text-green-600':'text-red-500');
+    document.getElementById('result-score').textContent = r.score + '%';
+    document.getElementById('result-score').className = 'text-5xl font-bold my-4 ' + (r.is_passed?'text-green-600':'text-red-500');
+    document.getElementById('result-details').innerHTML = `
+        <div><div class="text-xl font-bold text-blue-600">${r.earned_points}/${r.total_points}</div><div class="text-gray-500">Điểm</div></div>
+        <div><div class="text-xl font-bold text-orange-600">${Math.floor(r.time_spent/60)}:${(r.time_spent%60).toString().padStart(2,'0')}</div><div class="text-gray-500">Thời gian</div></div>
+        <div><div class="text-xl font-bold ${r.is_passed?'text-green-600':'text-red-500'}">${r.is_passed?'ĐẠT':'CHƯA ĐẠT'}</div><div class="text-gray-500">Kết quả</div></div>`;
+}
+loadExam();
+</script>
+</body>
+</html>
