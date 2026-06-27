@@ -1,5 +1,5 @@
 const CONFIG = {
-    API_BASE_URL: 'https://elearning-backend-ead6.onrender.com/api/',
+    API_BASE_URL: 'https://elearning-backend-ead6.onrender.com/api',
     APP_NAME: 'Smart E-Learning',
 };
 
