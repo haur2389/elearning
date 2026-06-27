@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kết quả thi - E-Learning</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50">
+<nav class="bg-white shadow-md sticky top-0 z-40">
+    <div class="max-w-7xl mx-auto px-4 flex items-center justify-between h-16">
+        <a href="index.html" class="text-2xl font-bold text-blue-600">🎓 E-Learning</a>
+        <div class="flex gap-3">
+            <a href="my-courses.html" class="text-gray-600 hover:text-blue-600">Khóa học của tôi</a>
+            <a href="profile.html" class="text-gray-600 hover:text-blue-600">Hồ sơ</a>
+            <button onclick="Auth.logout()" class="px-4 py-2 text-red-500 border border-red-500 rounded-lg text-sm">Đăng xuất</button>
+        </div>
+    </div>
+</nav>
+<div class="max-w-5xl mx-auto px-4 py-8">
+    <h1 class="text-3xl font-bold mb-6 text-gray-800">📝 Kết quả thi của tôi</h1>
+    <div id="results-container" class="space-y-4">
+        <div class="text-center py-20 text-gray-400"><div class="text-5xl mb-4">⏳</div>Đang tải...</div>
+    </div>
+</div>
+<script src="js/config.js"></script>
+<script>
+if (!Auth.requireLogin()) {}
+async function loadResults() {
+    try {
+        const data = await API.get('/exams/my-results/');
+        const results = data?.results || data || [];
+        const container = document.getElementById('results-container');
+        if (!results.length) {
+            container.innerHTML = '<div class="text-center py-20 text-gray-400"><div class="text-5xl mb-4">📭</div><div class="text-xl font-medium">Chưa có kết quả thi nào</div><a href="courses.html" class="mt-4 inline-block bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700">Khám phá khóa học</a></div>';
+            return;
+        }
+        container.innerHTML = results.map(r => `
+        <div class="bg-white rounded-xl shadow p-6 flex items-center justify-between">
+            <div class="flex-1">
+                <h3 class="font-bold text-gray-800 text-lg mb-1">${r.exam_title}</h3>
+                <div class="flex gap-4 text-sm text-gray-500">
+                    <span>📅 ${UI.formatDate(r.submitted_at)}</span>
+                    <span>⏱ ${Math.floor(r.time_spent/60)}:${String(r.time_spent%60).padStart(2,'0')}</span>
+                    <span>✅ ${r.earned_points}/${r.total_points} điểm</span>
+                </div>
+            </div>
+            <div class="text-center mx-8">
+                <div class="text-4xl font-bold ${r.is_passed ? 'text-green-600' : 'text-red-500'}">${r.score}%</div>
+                <div class="text-sm mt-1">
+                    <span class="px-3 py-1 rounded-full font-medium ${r.is_passed ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}">
+                        ${r.is_passed ? '🏆 ĐẠT' : '❌ CHƯA ĐẠT'}
+                    </span>
+                </div>
+            </div>
+        </div>`).join('');
+    } catch {
+        document.getElementById('results-container').innerHTML = '<div class="text-center py-10 text-red-400">Không thể tải dữ liệu</div>';
+    }
+}
+loadResults();
+</script>
+</body>
+</html>

@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thanh toán - Smart E-Learning</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50">
+<nav class="bg-white shadow-md sticky top-0 z-40">
+    <div class="max-w-4xl mx-auto px-4 flex items-center justify-between h-16">
+        <a href="index.html" class="text-2xl font-bold text-blue-600">🎓 E-Learning</a>
+        <button onclick="history.back()" class="text-gray-500 hover:text-blue-600">← Quay lại</button>
+    </div>
+</nav>
+
+<div class="max-w-2xl mx-auto px-4 py-8">
+    <h1 class="text-2xl font-bold text-gray-800 mb-2">💳 Thanh toán khóa học</h1>
+    <div id="course-info" class="bg-blue-50 rounded-xl p-4 mb-6">
+        <div class="font-bold text-blue-800" id="pay-course-title">Đang tải...</div>
+        <div class="text-blue-600 text-sm mt-1" id="pay-course-price"></div>
+    </div>
+
+    <!-- Chọn phương thức -->
+    <div class="bg-white rounded-xl shadow p-6 mb-4">
+        <h2 class="font-bold text-gray-800 mb-4">Chọn phương thức thanh toán</h2>
+        <div class="grid grid-cols-2 gap-3">
+            <button onclick="selectMethod('qr')" id="btn-qr"
+                class="method-btn border-2 border-blue-500 bg-blue-50 rounded-xl p-4 text-center transition-all">
+                <div class="text-3xl mb-2">📱</div>
+                <div class="font-bold text-blue-700">Chuyển khoản QR</div>
+                <div class="text-xs text-gray-500 mt-1">VietQR / Banking app</div>
+            </button>
+            <button onclick="selectMethod('cash')" id="btn-cash"
+                class="method-btn border-2 border-gray-200 rounded-xl p-4 text-center transition-all hover:border-gray-400">
+                <div class="text-3xl mb-2">💵</div>
+                <div class="font-bold text-gray-700">Tiền mặt</div>
+                <div class="text-xs text-gray-500 mt-1">Nộp tại văn phòng</div>
+            </button>
+        </div>
+    </div>
+
+    <!-- QR Section -->
+    <div id="qr-section" class="bg-white rounded-xl shadow p-6 mb-4">
+        <h2 class="font-bold text-gray-800 mb-4">📱 Quét mã QR để thanh toán</h2>
+        <div class="flex flex-col md:flex-row gap-6 items-center">
+            <!-- QR Code thật dùng VietQR -->
+            <div class="text-center">
+                <img id="qr-image"
+                    src="https://img.vietqr.io/image/MB-0399818923-compact2.jpg?amount=299000&addInfo=Hoc%20phi%20E-Learning&accountName=CHEN%20WOEI%20HAUR"
+                    class="w-52 h-52 rounded-xl border-4 border-blue-200 shadow" alt="QR Code thanh toán">
+                <p class="text-xs text-gray-400 mt-2">Quét bằng app ngân hàng bất kỳ</p>
+            </div>
+            <div class="flex-1 space-y-3">
+                <div class="bg-gray-50 rounded-lg p-3">
+                    <div class="text-xs text-gray-500 mb-1">Ngân hàng</div>
+                    <div class="font-bold text-gray-800">MB Bank (Quân đội)</div>
+                </div>
+                <div class="bg-gray-50 rounded-lg p-3">
+                    <div class="text-xs text-gray-500 mb-1">Số tài khoản</div>
+                    <div class="font-bold text-gray-800 flex items-center gap-2">
+                        <span>0399818923</span>
+                        <button onclick="copyText('0399818923')" class="text-blue-500 text-xs hover:underline">📋 Copy</button>
+                    </div>
+                </div>
+                <div class="bg-gray-50 rounded-lg p-3">
+                    <div class="text-xs text-gray-500 mb-1">Chủ tài khoản</div>
+                    <div class="font-bold text-gray-800">CHEN WOEI HAUR</div>
+                </div>
+                <div class="bg-gray-50 rounded-lg p-3">
+                    <div class="text-xs text-gray-500 mb-1">Số tiền</div>
+                    <div class="font-bold text-blue-600 text-xl" id="qr-amount">299.000đ</div>
+                </div>
+                <div class="bg-gray-50 rounded-lg p-3">
+                    <div class="text-xs text-gray-500 mb-1">Nội dung chuyển khoản</div>
+                    <div class="font-bold text-gray-800 flex items-center gap-2">
+                        <span id="transfer-note">ELEARNING SV001</span>
+                        <button onclick="copyText(document.getElementById('transfer-note').textContent)" class="text-blue-500 text-xs hover:underline">📋 Copy</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="mt-4 bg-yellow-50 rounded-lg p-3 text-sm text-yellow-700">
+            ⚠️ Sau khi chuyển khoản, hệ thống sẽ kích hoạt khóa học trong vòng <b>15 phút</b>. Giữ lại ảnh chụp màn hình giao dịch.
+        </div>
+        <button onclick="confirmQR()" class="w-full mt-4 bg-blue-600 text-white py-3 rounded-xl font-bold hover:bg-blue-700">
+            ✅ Tôi đã chuyển khoản xong
+        </button>
+    </div>
+
+    <!-- Cash Section -->
+    <div id="cash-section" class="hidden bg-white rounded-xl shadow p-6 mb-4">
+        <h2 class="font-bold text-gray-800 mb-4">💵 Hướng dẫn nộp tiền mặt</h2>
+        <div class="space-y-4">
+            <div class="flex gap-4 items-start">
+                <div class="w-8 h-8 bg-blue-600 text-white rounded-full flex items-center justify-center font-bold shrink-0">1</div>
+                <div>
+                    <div class="font-medium text-gray-800">Đến văn phòng đăng ký</div>
+                    <div class="text-sm text-gray-500 mt-1">📍 Trường ĐH Bình Dương – Phòng Đào tạo (Tầng 1, Tòa nhà A)<br>⏰ Giờ làm việc: 7:30 – 11:30 | 13:00 – 17:00 (Thứ 2 – Thứ 6)</div>
+                </div>
+            </div>
+            <div class="flex gap-4 items-start">
+                <div class="w-8 h-8 bg-blue-600 text-white rounded-full flex items-center justify-center font-bold shrink-0">2</div>
+                <div>
+                    <div class="font-medium text-gray-800">Mang theo thông tin đăng ký</div>
+                    <div class="text-sm text-gray-500 mt-1">📋 Mang theo thẻ sinh viên và in phiếu đăng ký bên dưới</div>
+                </div>
+            </div>
+            <div class="flex gap-4 items-start">
+                <div class="w-8 h-8 bg-blue-600 text-white rounded-full flex items-center justify-center font-bold shrink-0">3</div>
+                <div>
+                    <div class="font-medium text-gray-800">Nộp tiền và nhận biên lai</div>
+                    <div class="text-sm text-gray-500 mt-1">💰 Số tiền: <b id="cash-amount" class="text-blue-600">299.000đ</b><br>📄 Yêu cầu biên lai sau khi nộp tiền</div>
+                </div>
+            </div>
+            <div class="flex gap-4 items-start">
+                <div class="w-8 h-8 bg-blue-600 text-white rounded-full flex items-center justify-center font-bold shrink-0">4</div>
+                <div>
+                    <div class="font-medium text-gray-800">Kích hoạt khóa học</div>
+                    <div class="text-sm text-gray-500 mt-1">🔑 Khóa học được kích hoạt trong ngày làm việc</div>
+                </div>
+            </div>
+            <!-- Phiếu đăng ký in -->
+            <div class="border-2 border-dashed border-gray-300 rounded-xl p-4 bg-gray-50" id="print-ticket">
+                <div class="text-center font-bold text-gray-800 mb-2">📋 PHIẾU ĐĂNG KÝ KHÓA HỌC</div>
+                <div class="grid grid-cols-2 gap-2 text-sm">
+                    <div><span class="text-gray-500">Họ tên:</span> <b id="ticket-name">---</b></div>
+                    <div><span class="text-gray-500">Email:</span> <b id="ticket-email">---</b></div>
+                    <div><span class="text-gray-500">Khóa học:</span> <b id="ticket-course">---</b></div>
+                    <div><span class="text-gray-500">Số tiền:</span> <b id="ticket-amount" class="text-blue-600">---</b></div>
+                    <div><span class="text-gray-500">Ngày:</span> <b id="ticket-date">---</b></div>
+                    <div><span class="text-gray-500">Mã đăng ký:</span> <b id="ticket-code" class="text-red-600">---</b></div>
+                </div>
+            </div>
+            <div class="flex gap-3">
+                <button onclick="printTicket()" class="flex-1 border border-blue-600 text-blue-600 py-2 rounded-xl hover:bg-blue-50 font-medium">🖨 In phiếu đăng ký</button>
+                <button onclick="confirmCash()" class="flex-1 bg-green-600 text-white py-2 rounded-xl hover:bg-green-700 font-medium">✅ Xác nhận đã nộp tiền</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Success -->
+    <div id="success-section" class="hidden bg-green-50 rounded-xl p-8 text-center border border-green-200">
+        <div class="text-6xl mb-4">🎉</div>
+        <h2 class="text-2xl font-bold text-green-700 mb-2">Đăng ký thành công!</h2>
+        <p class="text-green-600 mb-6">Cảm ơn bạn đã đăng ký. Khóa học sẽ được kích hoạt sớm nhất.</p>
+        <div class="flex gap-3 justify-center">
+            <a href="my-courses.html" class="bg-blue-600 text-white px-6 py-3 rounded-xl hover:bg-blue-700 font-medium">📚 Khóa học của tôi</a>
+            <a href="courses.html" class="border border-gray-300 text-gray-600 px-6 py-3 rounded-xl hover:bg-gray-50">Xem khóa học khác</a>
+        </div>
+    </div>
+</div>
+
+<script src="js/config.js"></script>
+<script>
+if (!Auth.requireLogin()) {}
+const params = new URLSearchParams(location.search);
+const courseId = params.get('course');
+const user = Auth.getUser();
+
+async function loadCourse() {
+    if (!courseId) return;
+    try {
+        const c = await API.get(`/courses/${courseId}/`);
+        document.getElementById('pay-course-title').textContent = c.title;
+        const price = parseInt(c.price);
+        const priceStr = price === 0 ? 'Miễn phí' : price.toLocaleString('vi-VN') + 'đ';
+        document.getElementById('pay-course-price').textContent = '💰 Học phí: ' + priceStr;
+        document.getElementById('qr-amount').textContent = priceStr;
+        document.getElementById('cash-amount').textContent = priceStr;
+
+        // Update QR với số tiền thật
+        const note = encodeURIComponent('Hoc phi ' + c.title.substring(0,20));
+        document.getElementById('qr-image').src = `https://img.vietqr.io/image/MB-0399818923-compact2.jpg?amount=${price}&addInfo=${note}&accountName=CHEN%20WOEI%20HAUR`;
+
+        // Phiếu in
+        const code = 'EL' + Date.now().toString().slice(-6);
+        document.getElementById('ticket-name').textContent = user?.full_name || '---';
+        document.getElementById('ticket-email').textContent = user?.email || '---';
+        document.getElementById('ticket-course').textContent = c.title;
+        document.getElementById('ticket-amount').textContent = priceStr;
+        document.getElementById('ticket-date').textContent = new Date().toLocaleDateString('vi-VN');
+        document.getElementById('ticket-code').textContent = code;
+        document.getElementById('transfer-note').textContent = 'ELEARNING ' + code;
+    } catch {}
+}
+
+function selectMethod(method) {
+    document.getElementById('btn-qr').className = 'method-btn border-2 border-gray-200 rounded-xl p-4 text-center transition-all hover:border-gray-400';
+    document.getElementById('btn-cash').className = 'method-btn border-2 border-gray-200 rounded-xl p-4 text-center transition-all hover:border-gray-400';
+    document.getElementById('qr-section').classList.add('hidden');
+    document.getElementById('cash-section').classList.add('hidden');
+
+    if (method === 'qr') {
+        document.getElementById('btn-qr').className = 'method-btn border-2 border-blue-500 bg-blue-50 rounded-xl p-4 text-center';
+        document.getElementById('qr-section').classList.remove('hidden');
+    } else {
+        document.getElementById('btn-cash').className = 'method-btn border-2 border-green-500 bg-green-50 rounded-xl p-4 text-center';
+        document.getElementById('cash-section').classList.remove('hidden');
+    }
+}
+
+function copyText(text) {
+    navigator.clipboard.writeText(text);
+    UI.showAlert('Đã copy!', 'success', 1500);
+}
+
+function printTicket() {
+    const el = document.getElementById('print-ticket').innerHTML;
+    const w = window.open('', '_blank');
+    w.document.write(`<html><body style="font-family:Arial;padding:20px">${el}<br><br><i>In ngày: ${new Date().toLocaleString('vi-VN')}</i></body></html>`);
+    w.print();
+}
+
+async function confirmQR() {
+    await enrollAndSuccess();
+}
+async function confirmCash() {
+    await enrollAndSuccess();
+}
+
+async function enrollAndSuccess() {
+    try {
+        await API.post('/enrollments/enroll/', { course_id: parseInt(courseId) });
+    } catch {}
+    document.getElementById('qr-section').classList.add('hidden');
+    document.getElementById('cash-section').classList.add('hidden');
+    document.getElementById('success-section').classList.remove('hidden');
+    window.scrollTo({ top: document.getElementById('success-section').offsetTop - 80, behavior: 'smooth' });
+}
+
+// Init
+selectMethod('qr');
+loadCourse();
+</script>
+</body>
+</html>

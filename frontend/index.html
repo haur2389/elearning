@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart E-Learning - Học Trực Tuyến Thông Minh</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .line-clamp-2{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+        .course-card:hover{transform:translateY(-4px);box-shadow:0 12px 24px rgba(0,0,0,.12)}
+        .course-card{transition:all .25s ease}
+    </style>
+</head>
+<body class="bg-gray-50">
+
+<!-- NAVBAR -->
+<nav class="bg-white shadow-md sticky top-0 z-40">
+    <div class="max-w-7xl mx-auto px-4 flex items-center justify-between h-16">
+        <a href="index.html" class="text-2xl font-bold text-blue-600">🎓 E-Learning</a>
+        <div class="hidden md:flex items-center gap-6">
+            <a href="courses.html" class="text-gray-600 hover:text-blue-600 font-medium">Khóa học</a>
+        </div>
+        <!-- Guest -->
+        <div id="nav-guest" class="flex gap-2">
+            <a href="login.html" class="px-4 py-2 text-blue-600 border border-blue-600 rounded-lg hover:bg-blue-50 text-sm font-medium">Đăng nhập</a>
+            <a href="register.html" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm font-medium">Đăng ký</a>
+        </div>
+        <!-- User -->
+        <div id="nav-user" class="hidden flex items-center gap-4">
+            <a href="#" id="nav-bell" class="relative text-gray-500 hover:text-blue-600">
+                🔔<span id="notif-badge" class="hidden absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">0</span>
+            </a>
+            <div class="relative group">
+                <button class="flex items-center gap-2">
+                    <img id="nav-avatar" src="https://ui-avatars.com/api/?name=User&background=3b82f6&color=fff" class="w-8 h-8 rounded-full object-cover">
+                    <span id="nav-name" class="font-medium text-gray-700 text-sm"></span>▾
+                </button>
+                <div class="hidden group-hover:block absolute right-0 mt-1 bg-white shadow-xl rounded-xl w-52 py-2 z-50 border">
+                    <a href="profile.html"    class="block px-4 py-2 text-sm hover:bg-gray-50">👤 Hồ sơ cá nhân</a>
+                    <a href="my-courses.html" class="block px-4 py-2 text-sm hover:bg-gray-50">📚 Khóa học của tôi</a>
+                    <a href="my-exams.html"   class="block px-4 py-2 text-sm hover:bg-gray-50">📝 Kết quả thi</a>
+                    <div id="link-admin" class="hidden"><hr class="my-1"><a href="admin/dashboard.html" class="block px-4 py-2 text-sm text-red-600 hover:bg-gray-50">⚙️ Admin Panel</a></div>
+                    <div id="link-instructor" class="hidden"><hr class="my-1"><a href="instructor/courses.html" class="block px-4 py-2 text-sm text-blue-600 hover:bg-gray-50">📖 Quản lý khóa học</a></div>
+                    <hr class="my-1">
+                    <button onclick="handleLogout()" class="w-full text-left px-4 py-2 text-sm text-red-500 hover:bg-gray-50">🚪 Đăng xuất</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>
+
+<!-- HERO - 3-column photo collage slider (matches design reference) -->
+<style>
+.hero-wrap { position:relative; height:480px; overflow:hidden; background:#0f2864; }
+.hero-panel { position:absolute; inset:0; display:grid; grid-template-columns:1fr 2fr 1fr; opacity:0; transition:opacity .7s ease; }
+.hero-panel.active { opacity:1; }
+.hero-panel .col-img { position:relative; overflow:hidden; }
+.hero-panel .col-img img { width:100%; height:100%; object-fit:cover; filter:brightness(.55); }
+.hero-panel .col-center { position:relative; display:flex; flex-direction:column; align-items:center; justify-content:center; }
+.hero-panel .col-center::before {
+    content:''; position:absolute; inset:0;
+    background: linear-gradient(135deg, rgba(10,35,120,.88) 0%, rgba(20,70,200,.78) 100%);
+    z-index:0;
+}
+.hero-panel .col-center > * { position:relative; z-index:1; }
+/* blend edges */
+.hero-panel .col-img.left::after  { content:''; position:absolute; inset:0; background:linear-gradient(to right,  transparent 60%, rgba(10,35,120,.90) 100%); }
+.hero-panel .col-img.right::after { content:''; position:absolute; inset:0; background:linear-gradient(to left,   transparent 60%, rgba(10,35,120,.90) 100%); }
+.hero-arrow { position:absolute; top:50%; transform:translateY(-50%); z-index:30; width:42px; height:42px; border-radius:50%; background:rgba(255,255,255,.18); border:none; color:#fff; font-size:22px; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:background .2s; }
+.hero-arrow:hover { background:rgba(255,255,255,.38); }
+.hero-dot-wrap { display:flex; gap:8px; justify-content:center; margin-top:28px; }
+.hero-dot { width:10px; height:10px; border-radius:50%; background:rgba(255,255,255,.35); border:none; cursor:pointer; transition:background .3s; padding:0; }
+.hero-dot.on { background:#fff; }
+</style>
+
+<section class="hero-wrap" id="hero-wrap">
+
+    <!-- Slide set 1 -->
+    <div class="hero-panel active" id="hp0">
+        <div class="col-img left"><img src="https://images.unsplash.com/photo-1588702547919-26089e690ecc?w=600&h=600&fit=crop&auto=format" alt=""></div>
+        <div class="col-center px-8 text-white text-center">
+            <h1 style="font-size:2.6rem;font-weight:800;line-height:1.15;margin-bottom:12px;text-shadow:0 2px 8px rgba(0,0,0,.4)">Học Trực Tuyến Thông Minh</h1>
+            <p style="font-size:1rem;color:#bfcfef;margin-bottom:28px;max-width:360px">Nâng cao kỹ năng với hàng trăm khóa học chất lượng cao từ các chuyên gia hàng đầu</p>
+            <div style="display:flex;gap:12px;flex-wrap:wrap;justify-content:center;margin-bottom:36px">
+                <a href="courses.html" style="padding:10px 28px;background:#fff;color:#1d4ed8;border-radius:24px;font-weight:700;text-decoration:none;font-size:.95rem;box-shadow:0 4px 16px rgba(0,0,0,.18)">Khám phá khóa học</a>
+                <a href="register.html" style="padding:10px 28px;border:2px solid #fff;color:#fff;border-radius:24px;font-weight:700;text-decoration:none;font-size:.95rem">Đăng ký miễn phí</a>
+            </div>
+            <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;max-width:320px;margin:0 auto">
+                <div><div style="font-size:1.8rem;font-weight:800" id="stat-courses">--</div><div style="font-size:.78rem;color:#90acd8">Khóa học</div></div>
+                <div><div style="font-size:1.8rem;font-weight:800" id="stat-students">--</div><div style="font-size:.78rem;color:#90acd8">Học viên</div></div>
+                <div><div style="font-size:1.8rem;font-weight:800" id="stat-instructors">--</div><div style="font-size:.78rem;color:#90acd8">Giảng viên</div></div>
+            </div>
+            <div class="hero-dot-wrap" id="hero-dots">
+                <button class="hero-dot on" onclick="goSlide(0)"></button>
+                <button class="hero-dot" onclick="goSlide(1)"></button>
+                <button class="hero-dot" onclick="goSlide(2)"></button>
+                <button class="hero-dot" onclick="goSlide(3)"></button>
+                <button class="hero-dot" onclick="goSlide(4)"></button>
+            </div>
+        </div>
+        <div class="col-img right"><img src="https://images.unsplash.com/photo-1503676260728-1c00da094a0b?w=600&h=600&fit=crop&auto=format" alt=""></div>
+    </div>
+
+    <!-- Slide set 2 -->
+    <div class="hero-panel" id="hp1">
+        <div class="col-img left"><img src="https://images.unsplash.com/photo-1571260899304-425eee4c7efc?w=600&h=600&fit=crop&auto=format" alt=""></div>
+        <div class="col-center px-8 text-white text-center">
+            <h1 style="font-size:2.6rem;font-weight:800;line-height:1.15;margin-bottom:12px;text-shadow:0 2px 8px rgba(0,0,0,.4)">Học Trực Tuyến Thông Minh</h1>
+            <p style="font-size:1rem;color:#bfcfef;margin-bottom:28px;max-width:360px">Nâng cao kỹ năng với hàng trăm khóa học chất lượng cao từ các chuyên gia hàng đầu</p>
+            <div style="display:flex;gap:12px;flex-wrap:wrap;justify-content:center;margin-bottom:36px">
+                <a href="courses.html" style="padding:10px 28px;background:#fff;color:#1d4ed8;border-radius:24px;font-weight:700;text-decoration:none;font-size:.95rem;box-shadow:0 4px 16px rgba(0,0,0,.18)">Khám phá khóa học</a>
+                <a href="register.html" style="padding:10px 28px;border:2px solid #fff;color:#fff;border-radius:24px;font-weight:700;text-decoration:none;font-size:.95rem">Đăng ký miễn phí</a>
+            </div>
+            <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;max-width:320px;margin:0 auto">
+                <div><div style="font-size:1.8rem;font-weight:800" id="stat-courses2">--</div><div style="font-size:.78rem;color:#90acd8">Khóa học</div></div>
+                <div><div style="font-size:1.8rem;font-weight:800" id="stat-students2">--</div><div style="font-size:.78rem;color:#90acd8">Học viên</div></div>
+                <div><div style="font-size:1.8rem;font-weight:800" id="stat-instructors2">--</div><div style="font-size:.78rem;color:#90acd8">Giảng viên</div></div>
+            </div>
+            <div class="hero-dot-wrap">
+                <button class="hero-dot" onclick="goSlide(0)"></button>
+                <button class="hero-dot on" onclick="goSlide(1)"></button>
+                <button class="hero-dot" onclick="goSlide(2)"></button>
+                <button class="hero-dot" onclick="goSlide(3)"></button>
+                <button class="hero-dot" onclick="goSlide(4)"></button>
+            </div>
+        </div>
+        <div class="col-img right"><img src="https://images.unsplash.com/photo-1434030216411-0b793f4b4173?w=600&h=600&fit=crop&auto=format" alt=""></div>
+    </div>
+
+    <!-- Slide set 3 -->
+    <div class="hero-panel" id="hp2">
+        <div class="col-img left"><img src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=600&h=600&fit=crop&auto=format" alt=""></div>
+        <div class="col-center px-8 text-white text-center">
+            <h1 style="font-size:2.6rem;font-weight:800;line-height:1.15;margin-bottom:12px;text-shadow:0 2px 8px rgba(0,0,0,.4)">Học Trực Tuyến Thông Minh</h1>
+            <p style="font-size:1rem;color:#bfcfef;margin-bottom:28px;max-width:360px">Nâng cao kỹ năng với hàng trăm khóa học chất lượng cao từ các chuyên gia hàng đầu</p>
+            <div style="display:flex;gap:12px;flex-wrap:wrap;justify-content:center;margin-bottom:36px">
+                <a href="courses.html" style="padding:10px 28px;background:#fff;color:#1d4ed8;border-radius:24px;font-weight:700;text-decoration:none;font-size:.95rem;box-shadow:0 4px 16px rgba(0,0,0,.18)">Khám phá khóa học</a>
+                <a href="register.html" style="padding:10px 28px;border:2px solid #fff;color:#fff;border-radius:24px;font-weight:700;text-decoration:none;font-size:.95rem">Đăng ký miễn phí</a>
+            </div>
+            <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;max-width:320px;margin:0 auto">
+                <div><div style="font-size:1.8rem;font-weight:800" id="stat-courses3">--</div><div style="font-size:.78rem;color:#90acd8">Khóa học</div></div>
+                <div><div style="font-size:1.8rem;font-weight:800" id="stat-students3">--</div><div style="font-size:.78rem;color:#90acd8">Học viên</div></div>
+                <div><div style="font-size:1.8rem;font-weight:800" id="stat-instructors3">--</div><div style="font-size:.78rem;color:#90acd8">Giảng viên</div></div>
+            </div>
+            <div class="hero-dot-wrap">
+                <button class="hero-dot" onclick="goSlide(0)"></button>
+                <button class="hero-dot" onclick="goSlide(1)"></button>
+                <button class="hero-dot on" onclick="goSlide(2)"></button>
+                <button class="hero-dot" onclick="goSlide(3)"></button>
+                <button class="hero-dot" onclick="goSlide(4)"></button>
+            </div>
+        </div>
+        <div class="col-img right"><img src="https://images.unsplash.com/photo-1513258496099-48168024aec0?w=600&h=600&fit=crop&auto=format" alt=""></div>
+    </div>
+
+    <!-- Slide set 4 -->
+    <div class="hero-panel" id="hp3">
+        <div class="col-img left"><img src="https://images.unsplash.com/photo-1491841573634-28140fc7ced7?w=600&h=600&fit=crop&auto=format" alt=""></div>
+        <div class="col-center px-8 text-white text-center">
+            <h1 style="font-size:2.6rem;font-weight:800;line-height:1.15;margin-bottom:12px;text-shadow:0 2px 8px rgba(0,0,0,.4)">Học Trực Tuyến Thông Minh</h1>
+            <p style="font-size:1rem;color:#bfcfef;margin-bottom:28px;max-width:360px">Nâng cao kỹ năng với hàng trăm khóa học chất lượng cao từ các chuyên gia hàng đầu</p>
+            <div style="display:flex;gap:12px;flex-wrap:wrap;justify-content:center;margin-bottom:36px">
+                <a href="courses.html" style="padding:10px 28px;background:#fff;color:#1d4ed8;border-radius:24px;font-weight:700;text-decoration:none;font-size:.95rem;box-shadow:0 4px 16px rgba(0,0,0,.18)">Khám phá khóa học</a>
+                <a href="register.html" style="padding:10px 28px;border:2px solid #fff;color:#fff;border-radius:24px;font-weight:700;text-decoration:none;font-size:.95rem">Đăng ký miễn phí</a>
+            </div>
+            <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;max-width:320px;margin:0 auto">
+                <div><div style="font-size:1.8rem;font-weight:800" id="stat-courses4">--</div><div style="font-size:.78rem;color:#90acd8">Khóa học</div></div>
+                <div><div style="font-size:1.8rem;font-weight:800" id="stat-students4">--</div><div style="font-size:.78rem;color:#90acd8">Học viên</div></div>
+                <div><div style="font-size:1.8rem;font-weight:800" id="stat-instructors4">--</div><div style="font-size:.78rem;color:#90acd8">Giảng viên</div></div>
+            </div>
+            <div class="hero-dot-wrap">
+                <button class="hero-dot" onclick="goSlide(0)"></button>
+                <button class="hero-dot" onclick="goSlide(1)"></button>
+                <button class="hero-dot" onclick="goSlide(2)"></button>
+                <button class="hero-dot on" onclick="goSlide(3)"></button>
+                <button class="hero-dot" onclick="goSlide(4)"></button>
+            </div>
+        </div>
+        <div class="col-img right"><img src="https://images.unsplash.com/photo-1519389950473-47ba0277781c?w=600&h=600&fit=crop&auto=format" alt=""></div>
+    </div>
+
+    <!-- Slide set 5 -->
+    <div class="hero-panel" id="hp4">
+        <div class="col-img left"><img src="https://images.unsplash.com/photo-1550439062-609e1531270e?w=600&h=600&fit=crop&auto=format" alt=""></div>
+        <div class="col-center px-8 text-white text-center">
+            <h1 style="font-size:2.6rem;font-weight:800;line-height:1.15;margin-bottom:12px;text-shadow:0 2px 8px rgba(0,0,0,.4)">Học Trực Tuyến Thông Minh</h1>
+            <p style="font-size:1rem;color:#bfcfef;margin-bottom:28px;max-width:360px">Nâng cao kỹ năng với hàng trăm khóa học chất lượng cao từ các chuyên gia hàng đầu</p>
+            <div style="display:flex;gap:12px;flex-wrap:wrap;justify-content:center;margin-bottom:36px">
+                <a href="courses.html" style="padding:10px 28px;background:#fff;color:#1d4ed8;border-radius:24px;font-weight:700;text-decoration:none;font-size:.95rem;box-shadow:0 4px 16px rgba(0,0,0,.18)">Khám phá khóa học</a>
+                <a href="register.html" style="padding:10px 28px;border:2px solid #fff;color:#fff;border-radius:24px;font-weight:700;text-decoration:none;font-size:.95rem">Đăng ký miễn phí</a>
+            </div>
+            <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;max-width:320px;margin:0 auto">
+                <div><div style="font-size:1.8rem;font-weight:800" id="stat-courses5">--</div><div style="font-size:.78rem;color:#90acd8">Khóa học</div></div>
+                <div><div style="font-size:1.8rem;font-weight:800" id="stat-students5">--</div><div style="font-size:.78rem;color:#90acd8">Học viên</div></div>
+                <div><div style="font-size:1.8rem;font-weight:800" id="stat-instructors5">--</div><div style="font-size:.78rem;color:#90acd8">Giảng viên</div></div>
+            </div>
+            <div class="hero-dot-wrap">
+                <button class="hero-dot" onclick="goSlide(0)"></button>
+                <button class="hero-dot" onclick="goSlide(1)"></button>
+                <button class="hero-dot" onclick="goSlide(2)"></button>
+                <button class="hero-dot" onclick="goSlide(3)"></button>
+                <button class="hero-dot on" onclick="goSlide(4)"></button>
+            </div>
+        </div>
+        <div class="col-img right"><img src="https://images.unsplash.com/photo-1509062522246-3755977927d7?w=600&h=600&fit=crop&auto=format" alt=""></div>
+    </div>
+
+    <!-- Arrows -->
+    <button class="hero-arrow" style="left:14px" onclick="slideHero(-1)">&#8249;</button>
+    <button class="hero-arrow" style="right:14px" onclick="slideHero(1)">&#8250;</button>
+</section>
+
+<script>
+(function(){
+    const N=5; let cur=0;
+    const panels = Array.from({length:N},(_,i)=>document.getElementById('hp'+i));
+    function show(n){
+        panels[cur].classList.remove('active');
+        cur=(n+N)%N;
+        panels[cur].classList.add('active');
+        // sync stats into visible slide
+        const suf = cur===0?'':cur+1;
+        ['courses','students','instructors'].forEach(k=>{
+            const src=document.getElementById('stat-'+k);
+            const dst=document.getElementById('stat-'+k+(cur===0?'':cur+1));
+            if(src&&dst) dst.textContent=src.textContent;
+        });
+    }
+    window.slideHero=d=>show(cur+d);
+    window.goSlide=n=>show(n);
+    setInterval(()=>show(cur+1),4500);
+})();
+</script>
+
+<!-- CATEGORIES -->
+<section class="py-16 max-w-7xl mx-auto px-4">
+    <h2 class="text-3xl font-bold text-center mb-8 text-gray-800">Danh mục khóa học</h2>
+    <div id="categories-grid" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+        <div class="col-span-full text-center text-gray-400 py-8">Đang tải...</div>
+    </div>
+</section>
+
+<!-- FEATURED COURSES -->
+<section class="py-16 bg-white">
+    <div class="max-w-7xl mx-auto px-4">
+        <div class="flex justify-between items-center mb-8">
+            <h2 class="text-3xl font-bold text-gray-800">Khóa học nổi bật</h2>
+            <a href="courses.html" class="text-blue-600 hover:underline font-medium">Xem tất cả →</a>
+        </div>
+        <div id="featured-courses" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div class="col-span-full text-center text-gray-400 py-12">Đang tải khóa học...</div>
+        </div>
+    </div>
+</section>
+
+<!-- CHATBOT BUTTON -->
+<button onclick="openChat()" class="fixed bottom-6 right-6 z-50 bg-blue-600 text-white rounded-full w-14 h-14 shadow-lg hover:bg-blue-700 transition-all flex items-center justify-center text-2xl" title="AI Trợ lý">🤖</button>
+
+<!-- CHATBOT MODAL -->
+<div id="chat-modal" class="hidden fixed inset-0 bg-black/40 z-50 flex items-end justify-end p-6">
+    <div class="bg-white rounded-2xl shadow-2xl w-96 flex flex-col" style="height:520px">
+        <div class="bg-gradient-to-r from-blue-600 to-purple-600 text-white p-4 rounded-t-2xl flex justify-between items-center">
+            <div>
+                <div class="font-bold text-lg">🤖 AI Trợ lý học tập</div>
+                <div class="text-xs text-blue-200">Hỏi tôi bất cứ điều gì về lập trình!</div>
+            </div>
+            <button onclick="closeChat()" class="text-white hover:text-blue-200 text-xl">✕</button>
+        </div>
+        <div id="chat-messages" class="flex-1 overflow-y-auto p-4 space-y-3 bg-gray-50">
+            <div class="bg-blue-100 rounded-2xl rounded-tl-none p-3 text-sm text-blue-800 max-w-xs">
+                Xin chào! 👋 Tôi là AI trợ lý học tập. Bạn cần giúp gì về <b>lập trình, CSDL, AI, mạng máy tính</b> hay bất kỳ môn học nào?
+            </div>
+        </div>
+        <div class="p-3 border-t bg-white rounded-b-2xl flex gap-2">
+            <input id="chat-input" type="text" placeholder="Nhập câu hỏi..."
+                class="flex-1 border rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                onkeydown="if(event.key==='Enter')sendChat()">
+            <button onclick="sendChat()" id="chat-btn" class="bg-blue-600 text-white px-4 py-2 rounded-xl text-sm hover:bg-blue-700 font-medium">Gửi</button>
+        </div>
+    </div>
+</div>
+
+<!-- FOOTER -->
+<footer class="bg-gray-900 text-white py-12">
+    <div class="max-w-7xl mx-auto px-4 grid grid-cols-1 md:grid-cols-4 gap-8">
+        <div>
+            <div class="text-2xl font-bold mb-3">🎓 E-Learning</div>
+            <p class="text-gray-400 text-sm">Nền tảng học trực tuyến thông minh, giúp bạn nâng cao kỹ năng mọi lúc mọi nơi.</p>
+        </div>
+        <div>
+            <div class="font-bold mb-3">Khám phá</div>
+            <div class="space-y-2 text-gray-400 text-sm">
+                <a href="courses.html" class="block hover:text-white">Tất cả khóa học</a>
+                <a href="courses.html?level=beginner" class="block hover:text-white">Khóa học cơ bản</a>
+                <a href="courses.html?level=advanced" class="block hover:text-white">Khóa học nâng cao</a>
+            </div>
+        </div>
+        <div>
+            <div class="font-bold mb-3">Hỗ trợ</div>
+            <div class="space-y-2 text-gray-400 text-sm">
+                <a href="#" class="block hover:text-white">Trung tâm hỗ trợ</a>
+                <a href="#" class="block hover:text-white">Chính sách hoàn tiền</a>
+                <a href="#" class="block hover:text-white">Điều khoản dịch vụ</a>
+            </div>
+        </div>
+        <div>
+            <div class="font-bold mb-3">Liên hệ</div>
+            <div class="space-y-2 text-gray-400 text-sm">
+                <div>📧 support@elearning.com</div>
+                <div>📞 1900 1234</div>
+                <div>📍 TP. Hồ Chí Minh</div>
+            </div>
+        </div>
+    </div>
+    <div class="text-center text-gray-500 text-sm mt-8 pt-8 border-t border-gray-800">
+        © 2026 Smart E-Learning System. All rights reserved.
+    </div>
+</footer>
+
+<script src="js/config.js"></script>
+<script src="js/wake-up.js"></script>
+<script>
+// ── Navbar ────────────────────────────────────────────────────────────
+function initNavbar() {
+    const user = Auth.getUser();
+    if (user) {
+        document.getElementById('nav-guest').classList.add('hidden');
+        document.getElementById('nav-user').classList.remove('hidden');
+        document.getElementById('nav-name').textContent = user.full_name || user.email;
+        if (user.avatar_url || user.avatar)
+            document.getElementById('nav-avatar').src = user.avatar_url || user.avatar;
+        else
+            document.getElementById('nav-avatar').src = `https://ui-avatars.com/api/?name=${encodeURIComponent(user.full_name||'U')}&background=3b82f6&color=fff`;
+        if (user.role === 'admin')      document.getElementById('link-admin').classList.remove('hidden');
+        if (user.role === 'instructor') document.getElementById('link-instructor').classList.remove('hidden');
+        loadNotifCount();
+    }
+}
+
+async function loadNotifCount() {
+    try {
+        const data = await API.get('/notifications/unread/');
+        if (data && data.unread_count > 0) {
+            const b = document.getElementById('notif-badge');
+            b.textContent = data.unread_count;
+            b.classList.remove('hidden');
+        }
+    } catch {}
+}
+
+// ── Stats ─────────────────────────────────────────────────────────────
+async function loadStats() {
+    // Số khóa học
+    try {
+        const c = await API.get('/courses/?status=published&page_size=1');
+        document.getElementById('stat-courses').textContent = (c?.count || 0) + '+';
+    } catch { document.getElementById('stat-courses').textContent = '18+'; }
+
+    // Số học viên & giảng viên từ admin dashboard (chỉ admin mới thấy chính xác)
+    try {
+        const data = await API.get('/auth/admin/dashboard/');
+        if (data) {
+            document.getElementById('stat-students').textContent   = (data.total_students    || 0) + '+';
+            document.getElementById('stat-instructors').textContent= (data.total_instructors || 0) + '+';
+        }
+    } catch {
+        // Không phải admin hoặc chưa đăng nhập - hiển thị dấu --
+        document.getElementById('stat-students').textContent    = '--';
+        document.getElementById('stat-instructors').textContent = '--';
+    }
+}
+
+// ── Categories ────────────────────────────────────────────────────────
+const CAT_ICONS = {
+    'Lập trình':'💻','Cơ sở dữ liệu':'🗄️','Lập trình Web':'🌐',
+    'Trí tuệ nhân tạo':'🤖','Hệ thống':'⚙️','An toàn thông tin':'🔒',
+};
+const CAT_COLORS = [
+    'from-blue-400 to-blue-600','from-green-400 to-green-600',
+    'from-purple-400 to-purple-600','from-orange-400 to-orange-600',
+    'from-red-400 to-red-600','from-teal-400 to-teal-600',
+];
+
+async function loadCategories() {
+    try {
+        const data = await API.get('/courses/categories/');
+        const grid = document.getElementById('categories-grid');
+        if (!data?.length) { grid.innerHTML = '<div class="col-span-full text-center text-gray-400">Chưa có danh mục</div>'; return; }
+        grid.innerHTML = data.map((cat, i) => `
+            <a href="courses.html?category=${cat.id}"
+               class="bg-gradient-to-br ${CAT_COLORS[i % CAT_COLORS.length]} rounded-xl p-5 text-center text-white hover:scale-105 transition-all cursor-pointer shadow-md">
+                <div class="text-3xl mb-2">${CAT_ICONS[cat.name] || '📚'}</div>
+                <div class="font-semibold text-sm">${cat.name}</div>
+                <div class="text-xs opacity-80 mt-1">${cat.course_count} khóa</div>
+            </a>`).join('');
+    } catch {}
+}
+
+// ── Courses ───────────────────────────────────────────────────────────
+async function loadFeaturedCourses() {
+    try {
+        const data = await API.get('/courses/?status=published');
+        const courses = data?.results || data || [];
+        const el = document.getElementById('featured-courses');
+        if (!courses.length) {
+            el.innerHTML = '<div class="col-span-full text-center text-gray-400 py-12">Chưa có khóa học</div>';
+            return;
+        }
+        el.innerHTML = courses.slice(0, 6).map(c => renderCard(c)).join('');
+    } catch {
+        document.getElementById('featured-courses').innerHTML =
+            '<div class="col-span-full text-center text-red-400 py-12">⚠️ Không thể tải khóa học. Backend đang khởi động, vui lòng thử lại sau 30 giây.</div>';
+    }
+}
+
+function renderCard(c) {
+    const img = c.thumbnail_url || UI.getCategoryImage(c.category_name, c.title);
+    return `
+    <div class="course-card bg-white rounded-xl shadow overflow-hidden cursor-pointer"
+         onclick="location.href='course-detail.html?id=${c.id}'">
+        <div class="relative overflow-hidden h-48">
+            <img src="${img}" alt="${c.title}"
+                 class="w-full h-48 object-cover hover:scale-105 transition-transform duration-300"
+                 onerror="this.src='https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=400&h=220&fit=crop'">
+            <div class="absolute top-2 left-2">${UI.levelBadge(c.level)}</div>
+        </div>
+        <div class="p-4">
+            <h3 class="font-bold text-gray-800 line-clamp-2 mb-1">${c.title}</h3>
+            <p class="text-gray-500 text-sm mb-2">👨‍🏫 ${c.instructor_name || 'Giảng viên'}</p>
+            <div class="flex items-center gap-1 text-yellow-500 text-sm mb-3">
+                ${UI.renderStars(c.avg_rating)}
+                <span class="text-gray-400 ml-1">(${c.total_students || 0})</span>
+            </div>
+            <div class="flex justify-between items-center border-t pt-3">
+                <div>${UI.formatPrice(c.price)}</div>
+                <span class="text-gray-400 text-xs">⏱ ${c.duration_hours}h</span>
+            </div>
+        </div>
+    </div>`;
+}
+
+function handleLogout() {
+    API.post('/auth/logout/', { refresh: localStorage.getItem('refresh_token') }).catch(() => {});
+    Auth.logout();
+}
+
+// ── Chatbot - dùng Claude API thật ───────────────────────────────────
+let chatHistory = [];
+
+function openChat()  { document.getElementById('chat-modal').classList.remove('hidden'); document.getElementById('chat-input').focus(); }
+function closeChat() { document.getElementById('chat-modal').classList.add('hidden'); }
+
+function appendMsg(text, isUser = false) {
+    const el = document.getElementById('chat-messages');
+    const wrapper = document.createElement('div');
+    wrapper.className = isUser ? 'flex justify-end' : 'flex justify-start';
+    const div = document.createElement('div');
+    div.className = isUser
+        ? 'bg-blue-600 text-white rounded-2xl rounded-tr-none p-3 text-sm max-w-xs'
+        : 'bg-white border text-gray-800 rounded-2xl rounded-tl-none p-3 text-sm max-w-xs shadow-sm';
+    div.innerHTML = text.replace(/\n/g, '<br>').replace(/\*\*(.*?)\*\*/g, '<b>$1</b>').replace(/```[\w]*\n?([\s\S]*?)```/g, '<pre class="bg-gray-100 text-xs p-2 rounded mt-1 overflow-x-auto whitespace-pre">$1</pre>');
+    wrapper.appendChild(div);
+    el.appendChild(wrapper);
+    el.scrollTop = el.scrollHeight;
+    return div;
+}
+
+async function sendChat() {
+    const input = document.getElementById('chat-input');
+    const btn   = document.getElementById('chat-btn');
+    const msg   = input.value.trim();
+    if (!msg) return;
+    input.value = '';
+    btn.disabled = true;
+    btn.textContent = '...';
+
+    appendMsg(msg, true);
+    chatHistory.push({ role: 'user', content: msg });
+
+    const typingDiv = appendMsg('⏳ Đang trả lời...', false);
+
+    try {
+        // Thử backend AI trước
+        const res = await fetch(`${CONFIG.API_BASE_URL}/ai/chat/`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                ...(localStorage.getItem('access_token')
+                    ? { 'Authorization': `Bearer ${localStorage.getItem('access_token')}` }
+                    : {})
+            },
+            body: JSON.stringify({ message: msg, history: chatHistory.slice(-10) })
+        });
+        if (res.ok) {
+            const data = await res.json();
+            const reply = data.reply || data.response || 'Xin lỗi, có lỗi xảy ra.';
+            typingDiv.innerHTML = reply.replace(/\n/g, '<br>').replace(/\*\*(.*?)\*\*/g, '<b>$1</b>').replace(/```[\w]*\n?([\s\S]*?)```/g, '<pre class="bg-gray-100 text-xs p-2 rounded mt-1 overflow-x-auto whitespace-pre">$1</pre>');
+            chatHistory.push({ role: 'assistant', content: reply });
+        } else {
+            throw new Error('Backend lỗi');
+        }
+    } catch {
+        typingDiv.innerHTML = '❌ Không kết nối được server. Vui lòng thử lại sau.';
+    }
+
+    btn.disabled = false;
+    btn.textContent = 'Gửi';
+}
+
+// ── Init ──────────────────────────────────────────────────────────────
+initNavbar();
+loadStats();
+loadCategories();
+loadFeaturedCourses();
+</script>
+</body>
+</html>

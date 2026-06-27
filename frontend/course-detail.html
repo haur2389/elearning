@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chi tiết khóa học - Smart E-Learning</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50">
+
+<nav class="bg-white shadow-md sticky top-0 z-40">
+    <div class="max-w-7xl mx-auto px-4 flex items-center justify-between h-16">
+        <a href="index.html" class="text-2xl font-bold text-blue-600">🎓 E-Learning</a>
+        <div class="flex gap-3">
+            <a href="courses.html" class="text-gray-600 hover:text-blue-600">← Khóa học</a>
+            <div id="nav-auth"></div>
+        </div>
+    </div>
+</nav>
+
+<div id="loading" class="text-center py-32 text-gray-400">
+    <div class="text-5xl mb-4">⏳</div><div>Đang tải...</div>
+</div>
+
+<div id="course-content" class="hidden">
+    <!-- Hero -->
+    <div class="bg-gradient-to-r from-gray-900 to-blue-900 text-white py-12">
+        <div class="max-w-7xl mx-auto px-4 flex gap-8">
+            <div class="flex-1">
+                <div id="breadcrumb" class="text-blue-300 text-sm mb-3"></div>
+                <h1 id="course-title" class="text-4xl font-bold mb-4"></h1>
+                <p id="course-desc" class="text-gray-300 mb-4 line-clamp-3"></p>
+                <div id="course-meta" class="flex flex-wrap gap-4 text-sm text-gray-300 mb-6"></div>
+                <div id="course-instructor" class="flex items-center gap-3"></div>
+            </div>
+            <!-- Enroll Card -->
+            <div class="w-80 shrink-0">
+                <div class="bg-white rounded-xl shadow-xl p-6 text-gray-800">
+                    <img id="course-thumbnail" src="" class="w-full h-44 object-cover rounded-lg mb-4" alt="">
+                    <div id="course-price" class="text-3xl font-bold mb-4"></div>
+                    <button id="enroll-btn" onclick="goToPayment()"
+                        class="w-full bg-blue-600 text-white py-3 rounded-lg font-bold hover:bg-blue-700 transition-all mb-3">
+                        Đăng ký học ngay
+                    </button>
+                    <a id="learn-btn" href="#" class="hidden w-full block text-center bg-green-600 text-white py-3 rounded-lg font-bold hover:bg-green-700 transition-all mb-3">
+                        ▶ Tiếp tục học
+                    </a>
+                    <div class="text-xs text-gray-400 text-center">✓ Truy cập trọn đời • ✓ Chứng chỉ hoàn thành</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="max-w-7xl mx-auto px-4 py-8 flex gap-8">
+        <div class="flex-1">
+            <!-- Tabs -->
+            <div class="flex border-b mb-6 flex-wrap">
+                <button onclick="switchTab('overview')" id="tab-overview" class="tab-btn px-6 py-3 font-medium text-blue-600 border-b-2 border-blue-600">Tổng quan</button>
+                <button onclick="switchTab('curriculum')" id="tab-curriculum" class="tab-btn px-6 py-3 font-medium text-gray-500 hover:text-gray-700">Nội dung</button>
+                <button onclick="switchTab('assignments')" id="tab-assignments" class="tab-btn px-6 py-3 font-medium text-gray-500 hover:text-gray-700">📋 Bài tập</button>
+                <button onclick="switchTab('exams')" id="tab-exams" class="tab-btn px-6 py-3 font-medium text-gray-500 hover:text-gray-700">📝 Bài thi</button>
+                <button onclick="switchTab('reviews')" id="tab-reviews" class="tab-btn px-6 py-3 font-medium text-gray-500 hover:text-gray-700">⭐ Đánh giá</button>
+            </div>
+
+            <!-- Overview Tab -->
+            <div id="content-overview">
+                <div class="bg-white rounded-xl shadow p-6 mb-6">
+                    <h2 class="text-xl font-bold mb-4">🎯 Mục tiêu khóa học</h2>
+                    <div id="course-objectives" class="text-gray-600 space-y-2"></div>
+                </div>
+                <div class="bg-white rounded-xl shadow p-6">
+                    <h2 class="text-xl font-bold mb-4">📋 Yêu cầu</h2>
+                    <div id="course-requirements" class="text-gray-600"></div>
+                </div>
+            </div>
+
+            <!-- Curriculum Tab -->
+            <div id="content-curriculum" class="hidden">
+                <div class="bg-white rounded-xl shadow p-6">
+                    <h2 class="text-xl font-bold mb-4">📚 Nội dung khóa học</h2>
+                    <div id="curriculum-content" class="space-y-3"></div>
+                </div>
+            </div>
+
+            <!-- Reviews Tab -->
+            <div id="content-reviews" class="hidden">
+                <div class="bg-white rounded-xl shadow p-6">
+                    <div class="flex justify-between items-center mb-6">
+                        <h2 class="text-xl font-bold">⭐ Đánh giá</h2>
+                        <button onclick="showReviewForm()" class="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm hover:bg-blue-700" id="review-btn">Viết đánh giá</button>
+                    </div>
+                    <!-- Review form -->
+                    <div id="review-form" class="hidden mb-6 bg-blue-50 rounded-lg p-4">
+                        <div class="flex gap-2 mb-3" id="star-rating">
+                            <span class="text-gray-600 text-sm">Đánh giá:</span>
+                            <div class="flex gap-1">
+                                <button onclick="setRating(1)" class="star-btn text-2xl text-gray-300 hover:text-yellow-500">★</button>
+                                <button onclick="setRating(2)" class="star-btn text-2xl text-gray-300 hover:text-yellow-500">★</button>
+                                <button onclick="setRating(3)" class="star-btn text-2xl text-gray-300 hover:text-yellow-500">★</button>
+                                <button onclick="setRating(4)" class="star-btn text-2xl text-gray-300 hover:text-yellow-500">★</button>
+                                <button onclick="setRating(5)" class="star-btn text-2xl text-gray-300 hover:text-yellow-500">★</button>
+                            </div>
+                        </div>
+                        <textarea id="review-comment" rows="3" placeholder="Chia sẻ nhận xét của bạn..." class="w-full border rounded-lg p-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
+                        <div class="flex gap-2 mt-2">
+                            <button onclick="submitReview()" class="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm">Gửi đánh giá</button>
+                            <button onclick="document.getElementById('review-form').classList.add('hidden')" class="text-gray-500 px-4 py-2 text-sm">Hủy</button>
+                        </div>
+                    </div>
+                    <div id="reviews-list" class="space-y-4"></div>
+                </div>
+            </div>
+
+            <!-- Exams Tab -->
+            <div id="content-exams" class="hidden">
+                <div class="bg-white rounded-xl shadow p-6">
+                    <h2 class="text-xl font-bold mb-4">📝 Bài kiểm tra</h2>
+                    <div id="exams-list" class="space-y-3"></div>
+                </div>
+            </div>
+
+            <!-- Assignments Tab -->
+            <div id="content-assignments" class="hidden">
+                <div class="bg-white rounded-xl shadow p-6">
+                    <h2 class="text-xl font-bold mb-4">📋 Bài tập</h2>
+                    <div id="assignments-list" class="space-y-4"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="js/config.js"></script>
+<script>
+const courseId = new URLSearchParams(location.search).get('id');
+let courseData = null;
+let selectedRating = 5;
+
+if (!courseId) location.href = 'courses.html';
+
+function initNavbar() {
+    const user = Auth.getUser();
+    const nav = document.getElementById('nav-auth');
+    if (user) {
+        nav.innerHTML = `<span class="text-gray-600">${user.full_name}</span>
+            <button onclick="handleLogout()" class="px-3 py-1 text-red-500 border border-red-500 rounded-lg text-sm">Đăng xuất</button>`;
+    } else {
+        nav.innerHTML = `<a href="login.html" class="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm">Đăng nhập</a>`;
+    }
+}
+
+async function loadCourse() {
+    try {
+        courseData = await API.get(`/courses/${courseId}/`);
+        renderCourse(courseData);
+        document.getElementById('loading').classList.add('hidden');
+        document.getElementById('course-content').classList.remove('hidden');
+    } catch {
+        document.getElementById('loading').innerHTML = '<div class="text-center py-32 text-red-400"><div class="text-5xl mb-4">❌</div><div>Không tìm thấy khóa học</div><a href="courses.html" class="mt-4 inline-block text-blue-600 hover:underline">Quay lại</a></div>';
+    }
+}
+
+function renderCourse(c) {
+    document.title = `${c.title} - E-Learning`;
+    document.getElementById('course-title').textContent = c.title;
+    document.getElementById('course-desc').textContent = c.description;
+    const thumbSrc = c.thumbnail_url || c.thumbnail ||
+        (typeof UI !== 'undefined' ? UI.getCourseImage(c.title, c.category?.name) : '');
+    const thumbEl = document.getElementById('course-thumbnail');
+    thumbEl.src = thumbSrc || 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=500&h=280&fit=crop';
+    thumbEl.onerror = () => { thumbEl.src = 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=500&h=280&fit=crop'; };
+    document.getElementById('breadcrumb').textContent = `📂 ${c.category?.name || 'Khóa học'}`;
+    document.getElementById('course-price').innerHTML = UI.formatPrice(c.price);
+    document.getElementById('course-meta').innerHTML = `
+        <span>⭐ ${(c.avg_rating || 0).toFixed(1)} (${c.total_students} đánh giá)</span>
+        <span>👥 ${c.total_students} học viên</span>
+        <span>⏱ ${c.duration_hours} giờ</span>
+        ${UI.levelBadge(c.level)}
+    `;
+    document.getElementById('course-instructor').innerHTML = `
+        <div class="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center text-white font-bold">
+            ${(c.instructor?.full_name || 'GV').charAt(0)}
+        </div>
+        <div><div class="text-sm text-gray-300">Giảng viên</div><div class="font-medium">${c.instructor?.full_name || ''}</div></div>
+    `;
+    const objs = (c.objectives || '').split('\n').filter(Boolean);
+    document.getElementById('course-objectives').innerHTML = objs.map(o => `<div class="flex gap-2"><span class="text-green-500">✓</span><span>${o}</span></div>`).join('') || '<p class="text-gray-400">Chưa có thông tin</p>';
+    document.getElementById('course-requirements').textContent = c.requirements || 'Không yêu cầu kinh nghiệm trước';
+
+    const currentUser = Auth.getUser();
+    const isStaffUser = currentUser && (currentUser.role === 'instructor' || currentUser.role === 'admin');
+
+    if (isStaffUser) {
+        // Instructor/Admin: ẩn nút đăng ký, hiện nút "Xem khóa học"
+        document.getElementById('enroll-btn').classList.add('hidden');
+        const learnBtn = document.getElementById('learn-btn');
+        learnBtn.classList.remove('hidden');
+        learnBtn.href = `learn.html?course=${courseId}`;
+        learnBtn.innerHTML = '📖 Xem khóa học';
+        learnBtn.style.background = '#2563eb';
+    } else if (c.is_enrolled) {
+        document.getElementById('enroll-btn').classList.add('hidden');
+        document.getElementById('learn-btn').classList.remove('hidden');
+        document.getElementById('learn-btn').href = `learn.html?course=${courseId}`;
+    }
+    renderCurriculum(c.chapters || []);
+}
+
+function renderCurriculum(chapters) {
+    const container = document.getElementById('curriculum-content');
+    if (!chapters.length) {
+        container.innerHTML = '<p class="text-gray-400">Chưa có nội dung</p>';
+        return;
+    }
+    container.innerHTML = chapters.map(ch => `
+        <div class="border rounded-lg overflow-hidden">
+            <button onclick="toggleChapter(${ch.id})" class="w-full flex justify-between items-center p-4 bg-gray-50 hover:bg-gray-100 font-medium text-left">
+                <span>📖 ${ch.title}</span>
+                <span class="text-sm text-gray-500">${(ch.lessons||[]).length} bài học ▾</span>
+            </button>
+            <div id="chapter-${ch.id}" class="hidden">
+                ${(ch.lessons||[]).map(l => `
+                    <div class="flex items-center gap-3 px-4 py-3 border-t hover:bg-blue-50 cursor-pointer"
+                         onclick="openLesson(${l.id}, ${courseData?.is_enrolled})">
+                        <span>${l.content_type === 'video' ? '▶️' : l.content_type === 'pdf' ? '📄' : '📝'}</span>
+                        <span class="flex-1 text-sm">${l.title}</span>
+                        <span class="text-xs text-gray-400">${l.duration}ph</span>
+                        ${l.is_preview ? '<span class="text-xs bg-green-100 text-green-600 px-2 py-0.5 rounded">Xem thử</span>' : '<span class="text-xs text-gray-300">🔒</span>'}
+                    </div>
+                `).join('')}
+            </div>
+        </div>
+    `).join('');
+}
+
+function toggleChapter(id) {
+    document.getElementById(`chapter-${id}`).classList.toggle('hidden');
+}
+
+function openLesson(lessonId, isEnrolled) {
+    if (!Auth.isLoggedIn()) {
+        if (confirm('Bạn cần đăng nhập để học. Đăng nhập ngay?')) location.href = 'login.html';
+        return;
+    }
+    // Instructor/Admin luôn được xem bài học
+    const user = Auth.getUser();
+    if (user && (user.role === 'instructor' || user.role === 'admin')) {
+        location.href = `learn.html?course=${courseId}&lesson=${lessonId}`;
+        return;
+    }
+    if (!isEnrolled) {
+        UI.showAlert('Vui lòng đăng ký khóa học để xem bài học này.', 'warning');
+        return;
+    }
+    location.href = `learn.html?course=${courseId}&lesson=${lessonId}`;
+}
+
+async function enrollCourse() {
+    if (!Auth.isLoggedIn()) {
+        if (confirm('Bạn cần đăng nhập để đăng ký. Đăng nhập ngay?')) location.href = 'login.html';
+        return;
+    }
+    const btn = document.getElementById('enroll-btn');
+    btn.disabled = true;
+    btn.textContent = 'Đang đăng ký...';
+    try {
+        await API.post('/enrollments/enroll/', { course_id: parseInt(courseId) });
+        UI.showAlert('Đăng ký khóa học thành công! 🎉', 'success');
+        setTimeout(() => location.reload(), 1500);
+    } catch (err) {
+        UI.showAlert(err.data?.error || 'Đã có lỗi xảy ra.', 'error');
+        btn.disabled = false;
+        btn.textContent = 'Đăng ký học ngay';
+    }
+}
+
+function switchTab(tab) {
+    ['overview', 'curriculum', 'assignments', 'exams', 'reviews'].forEach(t => {
+        document.getElementById(`content-${t}`).classList.add('hidden');
+        document.getElementById(`tab-${t}`).className = 'tab-btn px-6 py-3 font-medium text-gray-500 hover:text-gray-700';
+    });
+    document.getElementById(`content-${tab}`).classList.remove('hidden');
+    document.getElementById(`tab-${tab}`).className = 'tab-btn px-6 py-3 font-medium text-blue-600 border-b-2 border-blue-600';
+    if (tab === 'reviews') loadReviews();
+    if (tab === 'exams') loadExams();
+    if (tab === 'assignments') loadAssignments();
+}
+
+// ── FIX 1: loadReviews — xử lý cả array lẫn paginated {results:[]} ──
+async function loadReviews() {
+    const list = document.getElementById('reviews-list');
+    list.innerHTML = '<p class="text-gray-400 text-center py-4">Đang tải...</p>';
+    try {
+        const user = Auth.getUser();
+        const isInstructor = user && (user.role === 'instructor' || user.role === 'admin');
+        const raw = await API.get(`/reviews/courses/${courseId}/`);
+        // Hỗ trợ cả array và paginated response
+        const data = Array.isArray(raw) ? raw : (raw?.results || []);
+        if (!data.length) {
+            list.innerHTML = '<p class="text-gray-400 text-center py-8">Chưa có đánh giá nào. Hãy là người đầu tiên đánh giá!</p>';
+            return;
+        }
+        list.innerHTML = data.map(r => `
+            <div class="flex gap-4 pb-4 border-b last:border-0">
+                <div class="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center text-white font-bold shrink-0">${(r.student_name||'?').charAt(0)}</div>
+                <div class="flex-1">
+                    <div class="flex justify-between"><span class="font-medium">${r.student_name}</span><span class="text-gray-400 text-xs">${UI.formatDate(r.created_at)}</span></div>
+                    <div class="text-yellow-500">${UI.renderStars(r.rating)}</div>
+                    <p class="text-gray-600 text-sm mt-1">${r.comment}</p>
+                    ${r.instructor_reply ? `
+                    <div class="mt-2 bg-blue-50 border-l-4 border-blue-400 p-3 rounded">
+                        <div class="text-xs font-semibold text-blue-700 mb-1">💬 Phản hồi từ giảng viên:</div>
+                        <p class="text-sm text-gray-700">${r.instructor_reply}</p>
+                    </div>` : ''}
+                    ${isInstructor && !r.instructor_reply ? `
+                    <div class="mt-2">
+                        <textarea id="reply-${r.id}" rows="2" placeholder="Viết phản hồi cho sinh viên..." class="w-full border rounded-lg p-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
+                        <button onclick="replyReview(${r.id})" class="mt-1 bg-blue-600 text-white px-3 py-1 rounded text-xs hover:bg-blue-700">Gửi phản hồi</button>
+                    </div>` : ''}
+                </div>
+            </div>
+        `).join('');
+    } catch(e) {
+        list.innerHTML = '<p class="text-red-400 text-center py-4">Không tải được đánh giá</p>';
+    }
+}
+
+async function replyReview(reviewId) {
+    const reply = document.getElementById(`reply-${reviewId}`)?.value?.trim();
+    if (!reply) return UI.showAlert('Vui lòng nhập nội dung phản hồi', 'warning');
+    try {
+        await API.patch(`/reviews/${reviewId}/reply/`, { instructor_reply: reply });
+        UI.showAlert('Đã gửi phản hồi!', 'success');
+        loadReviews();
+    } catch(e) {
+        UI.showAlert(e.data?.error || 'Lỗi gửi phản hồi', 'error');
+    }
+}
+
+// ── FIX 2: loadAssignments — xử lý paginated response ──
+async function loadAssignments() {
+    const list = document.getElementById('assignments-list');
+    list.innerHTML = '<p class="text-gray-400 text-center py-4">Đang tải...</p>';
+    try {
+        const user = Auth.getUser();
+        const isStaff = user && (user.role === 'admin' || user.role === 'instructor');
+        const raw = await API.get(`/assignments/courses/${courseId}/`);
+        const data = Array.isArray(raw) ? raw : (raw?.results || []);
+        if (!data.length) {
+            list.innerHTML = '<p class="text-gray-400 text-center py-8">Chưa có bài tập nào</p>';
+            return;
+        }
+        const now = new Date();
+        list.innerHTML = data.map(a => {
+            const deadline = new Date(a.deadline);
+            const isOverdue = now > deadline;
+            let actionBtn = '';
+            if (isStaff) {
+                actionBtn = `<span class="text-xs text-gray-400 italic">Xem nộp bài</span>`;
+            } else if (a.my_submission) {
+                // ── FIX: Hiển thị trạng thái đã nộp ──
+                const sub = a.my_submission;
+                const statusColor = sub.status === 'graded' ? 'text-green-600' : 'text-blue-600';
+                const statusText = sub.status === 'graded'
+                    ? `✅ Đã chấm: ${sub.score}/${a.max_score || 100} điểm`
+                    : sub.status === 'late' ? '⏰ Đã nộp (muộn)' : '📤 Đã nộp';
+                actionBtn = `<span class="text-sm font-medium ${statusColor}">${statusText}</span>`;
+            } else if (isOverdue) {
+                actionBtn = `<span class="text-xs text-red-500 font-medium">⏰ Đã hết hạn</span>`;
+            } else {
+                actionBtn = `<label class="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm hover:bg-blue-700 cursor-pointer font-medium">
+                    📤 Nộp bài
+                    <input type="file" class="hidden" onchange="submitAssignment(${a.id}, this)">
+                </label>`;
+            }
+            return `
+            <div class="border rounded-lg p-4 hover:bg-blue-50 transition-all">
+                <div class="flex justify-between items-start">
+                    <div class="flex-1">
+                        <div class="font-semibold text-gray-800">📋 ${a.title}</div>
+                        <p class="text-sm text-gray-600 mt-1">${a.description || ''}</p>
+                        <div class="flex gap-3 mt-2 text-xs text-gray-500">
+                            <span>📅 Hạn nộp: <strong class="${isOverdue?'text-red-500':'text-gray-700'}">${UI.formatDate(a.deadline)}</strong></span>
+                            <span>💯 Điểm tối đa: ${a.max_score || 100}</span>
+                        </div>
+                    </div>
+                    <div class="ml-4">${actionBtn}</div>
+                </div>
+            </div>`;
+        }).join('');
+    } catch(e) {
+        list.innerHTML = '<p class="text-red-400 text-center py-4">Không tải được bài tập</p>';
+    }
+}
+
+// ── FIX 3: submitAssignment — dùng CONFIG.API_BASE_URL thay vì window.API_BASE ──
+async function submitAssignment(assignmentId, fileInput) {
+    const file = fileInput.files[0];
+    if (!file) return;
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('note', '');
+    try {
+        const token = localStorage.getItem('access_token');
+        const resp = await fetch(`${CONFIG.API_BASE_URL}/assignments/${assignmentId}/submit/`, {
+            method: 'POST',
+            headers: { 'Authorization': `Bearer ${token}` },
+            body: formData
+        });
+        const result = await resp.json();
+        if (resp.ok) {
+            UI.showAlert('Nộp bài thành công! 🎉', 'success');
+            loadAssignments(); // reload để hiển thị trạng thái đã nộp
+        } else {
+            UI.showAlert(result.error || 'Lỗi nộp bài', 'error');
+        }
+    } catch { UI.showAlert('Lỗi kết nối', 'error'); }
+}
+
+// ── FIX 4: loadExams — xử lý paginated response ──
+async function loadExams() {
+    const list = document.getElementById('exams-list');
+    list.innerHTML = '<p class="text-gray-400 text-center py-4">Đang tải...</p>';
+    try {
+        const user = Auth.getUser();
+        const isStaff = user && (user.role === 'admin' || user.role === 'instructor');
+        const raw = await API.get(`/exams/courses/${courseId}/`);
+        const data = Array.isArray(raw) ? raw : (raw?.results || []);
+        if (!data.length) {
+            list.innerHTML = '<p class="text-gray-400 text-center py-8">Chưa có bài thi nào</p>';
+            return;
+        }
+        list.innerHTML = data.map(exam => {
+            const canTake = exam.can_take;
+            let actionBtn = '';
+            if (isStaff) {
+                actionBtn = `<span class="text-xs text-gray-400 italic">Chỉ xem kết quả</span>`;
+            } else if (canTake) {
+                actionBtn = `<button onclick="location.href='exam.html?id=${exam.id}'"
+                    class="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm hover:bg-blue-700 font-medium">
+                    ✏️ Làm bài
+                </button>`;
+            } else {
+                actionBtn = `<button class="bg-gray-200 text-gray-500 px-4 py-2 rounded-lg text-sm cursor-not-allowed">
+                    🔒 Đăng ký để làm bài
+                </button>`;
+            }
+            return `
+            <div class="border rounded-lg p-4 flex justify-between items-center hover:bg-blue-50 transition-all">
+                <div>
+                    <div class="font-semibold text-gray-800">📝 ${exam.title}</div>
+                    <div class="text-sm text-gray-500 mt-1">${exam.total_questions} câu • ${exam.duration_minutes} phút • Điểm đạt: ${exam.pass_score}%</div>
+                    ${exam.my_best_score !== null && exam.my_best_score !== undefined
+                        ? `<div class="text-xs mt-1 ${exam.my_best_score >= exam.pass_score ? 'text-green-600' : 'text-red-500'}">
+                            ${exam.my_best_score >= exam.pass_score ? '✅' : '❌'} Điểm cao nhất: ${exam.my_best_score}%
+                           </div>`
+                        : '<div class="text-xs text-gray-400 mt-1">Chưa làm bài</div>'}
+                </div>
+                ${actionBtn}
+            </div>`;
+        }).join('');
+    } catch(e) {
+        list.innerHTML = '<p class="text-red-400 text-center py-4">Không tải được danh sách bài thi</p>';
+    }
+}
+
+function showReviewForm() {
+    if (!Auth.isLoggedIn()) { location.href = 'login.html'; return; }
+    const user = Auth.getUser();
+    if (user.role === 'admin' || user.role === 'instructor') {
+        UI.showAlert('Giảng viên và Admin không thể viết đánh giá.', 'warning');
+        return;
+    }
+    document.getElementById('review-form').classList.toggle('hidden');
+}
+
+function setRating(n) {
+    selectedRating = n;
+    document.querySelectorAll('.star-btn').forEach((btn, i) => {
+        btn.className = `star-btn text-2xl hover:text-yellow-500 ${i < n ? 'text-yellow-500' : 'text-gray-300'}`;
+    });
+}
+setRating(5);
+
+// ── FIX 5: submitReview — reload reviews sau khi gửi ──
+async function submitReview() {
+    const comment = document.getElementById('review-comment').value.trim();
+    if (!comment) { UI.showAlert('Vui lòng nhập nhận xét.', 'warning'); return; }
+    const btn = document.querySelector('#review-form button');
+    btn.disabled = true;
+    btn.textContent = 'Đang gửi...';
+    try {
+        await API.post('/reviews/courses/' + courseId + '/', {
+            course: parseInt(courseId),
+            rating: selectedRating,
+            comment
+        });
+        UI.showAlert('Đánh giá thành công! 🌟', 'success');
+        document.getElementById('review-form').classList.add('hidden');
+        document.getElementById('review-comment').value = '';
+        setRating(5);
+        loadReviews(); // reload để hiển thị đánh giá vừa gửi
+    } catch (err) {
+        UI.showAlert(err.data?.error || 'Lỗi gửi đánh giá.', 'error');
+    } finally {
+        btn.disabled = false;
+        btn.textContent = 'Gửi đánh giá';
+    }
+}
+
+function handleLogout() {
+    API.post('/auth/logout/', { refresh: localStorage.getItem('refresh_token') }).catch(() => {});
+    Auth.logout();
+}
+
+function goToPayment() {
+    if (!Auth.isLoggedIn()) {
+        if (confirm('Bạn cần đăng nhập để đăng ký. Đăng nhập ngay?')) location.href = 'login.html';
+        return;
+    }
+    if (courseData && (courseData.price == 0 || courseData.price === '0.00')) {
+        enrollCourse();
+    } else {
+        location.href = `payment.html?course=${courseId}`;
+    }
+}
+
+initNavbar();
+loadCourse();
+</script>
+</body>
+</html>

@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản lý đăng ký - Admin</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100">
+<div class="flex h-screen">
+<aside class="w-64 bg-gray-900 text-white flex flex-col shrink-0">
+    <div class="p-4 border-b border-gray-700"><div class="text-xl font-bold text-blue-400">🎓 E-Learning</div><div class="text-xs text-gray-400 mt-1">Admin Panel</div></div>
+    <nav class="flex-1 p-4 space-y-1">
+        <a href="dashboard.html" class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-300 hover:bg-gray-700 text-sm">📊 Dashboard</a>
+        <a href="users.html" class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-300 hover:bg-gray-700 text-sm">👥 Người dùng</a>
+        <a href="courses.html" class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-300 hover:bg-gray-700 text-sm">📚 Khóa học</a>
+        <a href="categories.html" class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-300 hover:bg-gray-700 text-sm">🏷️ Danh mục</a>
+        <a href="enrollments.html" class="flex items-center gap-3 px-3 py-2 rounded-lg bg-blue-600 text-white text-sm">📋 Đăng ký</a>
+        <a href="exam-results.html" class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-300 hover:bg-gray-700 text-sm">🏆 Điểm thi</a>
+    </nav>
+    <div class="p-4 border-t border-gray-700">
+        <div id="admin-name" class="text-sm text-gray-300 mb-2"></div>
+        <button onclick="Auth.logout()" class="text-red-400 text-sm">🚪 Đăng xuất</button>
+    </div>
+</aside>
+<div class="flex-1 overflow-y-auto">
+    <div class="bg-white shadow px-6 py-4 flex justify-between items-center">
+        <h1 class="text-xl font-bold text-gray-800">📋 Quản lý đăng ký khóa học</h1>
+        <a href="../index.html" class="text-blue-600 text-sm hover:underline">← Xem trang chủ</a>
+    </div>
+    <div class="p-6">
+        <!-- Stats -->
+        <div class="grid grid-cols-3 gap-4 mb-6">
+            <div class="bg-white rounded-xl shadow p-4 text-center"><div id="stat-total" class="text-2xl font-bold text-blue-600">--</div><div class="text-gray-500 text-sm">Tổng đăng ký</div></div>
+            <div class="bg-white rounded-xl shadow p-4 text-center"><div id="stat-completed" class="text-2xl font-bold text-green-600">--</div><div class="text-gray-500 text-sm">Đã hoàn thành</div></div>
+            <div class="bg-white rounded-xl shadow p-4 text-center"><div id="stat-learning" class="text-2xl font-bold text-orange-600">--</div><div class="text-gray-500 text-sm">Đang học</div></div>
+        </div>
+        <div class="bg-white rounded-xl shadow p-4 mb-6 flex gap-4">
+            <select id="filter-completed" onchange="loadEnrollments()" class="border rounded-lg px-3 py-2 text-sm focus:outline-none">
+                <option value="">Tất cả</option>
+                <option value="true">Đã hoàn thành</option>
+                <option value="false">Đang học</option>
+            </select>
+        </div>
+        <div class="bg-white rounded-xl shadow overflow-hidden">
+            <table class="w-full text-sm">
+                <thead class="bg-gray-50 border-b">
+                    <tr>
+                        <th class="text-left px-4 py-3 font-medium text-gray-600">ID</th>
+                        <th class="text-left px-4 py-3 font-medium text-gray-600">Sinh viên</th>
+                        <th class="text-left px-4 py-3 font-medium text-gray-600">Khóa học</th>
+                        <th class="text-left px-4 py-3 font-medium text-gray-600">Tiến độ</th>
+                        <th class="text-left px-4 py-3 font-medium text-gray-600">Trạng thái</th>
+                        <th class="text-left px-4 py-3 font-medium text-gray-600">Ngày đăng ký</th>
+                    </tr>
+                </thead>
+                <tbody id="enrollments-tbody"><tr><td colspan="6" class="text-center py-8 text-gray-400">Đang tải...</td></tr></tbody>
+            </table>
+        </div>
+        <div id="pagination" class="mt-4 flex justify-center gap-2"></div>
+    </div>
+</div>
+</div>
+<script src="../js/config.js"></script>
+<script>
+if (!Auth.requireLogin()) {}
+if (Auth.getUser()?.role !== 'admin') { alert('Không có quyền!'); location.href='../index.html'; }
+document.getElementById('admin-name').textContent = Auth.getUser()?.full_name || 'Admin';
+
+async function loadEnrollments(page = 1) {
+    const completed = document.getElementById('filter-completed').value;
+    let url = `/enrollments/admin/all/?page=${page}`;
+    if (completed !== '') url += `&is_completed=${completed}`;
+    try {
+        const data = await API.get(url);
+        const enrollments = data?.results || data || [];
+        document.getElementById('stat-total').textContent = data?.count || enrollments.length;
+        const completedCount = enrollments.filter(e => e.is_completed).length;
+        document.getElementById('stat-completed').textContent = completedCount;
+        document.getElementById('stat-learning').textContent = enrollments.length - completedCount;
+        const tbody = document.getElementById('enrollments-tbody');
+        if (!enrollments.length) { tbody.innerHTML = '<tr><td colspan="6" class="text-center py-8 text-gray-400">Không có dữ liệu</td></tr>'; return; }
+        tbody.innerHTML = enrollments.map(e => `
+            <tr class="border-b hover:bg-gray-50">
+                <td class="px-4 py-3 text-gray-500">#${e.id}</td>
+                <td class="px-4 py-3 font-medium">${e.course_detail?.instructor_name || '—'}</td>
+                <td class="px-4 py-3"><div class="max-w-xs truncate">${e.course_detail?.title || '—'}</div></td>
+                <td class="px-4 py-3">
+                    <div class="flex items-center gap-2">
+                        <div class="flex-1 bg-gray-200 rounded-full h-2 w-24"><div class="h-2 rounded-full ${e.progress>=100?'bg-green-500':'bg-blue-500'}" style="width:${e.progress}%"></div></div>
+                        <span class="text-xs font-medium ${e.progress>=100?'text-green-600':'text-blue-600'}">${e.progress}%</span>
+                    </div>
+                </td>
+                <td class="px-4 py-3"><span class="px-2 py-1 rounded-full text-xs ${e.is_completed ? 'bg-green-100 text-green-700' : 'bg-blue-100 text-blue-700'}">${e.is_completed ? '🏆 Hoàn thành' : '📖 Đang học'}</span></td>
+                <td class="px-4 py-3 text-gray-500">${UI.formatDate(e.enrolled_at)}</td>
+            </tr>`).join('');
+        if (data?.count) {
+            const total = Math.ceil(data.count / 10);
+            document.getElementById('pagination').innerHTML = Array.from({length: Math.min(total,10)}, (_,i) =>
+                `<button onclick="loadEnrollments(${i+1})" class="px-3 py-1 rounded border text-sm hover:bg-blue-50">${i+1}</button>`
+            ).join('');
+        }
+    } catch { document.getElementById('enrollments-tbody').innerHTML = '<tr><td colspan="6" class="text-center py-8 text-red-400">Lỗi tải dữ liệu</td></tr>'; }
+}
+loadEnrollments();
+</script>
+</body>
+</html>

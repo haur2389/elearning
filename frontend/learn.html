@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Học - Smart E-Learning</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-900 text-white">
+
+<!-- Top bar -->
+<nav class="bg-gray-800 px-4 py-3 flex items-center justify-between">
+    <div class="flex items-center gap-4">
+        <a href="index.html" class="text-blue-400 font-bold">🎓 E-Learning</a>
+        <span class="text-gray-400">›</span>
+        <span id="course-title-nav" class="text-gray-300 text-sm truncate max-w-xs"></span>
+    </div>
+    <div class="flex items-center gap-4">
+        <div class="text-sm text-gray-400">Tiến độ: <span id="progress-text" class="text-green-400 font-bold">0%</span></div>
+        <a href="#" id="back-link" class="text-blue-400 text-sm hover:underline">← Quay lại</a>
+    </div>
+</nav>
+
+<div class="flex h-[calc(100vh-52px)]">
+
+    <!-- Sidebar - Chapters & Lessons -->
+    <aside class="w-80 bg-gray-800 overflow-y-auto shrink-0">
+        <div class="p-4 border-b border-gray-700">
+            <div class="text-sm font-medium text-gray-300">Nội dung khóa học</div>
+        </div>
+        <div id="sidebar-chapters"></div>
+    </aside>
+
+    <!-- Main content -->
+    <div class="flex-1 overflow-y-auto">
+        <!-- Video Player -->
+        <div id="video-section" class="hidden bg-black">
+            <div class="max-w-4xl mx-auto">
+                <div class="aspect-video">
+                    <iframe id="video-frame" src="" class="w-full h-full" allowfullscreen
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture">
+                    </iframe>
+                </div>
+            </div>
+        </div>
+
+        <!-- PDF Viewer -->
+        <div id="pdf-section" class="hidden p-4">
+            <iframe id="pdf-frame" src="" class="w-full h-[70vh] rounded-lg bg-white"></iframe>
+        </div>
+
+        <!-- Text Content -->
+        <div id="text-section" class="hidden max-w-4xl mx-auto p-8">
+            <div id="text-content" class="prose prose-invert max-w-none"></div>
+        </div>
+
+        <!-- Lesson Info -->
+        <div class="max-w-4xl mx-auto p-6">
+            <div class="flex justify-between items-start mb-4">
+                <div>
+                    <h1 id="lesson-title" class="text-2xl font-bold mb-2"></h1>
+                    <div id="lesson-meta" class="text-gray-400 text-sm"></div>
+                </div>
+                <button id="complete-btn" onclick="markComplete()" 
+                    class="bg-green-600 text-white px-4 py-2 rounded-lg text-sm hover:bg-green-700 flex items-center gap-2">
+                    ✓ Đánh dấu hoàn thành
+                </button>
+            </div>
+
+            <!-- Navigation buttons -->
+            <div class="flex justify-between mt-6 pt-6 border-t border-gray-700">
+                <button id="prev-btn" onclick="navigateLesson('prev')" 
+                    class="flex items-center gap-2 text-gray-400 hover:text-white px-4 py-2 rounded-lg border border-gray-600 hover:border-gray-400">
+                    ← Bài trước
+                </button>
+                <button id="next-btn" onclick="navigateLesson('next')"
+                    class="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">
+                    Bài tiếp theo →
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="js/config.js"></script>
+<script>
+if (!Auth.requireLogin()) {}
+
+const params = new URLSearchParams(location.search);
+const courseId = params.get('course');
+const initialLessonId = params.get('lesson');
+let courseData = null;
+let allLessons = [];
+let currentLessonIndex = 0;
+
+document.getElementById('back-link').href = `course-detail.html?id=${courseId}`;
+
+async function loadCourse() {
+    try {
+        courseData = await API.get(`/courses/${courseId}/`);
+        document.getElementById('course-title-nav').textContent = courseData.title;
+
+        // Flatten all lessons
+        allLessons = [];
+        (courseData.chapters || []).forEach(ch => {
+            (ch.lessons || []).forEach(l => {
+                allLessons.push({ ...l, chapterTitle: ch.title });
+            });
+        });
+
+        renderSidebar(courseData.chapters || []);
+
+        // Load initial lesson
+        const startLesson = initialLessonId
+            ? allLessons.find(l => l.id == initialLessonId)
+            : allLessons[0];
+
+        if (startLesson) loadLesson(startLesson.id);
+        updateEnrollmentProgress();
+    } catch {
+        alert('Không thể tải khóa học. Vui lòng thử lại.');
+    }
+}
+
+function renderSidebar(chapters) {
+    const container = document.getElementById('sidebar-chapters');
+    container.innerHTML = chapters.map((ch, ci) => `
+        <div class="border-b border-gray-700">
+            <div class="px-4 py-3 bg-gray-750 text-xs font-medium text-gray-400 uppercase tracking-wider">
+                ${ch.title}
+            </div>
+            ${(ch.lessons || []).map((l, li) => `
+                <button onclick="loadLesson(${l.id})" id="sidebar-lesson-${l.id}"
+                    class="w-full text-left px-4 py-3 flex items-start gap-3 hover:bg-gray-700 transition-colors border-b border-gray-700/50 text-sm">
+                    <span class="mt-0.5 shrink-0">${l.content_type === 'video' ? '▶️' : l.content_type === 'pdf' ? '📄' : '📝'}</span>
+                    <span class="flex-1 text-gray-300 line-clamp-2">${l.title}</span>
+                    <span id="check-${l.id}" class="text-green-400 shrink-0 hidden">✓</span>
+                </button>
+            `).join('')}
+        </div>
+    `).join('');
+}
+
+async function loadLesson(lessonId) {
+    try {
+        const lesson = await API.get(`/lessons/${lessonId}/`);
+
+        // Update active state in sidebar
+        document.querySelectorAll('[id^="sidebar-lesson-"]').forEach(el => {
+            el.classList.remove('bg-blue-900', 'text-white');
+            el.classList.add('text-gray-300');
+        });
+        const activeEl = document.getElementById(`sidebar-lesson-${lessonId}`);
+        if (activeEl) {
+            activeEl.classList.add('bg-blue-900', 'text-white');
+            activeEl.classList.remove('text-gray-300');
+        }
+
+        // Update lesson info
+        document.getElementById('lesson-title').textContent = lesson.title;
+        document.getElementById('lesson-meta').textContent =
+            `${lesson.content_type === 'video' ? '🎬 Video' : lesson.content_type === 'pdf' ? '📄 PDF' : '📝 Văn bản'} • ${lesson.duration} phút`;
+
+        // Render content
+        ['video-section', 'pdf-section', 'text-section'].forEach(s => document.getElementById(s).classList.add('hidden'));
+
+        if (lesson.content_type === 'video' && lesson.video_url) {
+            document.getElementById('video-section').classList.remove('hidden');
+            const embedUrl = getYouTubeEmbed(lesson.video_url) || lesson.video_url;
+            document.getElementById('video-frame').src = embedUrl;
+        } else if (lesson.content_type === 'pdf' && lesson.pdf_file) {
+            document.getElementById('pdf-section').classList.remove('hidden');
+            document.getElementById('pdf-frame').src = lesson.pdf_file;
+        } else {
+            document.getElementById('text-section').classList.remove('hidden');
+            document.getElementById('text-content').innerHTML = lesson.content || '<p class="text-gray-400">Nội dung bài học</p>';
+        }
+
+        // Track current lesson index
+        currentLessonIndex = allLessons.findIndex(l => l.id === lessonId);
+
+        // Check progress
+        if (lesson.progress?.is_completed) {
+            document.getElementById(`check-${lessonId}`)?.classList.remove('hidden');
+            document.getElementById('complete-btn').textContent = '✅ Đã hoàn thành';
+            document.getElementById('complete-btn').className = 'bg-gray-600 text-white px-4 py-2 rounded-lg text-sm cursor-default flex items-center gap-2';
+        } else {
+            document.getElementById('complete-btn').innerHTML = '✓ Đánh dấu hoàn thành';
+            document.getElementById('complete-btn').className = 'bg-green-600 text-white px-4 py-2 rounded-lg text-sm hover:bg-green-700 flex items-center gap-2';
+        }
+
+        // Navigation
+        document.getElementById('prev-btn').disabled = currentLessonIndex === 0;
+        document.getElementById('next-btn').disabled = currentLessonIndex === allLessons.length - 1;
+
+        // Auto mark progress
+        setTimeout(() => markProgress(lessonId, 100), 5000);
+
+    } catch (err) {
+        alert('Không thể tải bài học.');
+    }
+}
+
+function getYouTubeEmbed(url) {
+    const match = url.match(/(?:youtube\.com\/(?:watch\?v=|embed\/)|youtu\.be\/)([^&\s]+)/);
+    if (match) return `https://www.youtube.com/embed/${match[1]}`;
+    return null;
+}
+
+async function markProgress(lessonId, percentage) {
+    try {
+        await API.post(`/lessons/${lessonId}/progress/`, { watch_percentage: percentage });
+        document.getElementById(`check-${lessonId}`)?.classList.remove('hidden');
+        updateEnrollmentProgress();
+    } catch {}
+}
+
+async function markComplete() {
+    const lesson = allLessons[currentLessonIndex];
+    if (!lesson) return;
+    await markProgress(lesson.id, 100);
+    document.getElementById('complete-btn').innerHTML = '✅ Đã hoàn thành';
+    document.getElementById('complete-btn').className = 'bg-gray-600 text-white px-4 py-2 rounded-lg text-sm cursor-default flex items-center gap-2';
+    UI.showAlert('Đánh dấu hoàn thành!', 'success');
+}
+
+function navigateLesson(dir) {
+    const nextIndex = dir === 'next' ? currentLessonIndex + 1 : currentLessonIndex - 1;
+    if (nextIndex >= 0 && nextIndex < allLessons.length) {
+        loadLesson(allLessons[nextIndex].id);
+    }
+}
+
+async function updateEnrollmentProgress() {
+    try {
+        const data = await API.get('/enrollments/my/');
+        const enrollment = (data?.results || data || []).find(e => e.course == courseId);
+        if (enrollment) {
+            document.getElementById('progress-text').textContent = enrollment.progress + '%';
+        }
+    } catch {}
+}
+
+loadCourse();
+</script>
+</body>
+</html>

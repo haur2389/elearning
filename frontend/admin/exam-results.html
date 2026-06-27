@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Điểm thi sinh viên - Admin</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100">
+<div class="flex h-screen">
+<aside class="w-64 bg-gray-900 text-white flex flex-col shrink-0">
+    <div class="p-4 border-b border-gray-700"><div class="text-xl font-bold text-blue-400">🎓 E-Learning</div><div class="text-xs text-gray-400 mt-1">Admin Panel</div></div>
+    <nav class="flex-1 p-4 space-y-1">
+        <a href="dashboard.html" class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-300 hover:bg-gray-700 text-sm">📊 Dashboard</a>
+        <a href="users.html" class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-300 hover:bg-gray-700 text-sm">👥 Người dùng</a>
+        <a href="courses.html" class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-300 hover:bg-gray-700 text-sm">📚 Khóa học</a>
+        <a href="categories.html" class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-300 hover:bg-gray-700 text-sm">🏷️ Danh mục</a>
+        <a href="enrollments.html" class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-300 hover:bg-gray-700 text-sm">📋 Đăng ký</a>
+        <a href="exam-results.html" class="flex items-center gap-3 px-3 py-2 rounded-lg bg-blue-600 text-white text-sm">🏆 Điểm thi</a>
+    </nav>
+    <div class="p-4 border-t border-gray-700">
+        <div id="admin-name" class="text-sm text-gray-300 mb-2"></div>
+        <button onclick="Auth.logout()" class="text-red-400 text-sm">🚪 Đăng xuất</button>
+    </div>
+</aside>
+<div class="flex-1 overflow-y-auto">
+    <div class="bg-white shadow px-6 py-4 flex justify-between items-center">
+        <h1 class="text-xl font-bold text-gray-800">🏆 Điểm thi của sinh viên</h1>
+        <a href="../index.html" class="text-blue-600 text-sm hover:underline">← Xem trang chủ</a>
+    </div>
+    <div class="p-6">
+        <!-- Stats -->
+        <div class="grid grid-cols-4 gap-4 mb-6">
+            <div class="bg-white rounded-xl shadow p-4 text-center"><div id="stat-total" class="text-2xl font-bold text-blue-600">--</div><div class="text-gray-500 text-sm">Tổng lượt thi</div></div>
+            <div class="bg-white rounded-xl shadow p-4 text-center"><div id="stat-passed" class="text-2xl font-bold text-green-600">--</div><div class="text-gray-500 text-sm">Đạt</div></div>
+            <div class="bg-white rounded-xl shadow p-4 text-center"><div id="stat-failed" class="text-2xl font-bold text-red-500">--</div><div class="text-gray-500 text-sm">Chưa đạt</div></div>
+            <div class="bg-white rounded-xl shadow p-4 text-center"><div id="stat-avg" class="text-2xl font-bold text-purple-600">--</div><div class="text-gray-500 text-sm">Điểm TB</div></div>
+        </div>
+        <!-- Filter -->
+        <div class="bg-white rounded-xl shadow p-4 mb-6 flex gap-4 items-center flex-wrap">
+            <select id="filter-exam" onchange="loadResults()" class="border rounded-lg px-3 py-2 text-sm focus:outline-none flex-1 min-w-[200px]">
+                <option value="">-- Tất cả đề thi --</option>
+            </select>
+            <select id="filter-passed" onchange="loadResults()" class="border rounded-lg px-3 py-2 text-sm focus:outline-none">
+                <option value="">Tất cả kết quả</option>
+                <option value="true">✅ Đã đạt</option>
+                <option value="false">❌ Chưa đạt</option>
+            </select>
+        </div>
+        <div class="bg-white rounded-xl shadow overflow-x-auto">
+            <table class="w-full text-sm">
+                <thead class="bg-gray-50 border-b">
+                    <tr>
+                        <th class="text-left px-4 py-3 font-medium text-gray-600">Sinh viên</th>
+                        <th class="text-left px-4 py-3 font-medium text-gray-600">Email</th>
+                        <th class="text-left px-4 py-3 font-medium text-gray-600">Đề thi</th>
+                        <th class="text-left px-4 py-3 font-medium text-gray-600">Điểm</th>
+                        <th class="text-left px-4 py-3 font-medium text-gray-600">Kết quả</th>
+                        <th class="text-left px-4 py-3 font-medium text-gray-600">Thời gian làm</th>
+                        <th class="text-left px-4 py-3 font-medium text-gray-600">Ngày nộp</th>
+                    </tr>
+                </thead>
+                <tbody id="results-tbody"><tr><td colspan="7" class="text-center py-8 text-gray-400">Đang tải...</td></tr></tbody>
+            </table>
+        </div>
+        <div id="pagination" class="mt-4 flex justify-center gap-2"></div>
+    </div>
+</div>
+</div>
+<script src="../js/config.js"></script>
+<script>
+if (!Auth.requireLogin()) {}
+if (Auth.getUser()?.role !== 'admin') { alert('Không có quyền!'); location.href='../index.html'; }
+document.getElementById('admin-name').textContent = Auth.getUser()?.full_name || 'Admin';
+
+let allResults = [];
+
+async function loadExamOptions() {
+    try {
+        const courses = await API.get('/courses/?status=published');
+        const courseList = courses?.results || courses || [];
+        // Load all exams per course
+        const examSelect = document.getElementById('filter-exam');
+        for (const c of courseList.slice(0, 20)) {
+            try {
+                const exams = await API.get(`/exams/courses/${c.id}/`);
+                (exams || []).forEach(e => {
+                    const opt = document.createElement('option');
+                    opt.value = e.id;
+                    opt.textContent = `${c.title} — ${e.title}`;
+                    examSelect.appendChild(opt);
+                });
+            } catch {}
+        }
+    } catch {}
+}
+
+async function loadResults() {
+    const examId = document.getElementById('filter-exam').value;
+    const passed = document.getElementById('filter-passed').value;
+    const tbody = document.getElementById('results-tbody');
+    tbody.innerHTML = '<tr><td colspan="7" class="text-center py-8 text-gray-400">Đang tải...</td></tr>';
+
+    try {
+        let results = [];
+        if (examId) {
+            results = await API.get(`/exams/${examId}/results/`);
+            results = results || [];
+        } else {
+            // Load all results from all exams (load from my-results doesn't work for admin)
+            // Use enrollment admin to find all students, then load broadly
+            results = allResults;
+        }
+
+        if (passed !== '') {
+            results = results.filter(r => r.is_passed === (passed === 'true'));
+        }
+
+        const total = results.length;
+        const passedCount = results.filter(r => r.is_passed).length;
+        const avgScore = total > 0 ? (results.reduce((s,r) => s + parseFloat(r.score), 0) / total).toFixed(1) : '--';
+        document.getElementById('stat-total').textContent = total;
+        document.getElementById('stat-passed').textContent = passedCount;
+        document.getElementById('stat-failed').textContent = total - passedCount;
+        document.getElementById('stat-avg').textContent = avgScore + (total > 0 ? '%' : '');
+
+        if (!results.length) {
+            tbody.innerHTML = '<tr><td colspan="7" class="text-center py-8 text-gray-400">Không có dữ liệu</td></tr>';
+            return;
+        }
+
+        tbody.innerHTML = results.map(r => `
+            <tr class="border-b hover:bg-gray-50">
+                <td class="px-4 py-3 font-medium">${r.student_name || r.student || '—'}</td>
+                <td class="px-4 py-3 text-gray-500 text-xs">${r.student_email || '—'}</td>
+                <td class="px-4 py-3"><div class="max-w-xs truncate">${r.exam_title || r.exam || '—'}</div></td>
+                <td class="px-4 py-3">
+                    <span class="font-bold text-lg ${r.is_passed ? 'text-green-600' : 'text-red-500'}">${parseFloat(r.score).toFixed(1)}%</span>
+                </td>
+                <td class="px-4 py-3">
+                    <span class="px-2 py-1 rounded-full text-xs font-medium ${r.is_passed ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-600'}">
+                        ${r.is_passed ? '✅ Đạt' : '❌ Chưa đạt'}
+                    </span>
+                </td>
+                <td class="px-4 py-3 text-gray-500">${r.time_spent ? Math.floor(r.time_spent/60) + ' phút ' + (r.time_spent%60) + 'giây' : '—'}</td>
+                <td class="px-4 py-3 text-gray-500 text-xs">${UI.formatDate(r.submitted_at)}</td>
+            </tr>`).join('');
+    } catch(e) {
+        tbody.innerHTML = '<tr><td colspan="7" class="text-center py-8 text-red-400">Lỗi tải dữ liệu. Vui lòng chọn đề thi cụ thể.</td></tr>';
+    }
+}
+
+loadExamOptions();
+loadResults();
+</script>
+</body>
+</html>
