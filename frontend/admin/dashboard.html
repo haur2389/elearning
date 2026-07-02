@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - E-Learning</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body class="bg-gray-100">
+<div class="flex h-screen">
+<!-- Sidebar -->
+<aside class="w-64 bg-gray-900 text-white flex flex-col shrink-0">
+    <div class="p-4 border-b border-gray-700">
+        <div class="text-xl font-bold text-blue-400">🎓 E-Learning</div>
+        <div class="text-xs text-gray-400 mt-1">Admin Panel</div>
+    </div>
+    <nav class="flex-1 p-4 space-y-1">
+        <a href="dashboard.html" class="flex items-center gap-3 px-3 py-2 rounded-lg bg-blue-600 text-white text-sm">📊 Dashboard</a>
+        <a href="users.html" class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-300 hover:bg-gray-700 text-sm">👥 Người dùng</a>
+        <a href="courses.html" class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-300 hover:bg-gray-700 text-sm">📚 Khóa học</a>
+        <a href="categories.html" class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-300 hover:bg-gray-700 text-sm">🏷️ Danh mục</a>
+        <a href="enrollments.html" class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-300 hover:bg-gray-700 text-sm">📋 Đăng ký</a>
+        <a href="exam-results.html" class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-300 hover:bg-gray-700 text-sm">🏆 Điểm thi</a>
+    </nav>
+    <div class="p-4 border-t border-gray-700">
+        <div id="admin-name" class="text-sm text-gray-300 mb-2"></div>
+        <button onclick="Auth.logout()" class="w-full text-left text-red-400 text-sm hover:text-red-300">🚪 Đăng xuất</button>
+    </div>
+</aside>
+<!-- Main -->
+<div class="flex-1 overflow-y-auto">
+    <div class="bg-white shadow px-6 py-4 flex justify-between items-center">
+        <h1 class="text-xl font-bold text-gray-800">📊 Dashboard Tổng quan</h1>
+        <a href="../index.html" class="text-blue-600 text-sm hover:underline">← Xem trang chủ</a>
+    </div>
+    <div class="p-6">
+        <!-- Stats cards -->
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+            <div class="bg-white rounded-xl shadow p-5"><div class="text-3xl mb-1">👥</div><div id="stat-students" class="text-3xl font-bold text-blue-600">--</div><div class="text-gray-500 text-sm">Sinh viên</div></div>
+            <div class="bg-white rounded-xl shadow p-5"><div class="text-3xl mb-1">👨‍🏫</div><div id="stat-instructors" class="text-3xl font-bold text-green-600">--</div><div class="text-gray-500 text-sm">Giảng viên</div></div>
+            <div class="bg-white rounded-xl shadow p-5"><div class="text-3xl mb-1">📚</div><div id="stat-courses" class="text-3xl font-bold text-purple-600">--</div><div class="text-gray-500 text-sm">Khóa học</div></div>
+            <div class="bg-white rounded-xl shadow p-5"><div class="text-3xl mb-1">📋</div><div id="stat-enrollments" class="text-3xl font-bold text-orange-600">--</div><div class="text-gray-500 text-sm">Lượt đăng ký</div></div>
+        </div>
+        <!-- Charts -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+            <div class="bg-white rounded-xl shadow p-6">
+                <h2 class="font-bold text-gray-800 mb-4">📚 Khóa học theo danh mục</h2>
+                <canvas id="categoryChart" height="200"></canvas>
+            </div>
+            <div class="bg-white rounded-xl shadow p-6">
+                <h2 class="font-bold text-gray-800 mb-4">👥 Phân bố người dùng</h2>
+                <canvas id="userChart" height="200"></canvas>
+            </div>
+        </div>
+        <!-- Recent users -->
+        <div class="bg-white rounded-xl shadow p-6">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="font-bold text-gray-800">👥 Người dùng gần đây</h2>
+                <a href="users.html" class="text-blue-600 text-sm hover:underline">Xem tất cả →</a>
+            </div>
+            <div id="recent-users" class="overflow-x-auto">
+                <table class="w-full text-sm">
+                    <thead><tr class="border-b text-gray-500"><th class="text-left py-2">Tên</th><th class="text-left py-2">Email</th><th class="text-left py-2">Vai trò</th><th class="text-left py-2">Trạng thái</th></tr></thead>
+                    <tbody id="users-tbody"><tr><td colspan="4" class="text-center py-4 text-gray-400">Đang tải...</td></tr></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+<script src="../js/config.js"></script>
+<script>
+if (!Auth.requireLogin()) {}
+if (Auth.getUser()?.role !== 'admin') { alert('Không có quyền truy cập!'); location.href='../index.html'; }
+document.getElementById('admin-name').textContent = Auth.getUser()?.full_name || 'Admin';
+
+async function loadDashboard() {
+    try {
+        const stats = await API.get('/auth/admin/dashboard/');
+        document.getElementById('stat-students').textContent = stats.total_students;
+        document.getElementById('stat-instructors').textContent = stats.total_instructors;
+        document.getElementById('stat-courses').textContent = stats.total_courses;
+        document.getElementById('stat-enrollments').textContent = stats.total_enrollments;
+
+        // User chart
+        new Chart(document.getElementById('userChart'), {
+            type: 'doughnut',
+            data: {
+                labels: ['Sinh viên', 'Giảng viên', 'Admin'],
+                datasets: [{ data: [stats.total_students, stats.total_instructors, 1], backgroundColor: ['#3b82f6','#10b981','#ef4444'] }]
+            },
+            options: { responsive: true, plugins: { legend: { position: 'bottom' } } }
+        });
+    } catch {}
+
+    try {
+        const catsRaw = await API.get('/courses/categories/');
+        const cats = Array.isArray(catsRaw) ? catsRaw : (catsRaw?.results || []);
+        new Chart(document.getElementById('categoryChart'), {
+            type: 'bar',
+            data: {
+                labels: cats.map(c => c.name),
+                datasets: [{ label: 'Số khóa học', data: cats.map(c => c.course_count), backgroundColor: '#3b82f6' }]
+            },
+            options: { responsive: true, plugins: { legend: { display: false } } }
+        });
+    } catch {}
+
+    try {
+        const users = await API.get('/auth/admin/users/?page_size=10');
+        const list = users?.results || users || [];
+        document.getElementById('users-tbody').innerHTML = list.slice(0,8).map(u => `
+            <tr class="border-b hover:bg-gray-50">
+                <td class="py-2 font-medium">${u.full_name || u.username}</td>
+                <td class="py-2 text-gray-500">${u.email}</td>
+                <td class="py-2">${UI.roleBadge(u.role)}</td>
+                <td class="py-2"><span class="px-2 py-1 rounded-full text-xs ${u.is_active?'bg-green-100 text-green-700':'bg-red-100 text-red-700'}">${u.is_active?'Hoạt động':'Bị khóa'}</span></td>
+            </tr>`).join('');
+    } catch {}
+}
+loadDashboard();
+</script>
+    <script src="../js/chatbot.js"></script>
+</body>
+</html>

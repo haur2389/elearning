@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản lý danh mục - Admin</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100">
+<div class="flex h-screen">
+<aside class="w-64 bg-gray-900 text-white flex flex-col shrink-0">
+    <div class="p-4 border-b border-gray-700"><div class="text-xl font-bold text-blue-400">🎓 E-Learning</div><div class="text-xs text-gray-400 mt-1">Admin Panel</div></div>
+    <nav class="flex-1 p-4 space-y-1">
+        <a href="dashboard.html" class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-300 hover:bg-gray-700 text-sm">📊 Dashboard</a>
+        <a href="users.html" class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-300 hover:bg-gray-700 text-sm">👥 Người dùng</a>
+        <a href="courses.html" class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-300 hover:bg-gray-700 text-sm">📚 Khóa học</a>
+        <a href="categories.html" class="flex items-center gap-3 px-3 py-2 rounded-lg bg-blue-600 text-white text-sm">🏷️ Danh mục</a>
+        <a href="enrollments.html" class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-300 hover:bg-gray-700 text-sm">📋 Đăng ký</a>
+        <a href="exam-results.html" class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-300 hover:bg-gray-700 text-sm">🏆 Điểm thi</a>
+    </nav>
+    <div class="p-4 border-t border-gray-700">
+        <div id="admin-name" class="text-sm text-gray-300 mb-2"></div>
+        <button onclick="Auth.logout()" class="text-red-400 text-sm">🚪 Đăng xuất</button>
+    </div>
+</aside>
+<div class="flex-1 overflow-y-auto">
+    <div class="bg-white shadow px-6 py-4 flex justify-between items-center">
+        <h1 class="text-xl font-bold text-gray-800">🏷️ Quản lý danh mục</h1>
+        <button onclick="openCreate()" class="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm hover:bg-blue-700">+ Thêm danh mục</button>
+    </div>
+    <div class="p-6">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" id="categories-grid">
+            <div class="col-span-full text-center py-12 text-gray-400">Đang tải...</div>
+        </div>
+    </div>
+</div>
+</div>
+
+<!-- Modal tạo/sửa danh mục -->
+<div id="modal" class="hidden fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl shadow-xl w-full max-w-md p-6">
+        <div class="flex justify-between mb-4">
+            <h2 id="modal-title" class="text-xl font-bold">Thêm danh mục</h2>
+            <button onclick="closeModal()" class="text-gray-400 text-2xl hover:text-gray-600">✕</button>
+        </div>
+        <div class="space-y-4">
+            <div>
+                <label class="text-sm font-medium text-gray-700 mb-1 block">Tên danh mục *</label>
+                <input type="text" id="cat-name" class="w-full border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="VD: Lập trình Python">
+            </div>
+            <div>
+                <label class="text-sm font-medium text-gray-700 mb-1 block">Slug (URL) *</label>
+                <input type="text" id="cat-slug" class="w-full border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="lap-trinh-python">
+            </div>
+            <div>
+                <label class="text-sm font-medium text-gray-700 mb-1 block">Mô tả</label>
+                <textarea id="cat-desc" rows="2" class="w-full border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Mô tả ngắn về danh mục..."></textarea>
+            </div>
+            <div>
+                <label class="text-sm font-medium text-gray-700 mb-1 block">Icon (emoji)</label>
+                <input type="text" id="cat-icon" class="w-full border rounded-lg px-3 py-2 focus:outline-none" placeholder="💻">
+            </div>
+        </div>
+        <div class="flex gap-3 mt-6">
+            <button onclick="saveCategory()" class="flex-1 bg-blue-600 text-white py-2 rounded-lg font-medium hover:bg-blue-700">💾 Lưu</button>
+            <button onclick="closeModal()" class="flex-1 border py-2 rounded-lg text-gray-600 hover:bg-gray-50">Hủy</button>
+        </div>
+    </div>
+</div>
+
+<script src="../js/config.js"></script>
+<script>
+if (!Auth.requireLogin()) {}
+if (Auth.getUser()?.role !== 'admin') { alert('Không có quyền!'); location.href='../index.html'; }
+document.getElementById('admin-name').textContent = Auth.getUser()?.full_name || 'Admin';
+
+let editingId = null;
+const ICONS = {'lập trình':'💻','python':'🐍','web':'🌐','sql':'🗄️','dữ liệu':'📊','ai':'🤖','mạng':'🔗','bảo mật':'🔒','thiết kế':'🎨','mobile':'📱','java':'☕','javascript':'⚡'};
+
+async function loadCategories() {
+    try {
+        const raw = await API.get('/courses/categories/');
+        // FIX: handle cả array và paginated {count, results}
+        const data = Array.isArray(raw) ? raw : (raw?.results || []);
+        const grid = document.getElementById('categories-grid');
+        if (!data?.length) {
+            grid.innerHTML = '<div class="col-span-full text-center py-12 text-gray-400"><div class="text-4xl mb-3">🏷️</div><div>Chưa có danh mục nào. Hãy thêm danh mục đầu tiên!</div></div>';
+            return;
+        }
+        const colors = ['bg-blue-50 border-blue-200','bg-green-50 border-green-200','bg-purple-50 border-purple-200','bg-orange-50 border-orange-200','bg-red-50 border-red-200','bg-teal-50 border-teal-200'];
+        grid.innerHTML = data.map((cat, i) => `
+            <div class="bg-white rounded-xl shadow p-5 border-l-4 ${['border-blue-500','border-green-500','border-purple-500','border-orange-500','border-red-500','border-teal-500'][i%6]} hover:shadow-md transition-all">
+                <div class="flex justify-between items-start mb-3">
+                    <div class="flex items-center gap-3">
+                        <span class="text-3xl">${cat.icon || getIcon(cat.name)}</span>
+                        <div>
+                            <div class="font-bold text-gray-800">${cat.name}</div>
+                            <div class="text-xs text-gray-400">/${cat.slug}</div>
+                        </div>
+                    </div>
+                    <div class="flex gap-2">
+                        <button onclick="openEdit(${cat.id},'${escHtml(cat.name)}','${cat.slug}','${escHtml(cat.description||'')}','${escHtml(cat.icon||'')}')"\
+                            class="text-blue-500 hover:text-blue-700 text-xs font-medium px-2 py-1 border border-blue-200 rounded hover:bg-blue-50">✏️ Sửa</button>
+                        <button onclick="deleteCategory(${cat.id},'${escHtml(cat.name)}')"\
+                            class="text-red-500 hover:text-red-700 text-xs font-medium px-2 py-1 border border-red-200 rounded hover:bg-red-50">🗑️ Xóa</button>
+                    </div>
+                </div>
+                <p class="text-sm text-gray-500 mb-3">${cat.description || 'Chưa có mô tả'}</p>
+                <div class="text-xs font-medium text-blue-600 bg-blue-50 rounded-full px-3 py-1 inline-block">📚 ${cat.course_count} khóa học</div>
+            </div>`).join('');
+    } catch(e) {
+        document.getElementById('categories-grid').innerHTML = '<div class="col-span-full text-center py-12 text-red-400">Lỗi tải danh mục</div>';
+    }
+}
+
+function getIcon(name) {
+    const n = name.toLowerCase();
+    for (const [k,v] of Object.entries(ICONS)) if (n.includes(k)) return v;
+    return '📚';
+}
+function escHtml(s) { return (s||'').replace(/'/g,"&#39;").replace(/"/g,'&quot;'); }
+
+function openCreate() {
+    editingId = null;
+    document.getElementById('modal-title').textContent = '➕ Thêm danh mục mới';
+    document.getElementById('cat-name').value = '';
+    document.getElementById('cat-slug').value = '';
+    document.getElementById('cat-desc').value = '';
+    document.getElementById('cat-icon').value = '';
+    document.getElementById('modal').classList.remove('hidden');
+}
+
+function openEdit(id, name, slug, desc, icon) {
+    editingId = id;
+    document.getElementById('modal-title').textContent = '✏️ Sửa danh mục';
+    document.getElementById('cat-name').value = name;
+    document.getElementById('cat-slug').value = slug;
+    document.getElementById('cat-desc').value = desc;
+    document.getElementById('cat-icon').value = icon;
+    document.getElementById('modal').classList.remove('hidden');
+}
+
+function closeModal() { document.getElementById('modal').classList.add('hidden'); }
+
+// Auto-slug from name
+document.getElementById('cat-name').addEventListener('input', function() {
+    if (!editingId) {
+        const slug = this.value.toLowerCase()
+            .normalize('NFD').replace(/[\u0300-\u036f]/g,'')
+            .replace(/đ/g,'d').replace(/[^a-z0-9\s]/g,'')
+            .trim().replace(/\s+/g,'-');
+        document.getElementById('cat-slug').value = slug;
+    }
+});
+
+async function saveCategory() {
+    const name = document.getElementById('cat-name').value.trim();
+    const slug = document.getElementById('cat-slug').value.trim();
+    const description = document.getElementById('cat-desc').value.trim();
+    const icon = document.getElementById('cat-icon').value.trim();
+    if (!name || !slug) { UI.showAlert('Vui lòng nhập tên và slug danh mục!', 'warning'); return; }
+    const payload = { name, slug, description, icon };
+    try {
+        if (editingId) {
+            await API.patch(`/courses/categories/${editingId}/`, payload);
+            UI.showAlert('Cập nhật danh mục thành công!', 'success');
+        } else {
+            await API.post('/courses/categories/', payload);
+            UI.showAlert('Thêm danh mục thành công! 🎉', 'success');
+        }
+        closeModal();
+        loadCategories();
+    } catch(e) {
+        UI.showAlert(e.data?.name?.[0] || e.data?.slug?.[0] || e.data?.error || 'Lỗi lưu danh mục', 'error');
+    }
+}
+
+async function deleteCategory(id, name) {
+    if (!confirm(`Xóa danh mục "${name}"? Các khóa học thuộc danh mục này sẽ không còn danh mục.`)) return;
+    try {
+        await API.delete(`/courses/categories/${id}/`);
+        UI.showAlert('Đã xóa danh mục!', 'success');
+        loadCategories();
+    } catch(e) {
+        UI.showAlert(e.data?.error || 'Không thể xóa danh mục này', 'error');
+    }
+}
+
+loadCategories();
+</script>
+    <script src="../js/chatbot.js"></script>
+</body>
+</html>

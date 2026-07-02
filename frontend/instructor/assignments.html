@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản lý bài tập - Giảng viên</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50">
+<nav class="bg-white shadow-md sticky top-0 z-40">
+    <div class="max-w-7xl mx-auto px-4 flex items-center justify-between h-16">
+        <a href="../index.html" class="text-2xl font-bold text-blue-600">🎓 E-Learning</a>
+        <div class="flex items-center gap-4">
+            <a href="courses.html" class="text-gray-600 hover:text-blue-600">Khóa học</a>
+            <a href="exams.html" class="text-gray-600 hover:text-blue-600">Đề thi</a>
+            <button onclick="Auth.logout()" class="px-4 py-2 text-red-500 border border-red-500 rounded-lg text-sm">Đăng xuất</button>
+        </div>
+    </div>
+</nav>
+<div class="max-w-7xl mx-auto px-4 py-8">
+    <h1 class="text-3xl font-bold mb-6 text-gray-800">📋 Quản lý bài tập</h1>
+
+    <div class="bg-white rounded-xl shadow p-4 mb-6 flex gap-4 items-center">
+        <select id="course-select" onchange="loadAssignments()" class="flex-1 border rounded-lg px-3 py-2 focus:outline-none">
+            <option value="">-- Chọn khóa học --</option>
+        </select>
+        <button onclick="openCreate()" class="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm hover:bg-blue-700">+ Tạo bài tập</button>
+    </div>
+
+    <div id="assignments-list" class="space-y-4">
+        <div class="text-center py-16 text-gray-400"><div class="text-4xl mb-3">📋</div><div>Chọn khóa học để xem bài tập</div></div>
+    </div>
+</div>
+
+<!-- Modal tạo bài tập -->
+<div id="create-modal" class="hidden fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl shadow-xl w-full max-w-lg p-6">
+        <div class="flex justify-between mb-4">
+            <h2 class="text-xl font-bold">📋 Tạo bài tập mới</h2>
+            <button onclick="document.getElementById('create-modal').classList.add('hidden')" class="text-gray-400 text-2xl">✕</button>
+        </div>
+        <div class="space-y-4">
+            <div><label class="text-sm font-medium text-gray-700 mb-1 block">Tên bài tập *</label>
+                <input type="text" id="assign-title" class="w-full border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="VD: Bài tập tuần 1"></div>
+            <div><label class="text-sm font-medium text-gray-700 mb-1 block">Mô tả yêu cầu *</label>
+                <textarea id="assign-desc" rows="3" class="w-full border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Mô tả chi tiết yêu cầu bài tập..."></textarea></div>
+            <div class="grid grid-cols-2 gap-4">
+                <div><label class="text-sm font-medium text-gray-700 mb-1 block">Hạn nộp *</label>
+                    <input type="datetime-local" id="assign-deadline" class="w-full border rounded-lg px-3 py-2 focus:outline-none"></div>
+                <div><label class="text-sm font-medium text-gray-700 mb-1 block">Điểm tối đa</label>
+                    <input type="number" id="assign-score" value="100" min="1" class="w-full border rounded-lg px-3 py-2 focus:outline-none"></div>
+            </div>
+        </div>
+        <div class="flex gap-3 mt-6">
+            <button onclick="saveAssignment()" class="flex-1 bg-blue-600 text-white py-3 rounded-lg font-bold hover:bg-blue-700">💾 Lưu</button>
+            <button onclick="document.getElementById('create-modal').classList.add('hidden')" class="flex-1 border text-gray-600 py-3 rounded-lg">Hủy</button>
+        </div>
+    </div>
+</div>
+
+<!-- Modal chấm điểm -->
+<div id="grade-modal" class="hidden fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl shadow-xl w-full max-w-lg p-6">
+        <div class="flex justify-between mb-4">
+            <h2 class="text-xl font-bold">✏️ Chấm điểm bài nộp</h2>
+            <button onclick="document.getElementById('grade-modal').classList.add('hidden')" class="text-gray-400 text-2xl">✕</button>
+        </div>
+        <div class="space-y-4">
+            <div id="submission-info" class="bg-gray-50 rounded-lg p-3 text-sm"></div>
+            <input type="hidden" id="grade-submission-id">
+            <div><label class="text-sm font-medium text-gray-700 mb-1 block">Điểm số</label>
+                <input type="number" id="grade-score" min="0" max="100" class="w-full border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Nhập điểm (0-100)"></div>
+            <div><label class="text-sm font-medium text-gray-700 mb-1 block">Nhận xét</label>
+                <textarea id="grade-feedback" rows="3" class="w-full border rounded-lg px-3 py-2 focus:outline-none" placeholder="Nhận xét cho sinh viên..."></textarea></div>
+        </div>
+        <div class="flex gap-3 mt-6">
+            <button onclick="submitGrade()" class="flex-1 bg-green-600 text-white py-3 rounded-lg font-bold hover:bg-green-700">✅ Lưu điểm</button>
+            <button onclick="document.getElementById('grade-modal').classList.add('hidden')" class="flex-1 border text-gray-600 py-3 rounded-lg">Hủy</button>
+        </div>
+    </div>
+</div>
+
+<script src="../js/config.js"></script>
+<script>
+if (!Auth.requireLogin()) {}
+if (!['instructor','admin'].includes(Auth.getUser()?.role)) { alert('Không có quyền!'); location.href='../index.html'; }
+
+async function loadMyCourses() {
+    const data = await API.get('/courses/my-courses/');
+    const courses = data?.results || data || [];
+    const sel = document.getElementById('course-select');
+    courses.forEach(c => sel.innerHTML += `<option value="${c.id}">${c.title}</option>`);
+    // FIX: auto-select khóa đầu tiên và load bài tập
+    if (courses.length > 0) {
+        sel.value = courses[0].id;
+        loadAssignments();
+    }
+}
+
+async function loadAssignments() {
+    const courseId = document.getElementById('course-select').value;
+    if (!courseId) return;
+    try {
+        const data = await API.get(`/assignments/courses/${courseId}/`);
+        const assignments = data?.results || data || [];
+        const list = document.getElementById('assignments-list');
+        if (!assignments.length) {
+            list.innerHTML = '<div class="text-center py-12 text-gray-400"><div class="text-4xl mb-3">📭</div><div>Chưa có bài tập nào</div></div>';
+            return;
+        }
+        list.innerHTML = await Promise.all(assignments.map(async a => {
+            const subs = await API.get(`/assignments/${a.id}/submissions/`).catch(() => ({ results: [] }));
+            const subList = subs?.results || subs || [];
+            return `
+            <div class="bg-white rounded-xl shadow p-5">
+                <div class="flex justify-between items-start mb-3">
+                    <div>
+                        <h3 class="font-bold text-gray-800">${a.title}</h3>
+                        <p class="text-sm text-gray-500 mt-1">${a.description.substring(0,100)}...</p>
+                        <div class="flex gap-4 text-sm text-gray-500 mt-2">
+                            <span>⏰ Hạn: ${new Date(a.deadline).toLocaleString('vi-VN')}</span>
+                            <span>💯 Điểm tối đa: ${a.max_score}</span>
+                            <span>📬 ${subList.length} bài nộp</span>
+                        </div>
+                    </div>
+                </div>
+                ${subList.length ? `
+                <div class="border-t pt-3 space-y-2">
+                    <div class="text-sm font-medium text-gray-700 mb-2">Bài nộp:</div>
+                    ${subList.map(s => `
+                    <div class="flex justify-between items-center bg-gray-50 rounded-lg px-3 py-2">
+                        <div class="text-sm">
+                            <span class="font-medium">${s.student_name}</span>
+                            <span class="text-gray-500 ml-2">${new Date(s.submitted_at).toLocaleDateString('vi-VN')}</span>
+                            <span class="ml-2 px-2 py-0.5 rounded text-xs ${s.status==='graded'?'bg-green-100 text-green-700':s.status==='late'?'bg-red-100 text-red-700':'bg-blue-100 text-blue-700'}">${s.status==='graded'?'Đã chấm':s.status==='late'?'Nộp muộn':'Đã nộp'}</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            ${s.score !== null ? `<span class="font-bold text-blue-600">${s.score}đ</span>` : ''}
+                            <a href="${s.file}" target="_blank" class="text-blue-600 hover:underline text-xs">📥 Tải file</a>
+                            <button onclick="openGrade(${s.id},'${s.student_name}',${s.score||0},'${s.feedback||''}')" class="bg-green-600 text-white px-3 py-1 rounded-lg text-xs hover:bg-green-700">✏️ Chấm</button>
+                        </div>
+                    </div>`).join('')}
+                </div>` : ''}
+            </div>`;
+        })).then(html => html.join(''));
+    } catch (e) {
+        document.getElementById('assignments-list').innerHTML = '<div class="text-center py-8 text-red-400">Lỗi tải dữ liệu</div>';
+    }
+}
+
+function openCreate() {
+    if (!document.getElementById('course-select').value) { UI.showAlert('Chọn khóa học trước!', 'warning'); return; }
+    // Set default deadline = 7 ngày từ hôm nay
+    const d = new Date(); d.setDate(d.getDate() + 7);
+    document.getElementById('assign-deadline').value = d.toISOString().slice(0,16);
+    document.getElementById('create-modal').classList.remove('hidden');
+}
+
+async function saveAssignment() {
+    const courseId = document.getElementById('course-select').value;
+    const title = document.getElementById('assign-title').value.trim();
+    const desc = document.getElementById('assign-desc').value.trim();
+    const deadline = document.getElementById('assign-deadline').value;
+    if (!title || !desc || !deadline) { UI.showAlert('Điền đầy đủ thông tin!', 'error'); return; }
+    try {
+        await API.post('/assignments/create/', {
+            course: parseInt(courseId), title, description: desc,
+            deadline: new Date(deadline).toISOString(),
+            max_score: parseInt(document.getElementById('assign-score').value),
+        });
+        UI.showAlert('Tạo bài tập thành công!', 'success');
+        document.getElementById('create-modal').classList.add('hidden');
+        loadAssignments();
+    } catch (err) { UI.showAlert(err.data?.error || 'Lỗi!', 'error'); }
+}
+
+function openGrade(id, name, score, feedback) {
+    document.getElementById('grade-submission-id').value = id;
+    document.getElementById('grade-score').value = score || '';
+    document.getElementById('grade-feedback').value = feedback || '';
+    document.getElementById('submission-info').innerHTML = `<b>Sinh viên:</b> ${name}`;
+    document.getElementById('grade-modal').classList.remove('hidden');
+}
+
+async function submitGrade() {
+    const id = document.getElementById('grade-submission-id').value;
+    const score = document.getElementById('grade-score').value;
+    const feedback = document.getElementById('grade-feedback').value;
+    if (!score) { UI.showAlert('Nhập điểm!', 'error'); return; }
+    try {
+        await API.patch(`/assignments/submissions/${id}/grade/`, { score: parseFloat(score), feedback });
+        UI.showAlert('Chấm điểm thành công!', 'success');
+        document.getElementById('grade-modal').classList.add('hidden');
+        loadAssignments();
+    } catch { UI.showAlert('Lỗi chấm điểm!', 'error'); }
+}
+
+loadMyCourses();
+</script>
+    <script src="../js/chatbot.js"></script>
+</body>
+</html>
