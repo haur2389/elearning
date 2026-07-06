@@ -1,0 +1,932 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hướng dẫn sử dụng - Smart E-Learning</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="js/config.js"></script>
+</head>
+<body class="bg-gray-50">
+
+<!-- NAVBAR -->
+<nav class="bg-white shadow-md sticky top-0 z-40">
+    <div class="max-w-7xl mx-auto px-4 flex items-center justify-between h-16">
+        <a href="index.html" class="text-2xl font-bold text-blue-600">🎓 E-Learning</a>
+        <div class="hidden md:flex items-center gap-6">
+            <a href="courses.html" class="text-gray-600 hover:text-blue-600 font-medium">Khóa học</a>
+            <a href="courses.html" class="text-gray-600 hover:text-blue-600 font-medium">Thư viện</a>
+            <a href="faq.html" class="text-blue-600 font-medium">Hướng dẫn</a>
+        </div>
+        <div id="nav-auth" class="flex gap-2"></div>
+    </div>
+</nav>
+
+<!-- HERO -->
+<section class="bg-gradient-to-r from-blue-600 to-purple-600 text-white py-14">
+    <div class="max-w-4xl mx-auto px-4 text-center">
+        <h1 class="text-3xl md:text-4xl font-bold mb-3">Trung tâm hướng dẫn</h1>
+        <p class="text-blue-100">Giải đáp 103+ câu hỏi thường gặp về tài khoản, khóa học, thanh toán, bài kiểm tra và hơn thế nữa.</p>
+        <div class="mt-6 max-w-lg mx-auto relative">
+            <input id="faq-search" type="text" placeholder="Tìm câu hỏi... (VD: hoàn tiền, mật khẩu, chứng chỉ)"
+                oninput="filterFaq()"
+                class="w-full px-5 py-3 rounded-xl text-gray-800 focus:outline-none focus:ring-4 focus:ring-blue-300">
+        </div>
+    </div>
+</section>
+
+<!-- CATEGORY QUICK NAV -->
+<div class="max-w-6xl mx-auto px-4 py-4 flex gap-2 overflow-x-auto sticky top-16 bg-gray-50 z-30">
+    <a href="#cat-đăng-ký-tài-khoản" class="px-3 py-1.5 rounded-full text-sm font-medium bg-white border text-gray-600 hover:bg-blue-50 hover:text-blue-600 whitespace-nowrap">📝 Đăng Ký Tài Khoản</a><a href="#cat-đăng-nhập" class="px-3 py-1.5 rounded-full text-sm font-medium bg-white border text-gray-600 hover:bg-blue-50 hover:text-blue-600 whitespace-nowrap">🔑 Đăng Nhập</a><a href="#cat-quên-mật-khẩu" class="px-3 py-1.5 rounded-full text-sm font-medium bg-white border text-gray-600 hover:bg-blue-50 hover:text-blue-600 whitespace-nowrap">🔒 Quên Mật Khẩu</a><a href="#cat-hồ-sơ" class="px-3 py-1.5 rounded-full text-sm font-medium bg-white border text-gray-600 hover:bg-blue-50 hover:text-blue-600 whitespace-nowrap">👤 Hồ Sơ</a><a href="#cat-đăng-ký-khóa-học" class="px-3 py-1.5 rounded-full text-sm font-medium bg-white border text-gray-600 hover:bg-blue-50 hover:text-blue-600 whitespace-nowrap">📚 Đăng Ký Khóa Học</a><a href="#cat-thanh-toán" class="px-3 py-1.5 rounded-full text-sm font-medium bg-white border text-gray-600 hover:bg-blue-50 hover:text-blue-600 whitespace-nowrap">💳 Thanh Toán</a><a href="#cat-học-phí" class="px-3 py-1.5 rounded-full text-sm font-medium bg-white border text-gray-600 hover:bg-blue-50 hover:text-blue-600 whitespace-nowrap">💰 Học Phí</a><a href="#cat-bài-kiểm-tra" class="px-3 py-1.5 rounded-full text-sm font-medium bg-white border text-gray-600 hover:bg-blue-50 hover:text-blue-600 whitespace-nowrap">📝 Bài Kiểm Tra</a><a href="#cat-bài-tập" class="px-3 py-1.5 rounded-full text-sm font-medium bg-white border text-gray-600 hover:bg-blue-50 hover:text-blue-600 whitespace-nowrap">📋 Bài Tập</a><a href="#cat-điểm-số" class="px-3 py-1.5 rounded-full text-sm font-medium bg-white border text-gray-600 hover:bg-blue-50 hover:text-blue-600 whitespace-nowrap">🎯 Điểm Số</a><a href="#cat-giảng-viên" class="px-3 py-1.5 rounded-full text-sm font-medium bg-white border text-gray-600 hover:bg-blue-50 hover:text-blue-600 whitespace-nowrap">👨‍🏫 Giảng Viên</a><a href="#cat-lịch-học" class="px-3 py-1.5 rounded-full text-sm font-medium bg-white border text-gray-600 hover:bg-blue-50 hover:text-blue-600 whitespace-nowrap">📅 Lịch Học</a><a href="#cat-hủy-khóa-học" class="px-3 py-1.5 rounded-full text-sm font-medium bg-white border text-gray-600 hover:bg-blue-50 hover:text-blue-600 whitespace-nowrap">❌ Hủy Khóa Học</a><a href="#cat-hoàn-tiền" class="px-3 py-1.5 rounded-full text-sm font-medium bg-white border text-gray-600 hover:bg-blue-50 hover:text-blue-600 whitespace-nowrap">💸 Hoàn Tiền</a><a href="#cat-hỗ-trợ-kỹ-thuật" class="px-3 py-1.5 rounded-full text-sm font-medium bg-white border text-gray-600 hover:bg-blue-50 hover:text-blue-600 whitespace-nowrap">🛠️ Hỗ Trợ Kỹ Thuật</a><a href="#cat-chatbot-ai" class="px-3 py-1.5 rounded-full text-sm font-medium bg-white border text-gray-600 hover:bg-blue-50 hover:text-blue-600 whitespace-nowrap">🤖 Chatbot AI</a><a href="#cat-chứng-chỉ" class="px-3 py-1.5 rounded-full text-sm font-medium bg-white border text-gray-600 hover:bg-blue-50 hover:text-blue-600 whitespace-nowrap">🎓 Chứng Chỉ</a><a href="#cat-chính-sách" class="px-3 py-1.5 rounded-full text-sm font-medium bg-white border text-gray-600 hover:bg-blue-50 hover:text-blue-600 whitespace-nowrap">📜 Chính Sách</a>
+</div>
+
+<!-- FAQ CONTENT -->
+<main class="max-w-4xl mx-auto px-4 py-6" id="faq-root">
+    
+    <section id="cat-đăng-ký-tài-khoản" class="scroll-mt-24 mb-10">
+        <h2 class="text-xl font-bold text-gray-800 mb-3 flex items-center gap-2">📝 Đăng Ký Tài Khoản</h2>
+        <div class="bg-white rounded-xl shadow-sm border divide-y">
+            
+        <div class="border-b last:border-b-0">
+            <button onclick="toggleFaq('đăng-ký-tài-khoản-0')" class="w-full flex items-center justify-between text-left py-4 px-1 hover:text-blue-600">
+                <span class="font-medium text-gray-800">Đăng ký tài khoản mới?</span>
+                <svg id="icon-đăng-ký-tài-khoản-0" class="w-4 h-4 flex-shrink-0 ml-3 transition-transform" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd"/></svg>
+            </button>
+            <div id="ans-đăng-ký-tài-khoản-0" class="hidden pb-4 px-1 text-sm text-gray-600 leading-relaxed">Bạn truy cập trang chủ, nhấn nút &#x27;Đăng ký&#x27;, điền đầy đủ thông tin họ tên, email, mật khẩu rồi nhấn &#x27;Hoàn tất&#x27;. Hệ thống sẽ gửi email xác nhận để kích hoạt tài khoản.</div>
+        </div>
+        <div class="border-b last:border-b-0">
+            <button onclick="toggleFaq('đăng-ký-tài-khoản-1')" class="w-full flex items-center justify-between text-left py-4 px-1 hover:text-blue-600">
+                <span class="font-medium text-gray-800">Thông tin cần cung cấp khi đăng ký?</span>
+                <svg id="icon-đăng-ký-tài-khoản-1" class="w-4 h-4 flex-shrink-0 ml-3 transition-transform" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd"/></svg>
+            </button>
+            <div id="ans-đăng-ký-tài-khoản-1" class="hidden pb-4 px-1 text-sm text-gray-600 leading-relaxed">Bạn cần cung cấp: họ và tên, địa chỉ email hợp lệ, mật khẩu (tối thiểu 8 ký tự) và số điện thoại liên lạc.</div>
+        </div>
+        <div class="border-b last:border-b-0">
+            <button onclick="toggleFaq('đăng-ký-tài-khoản-2')" class="w-full flex items-center justify-between text-left py-4 px-1 hover:text-blue-600">
+                <span class="font-medium text-gray-800">Không nhận được email xác nhận đăng ký?</span>
+                <svg id="icon-đăng-ký-tài-khoản-2" class="w-4 h-4 flex-shrink-0 ml-3 transition-transform" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd"/></svg>
+            </button>
+            <div id="ans-đăng-ký-tài-khoản-2" class="hidden pb-4 px-1 text-sm text-gray-600 leading-relaxed">Email có thể nằm trong thư mục Spam/Rác. Vui lòng kiểm tra và đánh dấu &#x27;Không phải spam&#x27;. Nếu vẫn không thấy, nhấn &#x27;Gửi lại email xác nhận&#x27; hoặc liên hệ hỗ trợ.</div>
+        </div>
+        <div class="border-b last:border-b-0">
+            <button onclick="toggleFaq('đăng-ký-tài-khoản-3')" class="w-full flex items-center justify-between text-left py-4 px-1 hover:text-blue-600">
+                <span class="font-medium text-gray-800">Đăng ký bằng google facebook?</span>
+                <svg id="icon-đăng-ký-tài-khoản-3" class="w-4 h-4 flex-shrink-0 ml-3 transition-transform" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd"/></svg>
+            </button>
+            <div id="ans-đăng-ký-tài-khoản-3" class="hidden pb-4 px-1 text-sm text-gray-600 leading-relaxed">Hệ thống hỗ trợ đăng ký nhanh qua Google và Facebook. Chỉ cần nhấn nút tương ứng tại trang đăng ký và cấp quyền truy cập là xong.</div>
+        </div>
+        <div class="border-b last:border-b-0">
+            <button onclick="toggleFaq('đăng-ký-tài-khoản-4')" class="w-full flex items-center justify-between text-left py-4 px-1 hover:text-blue-600">
+                <span class="font-medium text-gray-800">Tuổi tối thiểu đăng ký?</span>
+                <svg id="icon-đăng-ký-tài-khoản-4" class="w-4 h-4 flex-shrink-0 ml-3 transition-transform" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd"/></svg>
+            </button>
+            <div id="ans-đăng-ký-tài-khoản-4" class="hidden pb-4 px-1 text-sm text-gray-600 leading-relaxed">Người dùng phải từ 13 tuổi trở lên để tự đăng ký. Học viên dưới 18 tuổi cần có sự đồng ý của phụ huynh hoặc người giám hộ.</div>
+        </div>
+        <div class="border-b last:border-b-0">
+            <button onclick="toggleFaq('đăng-ký-tài-khoản-5')" class="w-full flex items-center justify-between text-left py-4 px-1 hover:text-blue-600">
+                <span class="font-medium text-gray-800">Tạo nhiều tài khoản?</span>
+                <svg id="icon-đăng-ký-tài-khoản-5" class="w-4 h-4 flex-shrink-0 ml-3 transition-transform" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd"/></svg>
+            </button>
+            <div id="ans-đăng-ký-tài-khoản-5" class="hidden pb-4 px-1 text-sm text-gray-600 leading-relaxed">Mỗi người chỉ được tạo một tài khoản cá nhân. Việc tạo nhiều tài khoản vi phạm điều khoản sử dụng và có thể dẫn đến khóa tất cả các tài khoản liên quan.</div>
+        </div>
+        <div class="border-b last:border-b-0">
+            <button onclick="toggleFaq('đăng-ký-tài-khoản-6')" class="w-full flex items-center justify-between text-left py-4 px-1 hover:text-blue-600">
+                <span class="font-medium text-gray-800">Xác minh email sau đăng ký?</span>
+                <svg id="icon-đăng-ký-tài-khoản-6" class="w-4 h-4 flex-shrink-0 ml-3 transition-transform" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd"/></svg>
+            </button>
+            <div id="ans-đăng-ký-tài-khoản-6" class="hidden pb-4 px-1 text-sm text-gray-600 leading-relaxed">Sau khi đăng ký, hệ thống gửi email chứa nút &#x27;Xác minh tài khoản&#x27;. Nhấn vào nút đó để hoàn tất. Link có hiệu lực trong 24 giờ.</div>
+        </div>
+        <div class="border-b last:border-b-0">
+            <button onclick="toggleFaq('đăng-ký-tài-khoản-7')" class="w-full flex items-center justify-between text-left py-4 px-1 hover:text-blue-600">
+                <span class="font-medium text-gray-800">Email đã tồn tại khi đăng ký?</span>
+                <svg id="icon-đăng-ký-tài-khoản-7" class="w-4 h-4 flex-shrink-0 ml-3 transition-transform" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd"/></svg>
+            </button>
+            <div id="ans-đăng-ký-tài-khoản-7" class="hidden pb-4 px-1 text-sm text-gray-600 leading-relaxed">Email này đã được dùng để đăng ký trước đó. Bạn thử chức năng &#x27;Quên mật khẩu&#x27; để lấy lại quyền truy cập, hoặc dùng địa chỉ email khác.</div>
+        </div>
+        <div class="border-b last:border-b-0">
+            <button onclick="toggleFaq('đăng-ký-tài-khoản-8')" class="w-full flex items-center justify-between text-left py-4 px-1 hover:text-blue-600">
+                <span class="font-medium text-gray-800">Đăng ký tài khoản mất phí không?</span>
+                <svg id="icon-đăng-ký-tài-khoản-8" class="w-4 h-4 flex-shrink-0 ml-3 transition-transform" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd"/></svg>
+            </button>
+            <div id="ans-đăng-ký-tài-khoản-8" class="hidden pb-4 px-1 text-sm text-gray-600 leading-relaxed">Hoàn toàn miễn phí! Việc tạo tài khoản không tốn bất kỳ chi phí nào. Phí chỉ phát sinh khi bạn đăng ký các khóa học có trả phí.</div>
+        </div>
+        <div class="border-b last:border-b-0">
+            <button onclick="toggleFaq('đăng-ký-tài-khoản-9')" class="w-full flex items-center justify-between text-left py-4 px-1 hover:text-blue-600">
+                <span class="font-medium text-gray-800">Bắt đầu học sau đăng ký?</span>
+                <svg id="icon-đăng-ký-tài-khoản-9" class="w-4 h-4 flex-shrink-0 ml-3 transition-transform" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd"/></svg>
+            </button>
+            <div id="ans-đăng-ký-tài-khoản-9" class="hidden pb-4 px-1 text-sm text-gray-600 leading-relaxed">Sau khi xác minh email thành công, bạn có thể đăng nhập và bắt đầu khám phá các khóa học miễn phí ngay lập tức.</div>
+        </div>
+        </div>
+    </section>
+    <section id="cat-đăng-nhập" class="scroll-mt-24 mb-10">
+        <h2 class="text-xl font-bold text-gray-800 mb-3 flex items-center gap-2">🔑 Đăng Nhập</h2>
+        <div class="bg-white rounded-xl shadow-sm border divide-y">
+            
+        <div class="border-b last:border-b-0">
+            <button onclick="toggleFaq('đăng-nhập-0')" class="w-full flex items-center justify-between text-left py-4 px-1 hover:text-blue-600">
+                <span class="font-medium text-gray-800">Không thể đăng nhập?</span>
+                <svg id="icon-đăng-nhập-0" class="w-4 h-4 flex-shrink-0 ml-3 transition-transform" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd"/></svg>
+            </button>
+            <div id="ans-đăng-nhập-0" class="hidden pb-4 px-1 text-sm text-gray-600 leading-relaxed">Vui lòng kiểm tra lại email và mật khẩu, đảm bảo không bật Caps Lock. Nếu quên mật khẩu, hãy dùng chức năng &#x27;Quên mật khẩu&#x27;. Nếu vẫn không được, liên hệ bộ phận hỗ trợ.</div>
+        </div>
+        <div class="border-b last:border-b-0">
+            <button onclick="toggleFaq('đăng-nhập-1')" class="w-full flex items-center justify-between text-left py-4 px-1 hover:text-blue-600">
+                <span class="font-medium text-gray-800">Tài khoản bị khóa sau đăng nhập sai?</span>
+                <svg id="icon-đăng-nhập-1" class="w-4 h-4 flex-shrink-0 ml-3 transition-transform" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd"/></svg>
+            </button>
+            <div id="ans-đăng-nhập-1" class="hidden pb-4 px-1 text-sm text-gray-600 leading-relaxed">Đây là biện pháp bảo mật tự động. Sau 5 lần nhập sai, tài khoản bị khóa tạm thời 30 phút. Bạn có thể đặt lại mật khẩu ngay để mở khóa sớm hơn.</div>
+        </div>
+        <div class="border-b last:border-b-0">
+            <button onclick="toggleFaq('đăng-nhập-2')" class="w-full flex items-center justify-between text-left py-4 px-1 hover:text-blue-600">
+                <span class="font-medium text-gray-800">Đăng nhập nhiều thiết bị?</span>
+                <svg id="icon-đăng-nhập-2" class="w-4 h-4 flex-shrink-0 ml-3 transition-transform" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd"/></svg>
+            </button>
+            <div id="ans-đăng-nhập-2" class="hidden pb-4 px-1 text-sm text-gray-600 leading-relaxed">Có, bạn có thể đăng nhập đồng thời trên tối đa 3 thiết bị. Nếu vượt quá giới hạn, phiên đăng nhập cũ nhất sẽ tự động bị đăng xuất.</div>
+        </div>
+        <div class="border-b last:border-b-0">
+            <button onclick="toggleFaq('đăng-nhập-3')" class="w-full flex items-center justify-between text-left py-4 px-1 hover:text-blue-600">
+                <span class="font-medium text-gray-800">Phiên đăng nhập hết hạn?</span>
+                <svg id="icon-đăng-nhập-3" class="w-4 h-4 flex-shrink-0 ml-3 transition-transform" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd"/></svg>
+            </button>
+            <div id="ans-đăng-nhập-3" class="hidden pb-4 px-1 text-sm text-gray-600 leading-relaxed">Phiên đăng nhập thông thường hết hạn sau 7 ngày không hoạt động. Nếu bật &#x27;Ghi nhớ đăng nhập&#x27;, thời gian kéo dài lên 30 ngày.</div>
+        </div>
+        <div class="border-b last:border-b-0">
+            <button onclick="toggleFaq('đăng-nhập-4')" class="w-full flex items-center justify-between text-left py-4 px-1 hover:text-blue-600">
+                <span class="font-medium text-gray-800">Dữ liệu mất sau đăng xuất?</span>
+                <svg id="icon-đăng-nhập-4" class="w-4 h-4 flex-shrink-0 ml-3 transition-transform" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd"/></svg>
+            </button>
+            <div id="ans-đăng-nhập-4" class="hidden pb-4 px-1 text-sm text-gray-600 leading-relaxed">Không bao giờ! Toàn bộ tiến trình học, điểm số và bài tập của bạn được lưu trữ an toàn trên máy chủ.</div>
+        </div>
+        <div class="border-b last:border-b-0">
+            <button onclick="toggleFaq('đăng-nhập-5')" class="w-full flex items-center justify-between text-left py-4 px-1 hover:text-blue-600">
+                <span class="font-medium text-gray-800">Đăng nhập thành công nhưng không thấy khóa học đã mua?</span>
+                <svg id="icon-đăng-nhập-5" class="w-4 h-4 flex-shrink-0 ml-3 transition-transform" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd"/></svg>
+            </button>
+            <div id="ans-đăng-nhập-5" class="hidden pb-4 px-1 text-sm text-gray-600 leading-relaxed">Hãy kiểm tra xem bạn đang đăng nhập đúng tài khoản dùng để mua không. Nếu đúng rồi, thử làm mới trang hoặc liên hệ hỗ trợ kèm mã đơn hàng.</div>
+        </div>
+        </div>
+    </section>
+    <section id="cat-quên-mật-khẩu" class="scroll-mt-24 mb-10">
+        <h2 class="text-xl font-bold text-gray-800 mb-3 flex items-center gap-2">🔒 Quên Mật Khẩu</h2>
+        <div class="bg-white rounded-xl shadow-sm border divide-y">
+            
+        <div class="border-b last:border-b-0">
+            <button onclick="toggleFaq('quên-mật-khẩu-0')" class="w-full flex items-center justify-between text-left py-4 px-1 hover:text-blue-600">
+                <span class="font-medium text-gray-800">Lấy lại mật khẩu quên mật khẩu?</span>
+                <svg id="icon-quên-mật-khẩu-0" class="w-4 h-4 flex-shrink-0 ml-3 transition-transform" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd"/></svg>
+            </button>
+            <div id="ans-quên-mật-khẩu-0" class="hidden pb-4 px-1 text-sm text-gray-600 leading-relaxed">Tại trang đăng nhập, nhấn &#x27;Quên mật khẩu&#x27;, nhập email đăng ký và nhấn Gửi. Hệ thống sẽ gửi link đặt lại mật khẩu đến email của bạn trong vài phút.</div>
+        </div>
+        <div class="border-b last:border-b-0">
+            <button onclick="toggleFaq('quên-mật-khẩu-1')" class="w-full flex items-center justify-between text-left py-4 px-1 hover:text-blue-600">
+                <span class="font-medium text-gray-800">Không nhận được email đặt lại mật khẩu?</span>
+                <svg id="icon-quên-mật-khẩu-1" class="w-4 h-4 flex-shrink-0 ml-3 transition-transform" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd"/></svg>
+            </button>
+            <div id="ans-quên-mật-khẩu-1" class="hidden pb-4 px-1 text-sm text-gray-600 leading-relaxed">Kiểm tra thư mục Spam/Rác trước. Đảm bảo bạn nhập đúng email đăng ký. Nếu chờ quá 10 phút vẫn không thấy, hãy thử gửi lại hoặc liên hệ hỗ trợ.</div>
+        </div>
+        <div class="border-b last:border-b-0">
+            <button onclick="toggleFaq('quên-mật-khẩu-2')" class="w-full flex items-center justify-between text-left py-4 px-1 hover:text-blue-600">
+                <span class="font-medium text-gray-800">Link đặt lại mật khẩu hết hạn?</span>
+                <svg id="icon-quên-mật-khẩu-2" class="w-4 h-4 flex-shrink-0 ml-3 transition-transform" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd"/></svg>
+            </button>
+            <div id="ans-quên-mật-khẩu-2" class="hidden pb-4 px-1 text-sm text-gray-600 leading-relaxed">Link đặt lại mật khẩu có hiệu lực trong 1 giờ kể từ khi gửi. Nếu hết hạn, bạn cần quay lại trang &#x27;Quên mật khẩu&#x27; để yêu cầu gửi link mới.</div>
+        </div>
+        <div class="border-b last:border-b-0">
+            <button onclick="toggleFaq('quên-mật-khẩu-3')" class="w-full flex items-center justify-between text-left py-4 px-1 hover:text-blue-600">
+                <span class="font-medium text-gray-800">Yêu cầu mật khẩu mới?</span>
+                <svg id="icon-quên-mật-khẩu-3" class="w-4 h-4 flex-shrink-0 ml-3 transition-transform" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd"/></svg>
+            </button>
+            <div id="ans-quên-mật-khẩu-3" class="hidden pb-4 px-1 text-sm text-gray-600 leading-relaxed">Mật khẩu cần tối thiểu 8 ký tự, bao gồm ít nhất 1 chữ hoa, 1 chữ thường, 1 số và 1 ký tự đặc biệt (@, #, $...).</div>
+        </div>
+        <div class="border-b last:border-b-0">
+            <button onclick="toggleFaq('quên-mật-khẩu-4')" class="w-full flex items-center justify-between text-left py-4 px-1 hover:text-blue-600">
+                <span class="font-medium text-gray-800">Thay đổi mật khẩu khi đang đăng nhập?</span>
+                <svg id="icon-quên-mật-khẩu-4" class="w-4 h-4 flex-shrink-0 ml-3 transition-transform" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd"/></svg>
+            </button>
+            <div id="ans-quên-mật-khẩu-4" class="hidden pb-4 px-1 text-sm text-gray-600 leading-relaxed">Vào Cài đặt tài khoản → Bảo mật → Đổi mật khẩu. Nhập mật khẩu hiện tại và mật khẩu mới hai lần rồi nhấn Lưu.</div>
+        </div>
+        <div class="border-b last:border-b-0">
+            <button onclick="toggleFaq('quên-mật-khẩu-5')" class="w-full flex items-center justify-between text-left py-4 px-1 hover:text-blue-600">
+                <span class="font-medium text-gray-800">Quên cả email đăng ký?</span>
+                <svg id="icon-quên-mật-khẩu-5" class="w-4 h-4 flex-shrink-0 ml-3 transition-transform" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd"/></svg>
+            </button>
+            <div id="ans-quên-mật-khẩu-5" class="hidden pb-4 px-1 text-sm text-gray-600 leading-relaxed">Liên hệ bộ phận hỗ trợ qua live chat hoặc email, cung cấp họ tên, số điện thoại đăng ký. Đội ngũ sẽ xác minh và hỗ trợ khôi phục tài khoản.</div>
+        </div>
+        </div>
+    </section>
+    <section id="cat-hồ-sơ" class="scroll-mt-24 mb-10">
+        <h2 class="text-xl font-bold text-gray-800 mb-3 flex items-center gap-2">👤 Hồ Sơ</h2>
+        <div class="bg-white rounded-xl shadow-sm border divide-y">
+            
+        <div class="border-b last:border-b-0">
+            <button onclick="toggleFaq('hồ-sơ-0')" class="w-full flex items-center justify-between text-left py-4 px-1 hover:text-blue-600">
+                <span class="font-medium text-gray-800">Cập nhật thông tin hồ sơ cá nhân?</span>
+                <svg id="icon-hồ-sơ-0" class="w-4 h-4 flex-shrink-0 ml-3 transition-transform" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd"/></svg>
+            </button>
+            <div id="ans-hồ-sơ-0" class="hidden pb-4 px-1 text-sm text-gray-600 leading-relaxed">Nhấn vào ảnh đại diện góc trên bên phải → Hồ sơ của tôi → Chỉnh sửa. Cập nhật thông tin cần thiết và nhấn Lưu thay đổi.</div>
+        </div>
+        <div class="border-b last:border-b-0">
+            <button onclick="toggleFaq('hồ-sơ-1')" class="w-full flex items-center justify-between text-left py-4 px-1 hover:text-blue-600">
+                <span class="font-medium text-gray-800">Thay đổi tên hiển thị?</span>
+                <svg id="icon-hồ-sơ-1" class="w-4 h-4 flex-shrink-0 ml-3 transition-transform" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd"/></svg>
+            </button>
+            <div id="ans-hồ-sơ-1" class="hidden pb-4 px-1 text-sm text-gray-600 leading-relaxed">Vào Hồ sơ cá nhân → Chỉnh sửa, thay đổi tên hiển thị và nhấn Lưu.</div>
+        </div>
+        <div class="border-b last:border-b-0">
+            <button onclick="toggleFaq('hồ-sơ-2')" class="w-full flex items-center justify-between text-left py-4 px-1 hover:text-blue-600">
+                <span class="font-medium text-gray-800">Tải lên ảnh đại diện?</span>
+                <svg id="icon-hồ-sơ-2" class="w-4 h-4 flex-shrink-0 ml-3 transition-transform" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd"/></svg>
+            </button>
+            <div id="ans-hồ-sơ-2" class="hidden pb-4 px-1 text-sm text-gray-600 leading-relaxed">Vào Hồ sơ → Chỉnh sửa → nhấn vào vùng ảnh đại diện, chọn ảnh từ máy tính (JPG/PNG, tối đa 5MB), cắt ảnh và nhấn Lưu.</div>
+        </div>
+        <div class="border-b last:border-b-0">
+            <button onclick="toggleFaq('hồ-sơ-3')" class="w-full flex items-center justify-between text-left py-4 px-1 hover:text-blue-600">
+                <span class="font-medium text-gray-800">Thay đổi email đăng ký?</span>
+                <svg id="icon-hồ-sơ-3" class="w-4 h-4 flex-shrink-0 ml-3 transition-transform" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd"/></svg>
+            </button>
+            <div id="ans-hồ-sơ-3" class="hidden pb-4 px-1 text-sm text-gray-600 leading-relaxed">Vào Cài đặt → Tài khoản → Đổi email, nhập email mới và xác minh qua link gửi đến email cũ.</div>
+        </div>
+        <div class="border-b last:border-b-0">
+            <button onclick="toggleFaq('hồ-sơ-4')" class="w-full flex items-center justify-between text-left py-4 px-1 hover:text-blue-600">
+                <span class="font-medium text-gray-800">Xóa tài khoản?</span>
+                <svg id="icon-hồ-sơ-4" class="w-4 h-4 flex-shrink-0 ml-3 transition-transform" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd"/></svg>
+            </button>
+            <div id="ans-hồ-sơ-4" class="hidden pb-4 px-1 text-sm text-gray-600 leading-relaxed">Vào Cài đặt → Tài khoản → Xóa tài khoản và làm theo hướng dẫn. Lưu ý: hành động này không thể hoàn tác.</div>
+        </div>
+        <div class="border-b last:border-b-0">
+            <button onclick="toggleFaq('hồ-sơ-5')" class="w-full flex items-center justify-between text-left py-4 px-1 hover:text-blue-600">
+                <span class="font-medium text-gray-800">Xem lịch sử học tập?</span>
+                <svg id="icon-hồ-sơ-5" class="w-4 h-4 flex-shrink-0 ml-3 transition-transform" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd"/></svg>
+            </button>
+            <div id="ans-hồ-sơ-5" class="hidden pb-4 px-1 text-sm text-gray-600 leading-relaxed">Vào Hồ sơ → Lịch sử học tập để xem danh sách khóa học đã tham gia, tiến trình hoàn thành, điểm số.</div>
+        </div>
+        </div>
+    </section>
+    <section id="cat-đăng-ký-khóa-học" class="scroll-mt-24 mb-10">
+        <h2 class="text-xl font-bold text-gray-800 mb-3 flex items-center gap-2">📚 Đăng Ký Khóa Học</h2>
+        <div class="bg-white rounded-xl shadow-sm border divide-y">
+            
+        <div class="border-b last:border-b-0">
+            <button onclick="toggleFaq('đăng-ký-khóa-học-0')" class="w-full flex items-center justify-between text-left py-4 px-1 hover:text-blue-600">
+                <span class="font-medium text-gray-800">Tìm kiếm đăng ký khóa học?</span>
+                <svg id="icon-đăng-ký-khóa-học-0" class="w-4 h-4 flex-shrink-0 ml-3 transition-transform" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd"/></svg>
+            </button>
+            <div id="ans-đăng-ký-khóa-học-0" class="hidden pb-4 px-1 text-sm text-gray-600 leading-relaxed">Dùng thanh tìm kiếm hoặc duyệt qua danh mục để tìm khóa học. Nhấn vào khóa học, xem chi tiết rồi nhấn &#x27;Đăng ký ngay&#x27; để hoàn tất.</div>
+        </div>
+        <div class="border-b last:border-b-0">
+            <button onclick="toggleFaq('đăng-ký-khóa-học-1')" class="w-full flex items-center justify-between text-left py-4 px-1 hover:text-blue-600">
+                <span class="font-medium text-gray-800">Xem trước nội dung khóa học?</span>
+                <svg id="icon-đăng-ký-khóa-học-1" class="w-4 h-4 flex-shrink-0 ml-3 transition-transform" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd"/></svg>
+            </button>
+            <div id="ans-đăng-ký-khóa-học-1" class="hidden pb-4 px-1 text-sm text-gray-600 leading-relaxed">Có! Mỗi khóa học đều có phần giới thiệu miễn phí gồm mô tả, mục tiêu và 1-3 bài học mẫu để bạn trải nghiệm trước khi quyết định.</div>
+        </div>
+        <div class="border-b last:border-b-0">
+            <button onclick="toggleFaq('đăng-ký-khóa-học-2')" class="w-full flex items-center justify-between text-left py-4 px-1 hover:text-blue-600">
+                <span class="font-medium text-gray-800">Giới hạn số khóa học đăng ký?</span>
+                <svg id="icon-đăng-ký-khóa-học-2" class="w-4 h-4 flex-shrink-0 ml-3 transition-transform" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd"/></svg>
+            </button>
+            <div id="ans-đăng-ký-khóa-học-2" class="hidden pb-4 px-1 text-sm text-gray-600 leading-relaxed">Không giới hạn số lượng! Bạn có thể đăng ký và học song song nhiều khóa học tùy theo nhu cầu.</div>
+        </div>
+        <div class="border-b last:border-b-0">
+            <button onclick="toggleFaq('đăng-ký-khóa-học-3')" class="w-full flex items-center justify-between text-left py-4 px-1 hover:text-blue-600">
+                <span class="font-medium text-gray-800">Thời gian truy cập sau đăng ký?</span>
+                <svg id="icon-đăng-ký-khóa-học-3" class="w-4 h-4 flex-shrink-0 ml-3 transition-transform" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd"/></svg>
+            </button>
+            <div id="ans-đăng-ký-khóa-học-3" class="hidden pb-4 px-1 text-sm text-gray-600 leading-relaxed">Thông thường là trọn đời (lifetime access). Thông tin cụ thể được ghi rõ tại trang chi tiết khóa học.</div>
+        </div>
+        <div class="border-b last:border-b-0">
+            <button onclick="toggleFaq('đăng-ký-khóa-học-4')" class="w-full flex items-center justify-between text-left py-4 px-1 hover:text-blue-600">
+                <span class="font-medium text-gray-800">Yêu cầu kiến thức đầu vào khóa học?</span>
+                <svg id="icon-đăng-ký-khóa-học-4" class="w-4 h-4 flex-shrink-0 ml-3 transition-transform" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd"/></svg>
+            </button>
+            <div id="ans-đăng-ký-khóa-học-4" class="hidden pb-4 px-1 text-sm text-gray-600 leading-relaxed">Mỗi khóa học đều ghi rõ yêu cầu kiến thức đầu vào trong phần mô tả. Bạn nên đọc kỹ và thử bài học mẫu trước khi quyết định.</div>
+        </div>
+        <div class="border-b last:border-b-0">
+            <button onclick="toggleFaq('đăng-ký-khóa-học-5')" class="w-full flex items-center justify-between text-left py-4 px-1 hover:text-blue-600">
+                <span class="font-medium text-gray-800">Mã giảm giá voucher?</span>
+                <svg id="icon-đăng-ký-khóa-học-5" class="w-4 h-4 flex-shrink-0 ml-3 transition-transform" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd"/></svg>
+            </button>
+            <div id="ans-đăng-ký-khóa-học-5" class="hidden pb-4 px-1 text-sm text-gray-600 leading-relaxed">Tại trang thanh toán, bạn sẽ thấy ô &#x27;Nhập mã giảm giá&#x27;. Điền mã và nhấn Áp dụng — hệ thống sẽ tự động tính toán số tiền được giảm.</div>
+        </div>
+        </div>
+    </section>
+    <section id="cat-thanh-toán" class="scroll-mt-24 mb-10">
+        <h2 class="text-xl font-bold text-gray-800 mb-3 flex items-center gap-2">💳 Thanh Toán</h2>
+        <div class="bg-white rounded-xl shadow-sm border divide-y">
+            
+        <div class="border-b last:border-b-0">
+            <button onclick="toggleFaq('thanh-toán-0')" class="w-full flex items-center justify-between text-left py-4 px-1 hover:text-blue-600">
+                <span class="font-medium text-gray-800">Phương thức thanh toán?</span>
+                <svg id="icon-thanh-toán-0" class="w-4 h-4 flex-shrink-0 ml-3 transition-transform" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd"/></svg>
+            </button>
+            <div id="ans-thanh-toán-0" class="hidden pb-4 px-1 text-sm text-gray-600 leading-relaxed">Hệ thống hỗ trợ: thẻ tín dụng/ghi nợ (Visa, Mastercard), chuyển khoản ngân hàng, ví điện tử (MoMo, ZaloPay, VNPay) và thanh toán qua QR Code.</div>
+        </div>
+        <div class="border-b last:border-b-0">
+            <button onclick="toggleFaq('thanh-toán-1')" class="w-full flex items-center justify-between text-left py-4 px-1 hover:text-blue-600">
+                <span class="font-medium text-gray-800">Thanh toán an toàn không?</span>
+                <svg id="icon-thanh-toán-1" class="w-4 h-4 flex-shrink-0 ml-3 transition-transform" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd"/></svg>
+            </button>
+            <div id="ans-thanh-toán-1" class="hidden pb-4 px-1 text-sm text-gray-600 leading-relaxed">Hoàn toàn an toàn! Mọi giao dịch được mã hóa SSL 256-bit và xử lý qua cổng thanh toán đạt chuẩn PCI DSS.</div>
+        </div>
+        <div class="border-b last:border-b-0">
+            <button onclick="toggleFaq('thanh-toán-2')" class="w-full flex items-center justify-between text-left py-4 px-1 hover:text-blue-600">
+                <span class="font-medium text-gray-800">Thanh toán thành công nhưng chưa mở được khóa học?</span>
+                <svg id="icon-thanh-toán-2" class="w-4 h-4 flex-shrink-0 ml-3 transition-transform" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd"/></svg>
+            </button>
+            <div id="ans-thanh-toán-2" class="hidden pb-4 px-1 text-sm text-gray-600 leading-relaxed">Vui lòng chờ 5-15 phút và làm mới trang. Nếu vẫn chưa mở, liên hệ hỗ trợ kèm ảnh chụp xác nhận giao dịch.</div>
+        </div>
+        <div class="border-b last:border-b-0">
+            <button onclick="toggleFaq('thanh-toán-3')" class="w-full flex items-center justify-between text-left py-4 px-1 hover:text-blue-600">
+                <span class="font-medium text-gray-800">Hóa đơn biên lai thanh toán?</span>
+                <svg id="icon-thanh-toán-3" class="w-4 h-4 flex-shrink-0 ml-3 transition-transform" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd"/></svg>
+            </button>
+            <div id="ans-thanh-toán-3" class="hidden pb-4 px-1 text-sm text-gray-600 leading-relaxed">Sau khi thanh toán thành công, hệ thống tự động gửi biên lai điện tử đến email đăng ký. Bạn cũng có thể xem tại mục Lịch sử giao dịch.</div>
+        </div>
+        <div class="border-b last:border-b-0">
+            <button onclick="toggleFaq('thanh-toán-4')" class="w-full flex items-center justify-between text-left py-4 px-1 hover:text-blue-600">
+                <span class="font-medium text-gray-800">Thanh toán trả góp?</span>
+                <svg id="icon-thanh-toán-4" class="w-4 h-4 flex-shrink-0 ml-3 transition-transform" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd"/></svg>
+            </button>
+            <div id="ans-thanh-toán-4" class="hidden pb-4 px-1 text-sm text-gray-600 leading-relaxed">Hệ thống hỗ trợ trả góp 0% lãi suất qua thẻ tín dụng của các ngân hàng liên kết (3, 6, 12 tháng).</div>
+        </div>
+        </div>
+    </section>
+    <section id="cat-học-phí" class="scroll-mt-24 mb-10">
+        <h2 class="text-xl font-bold text-gray-800 mb-3 flex items-center gap-2">💰 Học Phí</h2>
+        <div class="bg-white rounded-xl shadow-sm border divide-y">
+            
+        <div class="border-b last:border-b-0">
+            <button onclick="toggleFaq('học-phí-0')" class="w-full flex items-center justify-between text-left py-4 px-1 hover:text-blue-600">
+                <span class="font-medium text-gray-800">Học phí tính như thế nào?</span>
+                <svg id="icon-học-phí-0" class="w-4 h-4 flex-shrink-0 ml-3 transition-transform" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd"/></svg>
+            </button>
+            <div id="ans-học-phí-0" class="hidden pb-4 px-1 text-sm text-gray-600 leading-relaxed">Học phí được định giá theo từng khóa học dựa trên độ dài, chất lượng nội dung và kinh nghiệm giảng viên. Giá hiển thị rõ trên trang chi tiết mỗi khóa học.</div>
+        </div>
+        <div class="border-b last:border-b-0">
+            <button onclick="toggleFaq('học-phí-1')" class="w-full flex items-center justify-between text-left py-4 px-1 hover:text-blue-600">
+                <span class="font-medium text-gray-800">Học viên mới có ưu đãi không?</span>
+                <svg id="icon-học-phí-1" class="w-4 h-4 flex-shrink-0 ml-3 transition-transform" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd"/></svg>
+            </button>
+            <div id="ans-học-phí-1" class="hidden pb-4 px-1 text-sm text-gray-600 leading-relaxed">Có! Học viên đăng ký lần đầu được giảm 20-30% cho khóa học đầu tiên.</div>
+        </div>
+        <div class="border-b last:border-b-0">
+            <button onclick="toggleFaq('học-phí-2')" class="w-full flex items-center justify-between text-left py-4 px-1 hover:text-blue-600">
+                <span class="font-medium text-gray-800">Học phí thay đổi sau khi đăng ký?</span>
+                <svg id="icon-học-phí-2" class="w-4 h-4 flex-shrink-0 ml-3 transition-transform" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd"/></svg>
+            </button>
+            <div id="ans-học-phí-2" class="hidden pb-4 px-1 text-sm text-gray-600 leading-relaxed">Không! Học phí bị khóa tại thời điểm bạn mua. Dù giá khóa học tăng sau đó, bạn vẫn được truy cập đầy đủ.</div>
+        </div>
+        <div class="border-b last:border-b-0">
+            <button onclick="toggleFaq('học-phí-3')" class="w-full flex items-center justify-between text-left py-4 px-1 hover:text-blue-600">
+                <span class="font-medium text-gray-800">Học bổng?</span>
+                <svg id="icon-học-phí-3" class="w-4 h-4 flex-shrink-0 ml-3 transition-transform" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd"/></svg>
+            </button>
+            <div id="ans-học-phí-3" class="hidden pb-4 px-1 text-sm text-gray-600 leading-relaxed">Có! Chúng tôi có quỹ học bổng hàng quý cho học viên xuất sắc và hoàn cảnh khó khăn. Liên hệ hỗ trợ để biết thêm chi tiết.</div>
+        </div>
+        <div class="border-b last:border-b-0">
+            <button onclick="toggleFaq('học-phí-4')" class="w-full flex items-center justify-between text-left py-4 px-1 hover:text-blue-600">
+                <span class="font-medium text-gray-800">Nội dung cập nhật có mất thêm phí không?</span>
+                <svg id="icon-học-phí-4" class="w-4 h-4 flex-shrink-0 ml-3 transition-transform" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd"/></svg>
+            </button>
+            <div id="ans-học-phí-4" class="hidden pb-4 px-1 text-sm text-gray-600 leading-relaxed">Không! Bạn chỉ trả một lần và nhận quyền truy cập tất cả nội dung cập nhật trong tương lai mà không phát sinh thêm chi phí.</div>
+        </div>
+        </div>
+    </section>
+    <section id="cat-bài-kiểm-tra" class="scroll-mt-24 mb-10">
+        <h2 class="text-xl font-bold text-gray-800 mb-3 flex items-center gap-2">📝 Bài Kiểm Tra</h2>
+        <div class="bg-white rounded-xl shadow-sm border divide-y">
+            
+        <div class="border-b last:border-b-0">
+            <button onclick="toggleFaq('bài-kiểm-tra-0')" class="w-full flex items-center justify-between text-left py-4 px-1 hover:text-blue-600">
+                <span class="font-medium text-gray-800">Bài kiểm tra có dạng như thế nào?</span>
+                <svg id="icon-bài-kiểm-tra-0" class="w-4 h-4 flex-shrink-0 ml-3 transition-transform" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd"/></svg>
+            </button>
+            <div id="ans-bài-kiểm-tra-0" class="hidden pb-4 px-1 text-sm text-gray-600 leading-relaxed">Bài kiểm tra có nhiều dạng: trắc nghiệm đơn/đa lựa chọn, điền vào chỗ trống và câu hỏi tự luận ngắn. Dạng cụ thể phụ thuộc vào từng khóa học.</div>
+        </div>
+        <div class="border-b last:border-b-0">
+            <button onclick="toggleFaq('bài-kiểm-tra-1')" class="w-full flex items-center justify-between text-left py-4 px-1 hover:text-blue-600">
+                <span class="font-medium text-gray-800">Làm lại bài kiểm tra?</span>
+                <svg id="icon-bài-kiểm-tra-1" class="w-4 h-4 flex-shrink-0 ml-3 transition-transform" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd"/></svg>
+            </button>
+            <div id="ans-bài-kiểm-tra-1" class="hidden pb-4 px-1 text-sm text-gray-600 leading-relaxed">Số lần làm lại tùy quy định của từng khóa học, thường từ 2-3 lần. Sau mỗi lần làm, hệ thống sẽ hiển thị phần bạn cần ôn lại.</div>
+        </div>
+        <div class="border-b last:border-b-0">
+            <button onclick="toggleFaq('bài-kiểm-tra-2')" class="w-full flex items-center justify-between text-left py-4 px-1 hover:text-blue-600">
+                <span class="font-medium text-gray-800">Thời gian làm bài kiểm tra?</span>
+                <svg id="icon-bài-kiểm-tra-2" class="w-4 h-4 flex-shrink-0 ml-3 transition-transform" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd"/></svg>
+            </button>
+            <div id="ans-bài-kiểm-tra-2" class="hidden pb-4 px-1 text-sm text-gray-600 leading-relaxed">Thời gian làm bài được quy định riêng cho từng bài kiểm tra, thường từ 15-60 phút. Đồng hồ đếm ngược hiển thị rõ ràng trong suốt quá trình làm bài.</div>
+        </div>
+        <div class="border-b last:border-b-0">
+            <button onclick="toggleFaq('bài-kiểm-tra-3')" class="w-full flex items-center justify-between text-left py-4 px-1 hover:text-blue-600">
+                <span class="font-medium text-gray-800">Điểm tối thiểu để qua bài kiểm tra?</span>
+                <svg id="icon-bài-kiểm-tra-3" class="w-4 h-4 flex-shrink-0 ml-3 transition-transform" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd"/></svg>
+            </button>
+            <div id="ans-bài-kiểm-tra-3" class="hidden pb-4 px-1 text-sm text-gray-600 leading-relaxed">Điểm qua thường là 60-70%, nhưng có thể khác tùy đề thi. Yêu cầu điểm tối thiểu được thông báo rõ ràng trước khi bạn bắt đầu làm bài.</div>
+        </div>
+        <div class="border-b last:border-b-0">
+            <button onclick="toggleFaq('bài-kiểm-tra-4')" class="w-full flex items-center justify-between text-left py-4 px-1 hover:text-blue-600">
+                <span class="font-medium text-gray-800">Xem lại đáp án sau khi nộp bài?</span>
+                <svg id="icon-bài-kiểm-tra-4" class="w-4 h-4 flex-shrink-0 ml-3 transition-transform" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd"/></svg>
+            </button>
+            <div id="ans-bài-kiểm-tra-4" class="hidden pb-4 px-1 text-sm text-gray-600 leading-relaxed">Tùy cài đặt của giảng viên. Một số bài kiểm tra cho xem đáp án ngay, số khác chỉ hiển thị điểm số.</div>
+        </div>
+        <div class="border-b last:border-b-0">
+            <button onclick="toggleFaq('bài-kiểm-tra-5')" class="w-full flex items-center justify-between text-left py-4 px-1 hover:text-blue-600">
+                <span class="font-medium text-gray-800">Mất kết nối internet khi làm bài?</span>
+                <svg id="icon-bài-kiểm-tra-5" class="w-4 h-4 flex-shrink-0 ml-3 transition-transform" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd"/></svg>
+            </button>
+            <div id="ans-bài-kiểm-tra-5" class="hidden pb-4 px-1 text-sm text-gray-600 leading-relaxed">Đừng lo! Hệ thống tự động lưu câu trả lời mỗi 30 giây. Khi kết nối lại, bạn có thể tiếp tục từ câu đã trả lời.</div>
+        </div>
+        <div class="border-b last:border-b-0">
+            <button onclick="toggleFaq('bài-kiểm-tra-6')" class="w-full flex items-center justify-between text-left py-4 px-1 hover:text-blue-600">
+                <span class="font-medium text-gray-800">Kết quả bài kiểm tra?</span>
+                <svg id="icon-bài-kiểm-tra-6" class="w-4 h-4 flex-shrink-0 ml-3 transition-transform" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd"/></svg>
+            </button>
+            <div id="ans-bài-kiểm-tra-6" class="hidden pb-4 px-1 text-sm text-gray-600 leading-relaxed">Bài trắc nghiệm chấm điểm và trả kết quả ngay lập tức sau khi nộp.</div>
+        </div>
+        </div>
+    </section>
+    <section id="cat-bài-tập" class="scroll-mt-24 mb-10">
+        <h2 class="text-xl font-bold text-gray-800 mb-3 flex items-center gap-2">📋 Bài Tập</h2>
+        <div class="bg-white rounded-xl shadow-sm border divide-y">
+            
+        <div class="border-b last:border-b-0">
+            <button onclick="toggleFaq('bài-tập-0')" class="w-full flex items-center justify-between text-left py-4 px-1 hover:text-blue-600">
+                <span class="font-medium text-gray-800">Bài tập chấm điểm tự động không?</span>
+                <svg id="icon-bài-tập-0" class="w-4 h-4 flex-shrink-0 ml-3 transition-transform" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd"/></svg>
+            </button>
+            <div id="ans-bài-tập-0" class="hidden pb-4 px-1 text-sm text-gray-600 leading-relaxed">Bài tập trắc nghiệm và lập trình được chấm tự động. Bài tập tự luận, đồ án cần giảng viên chấm thủ công.</div>
+        </div>
+        <div class="border-b last:border-b-0">
+            <button onclick="toggleFaq('bài-tập-1')" class="w-full flex items-center justify-between text-left py-4 px-1 hover:text-blue-600">
+                <span class="font-medium text-gray-800">Nộp bài tập?</span>
+                <svg id="icon-bài-tập-1" class="w-4 h-4 flex-shrink-0 ml-3 transition-transform" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd"/></svg>
+            </button>
+            <div id="ans-bài-tập-1" class="hidden pb-4 px-1 text-sm text-gray-600 leading-relaxed">Vào bài học tương ứng → Bài tập → Làm bài. Điền câu trả lời hoặc tải file lên, kiểm tra lại và nhấn &#x27;Nộp bài&#x27;.</div>
+        </div>
+        <div class="border-b last:border-b-0">
+            <button onclick="toggleFaq('bài-tập-2')" class="w-full flex items-center justify-between text-left py-4 px-1 hover:text-blue-600">
+                <span class="font-medium text-gray-800">Bài tập có thời hạn không deadline?</span>
+                <svg id="icon-bài-tập-2" class="w-4 h-4 flex-shrink-0 ml-3 transition-transform" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd"/></svg>
+            </button>
+            <div id="ans-bài-tập-2" class="hidden pb-4 px-1 text-sm text-gray-600 leading-relaxed">Có! Mỗi bài tập đều hiển thị thời hạn nộp (deadline) rõ ràng. Hệ thống gửi nhắc nhở trước deadline 24 giờ qua email.</div>
+        </div>
+        <div class="border-b last:border-b-0">
+            <button onclick="toggleFaq('bài-tập-3')" class="w-full flex items-center justify-between text-left py-4 px-1 hover:text-blue-600">
+                <span class="font-medium text-gray-800">Nộp bài tập trễ hạn?</span>
+                <svg id="icon-bài-tập-3" class="w-4 h-4 flex-shrink-0 ml-3 transition-transform" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd"/></svg>
+            </button>
+            <div id="ans-bài-tập-3" class="hidden pb-4 px-1 text-sm text-gray-600 leading-relaxed">Tùy quy định từng khóa. Một số khóa cho phép nộp trễ với mức trừ điểm. Kiểm tra quy định trong phần mô tả bài tập.</div>
+        </div>
+        <div class="border-b last:border-b-0">
+            <button onclick="toggleFaq('bài-tập-4')" class="w-full flex items-center justify-between text-left py-4 px-1 hover:text-blue-600">
+                <span class="font-medium text-gray-800">Định dạng file nộp bài tập?</span>
+                <svg id="icon-bài-tập-4" class="w-4 h-4 flex-shrink-0 ml-3 transition-transform" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd"/></svg>
+            </button>
+            <div id="ans-bài-tập-4" class="hidden pb-4 px-1 text-sm text-gray-600 leading-relaxed">Hệ thống chấp nhận: PDF, DOCX, XLSX, PPTX, JPG, PNG, MP4 và file nén ZIP/RAR. Kích thước tối đa 50MB.</div>
+        </div>
+        <div class="border-b last:border-b-0">
+            <button onclick="toggleFaq('bài-tập-5')" class="w-full flex items-center justify-between text-left py-4 px-1 hover:text-blue-600">
+                <span class="font-medium text-gray-800">Chỉnh sửa nộp lại bài tập?</span>
+                <svg id="icon-bài-tập-5" class="w-4 h-4 flex-shrink-0 ml-3 transition-transform" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd"/></svg>
+            </button>
+            <div id="ans-bài-tập-5" class="hidden pb-4 px-1 text-sm text-gray-600 leading-relaxed">Trước deadline, bạn có thể nộp lại nhiều lần — hệ thống ghi nhận lần nộp cuối cùng.</div>
+        </div>
+        <div class="border-b last:border-b-0">
+            <button onclick="toggleFaq('bài-tập-6')" class="w-full flex items-center justify-between text-left py-4 px-1 hover:text-blue-600">
+                <span class="font-medium text-gray-800">Giảng viên có nhận xét bài tập không?</span>
+                <svg id="icon-bài-tập-6" class="w-4 h-4 flex-shrink-0 ml-3 transition-transform" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd"/></svg>
+            </button>
+            <div id="ans-bài-tập-6" class="hidden pb-4 px-1 text-sm text-gray-600 leading-relaxed">Có! Giảng viên thường cung cấp nhận xét chi tiết trong vòng 3-5 ngày làm việc sau deadline.</div>
+        </div>
+        </div>
+    </section>
+    <section id="cat-điểm-số" class="scroll-mt-24 mb-10">
+        <h2 class="text-xl font-bold text-gray-800 mb-3 flex items-center gap-2">🎯 Điểm Số</h2>
+        <div class="bg-white rounded-xl shadow-sm border divide-y">
+            
+        <div class="border-b last:border-b-0">
+            <button onclick="toggleFaq('điểm-số-0')" class="w-full flex items-center justify-between text-left py-4 px-1 hover:text-blue-600">
+                <span class="font-medium text-gray-800">Xem điểm số tổng kết?</span>
+                <svg id="icon-điểm-số-0" class="w-4 h-4 flex-shrink-0 ml-3 transition-transform" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd"/></svg>
+            </button>
+            <div id="ans-điểm-số-0" class="hidden pb-4 px-1 text-sm text-gray-600 leading-relaxed">Vào trang khóa học → Tiến trình học tập → Điểm số. Tại đây hiển thị điểm từng bài tập, kiểm tra và điểm tổng kết.</div>
+        </div>
+        <div class="border-b last:border-b-0">
+            <button onclick="toggleFaq('điểm-số-1')" class="w-full flex items-center justify-between text-left py-4 px-1 hover:text-blue-600">
+                <span class="font-medium text-gray-800">Điểm được tính như thế nào?</span>
+                <svg id="icon-điểm-số-1" class="w-4 h-4 flex-shrink-0 ml-3 transition-transform" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd"/></svg>
+            </button>
+            <div id="ans-điểm-số-1" class="hidden pb-4 px-1 text-sm text-gray-600 leading-relaxed">Thường: bài tập chiếm 40%, kiểm tra giữa kỳ 20%, kiểm tra cuối kỳ 40%. Có thể khác theo từng khóa.</div>
+        </div>
+        <div class="border-b last:border-b-0">
+            <button onclick="toggleFaq('điểm-số-2')" class="w-full flex items-center justify-between text-left py-4 px-1 hover:text-blue-600">
+                <span class="font-medium text-gray-800">Điểm bao nhiêu được cấp chứng chỉ?</span>
+                <svg id="icon-điểm-số-2" class="w-4 h-4 flex-shrink-0 ml-3 transition-transform" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd"/></svg>
+            </button>
+            <div id="ans-điểm-số-2" class="hidden pb-4 px-1 text-sm text-gray-600 leading-relaxed">Cần đạt tối thiểu 70% (7/10 điểm) và hoàn thành ít nhất 80% nội dung khóa học để được cấp chứng chỉ.</div>
+        </div>
+        <div class="border-b last:border-b-0">
+            <button onclick="toggleFaq('điểm-số-3')" class="w-full flex items-center justify-between text-left py-4 px-1 hover:text-blue-600">
+                <span class="font-medium text-gray-800">Phúc khảo điểm?</span>
+                <svg id="icon-điểm-số-3" class="w-4 h-4 flex-shrink-0 ml-3 transition-transform" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd"/></svg>
+            </button>
+            <div id="ans-điểm-số-3" class="hidden pb-4 px-1 text-sm text-gray-600 leading-relaxed">Trong vòng 7 ngày sau khi điểm được công bố, bạn có thể gửi yêu cầu phúc khảo qua mục Hỗ trợ.</div>
+        </div>
+        <div class="border-b last:border-b-0">
+            <button onclick="toggleFaq('điểm-số-4')" class="w-full flex items-center justify-between text-left py-4 px-1 hover:text-blue-600">
+                <span class="font-medium text-gray-800">Tải bảng điểm?</span>
+                <svg id="icon-điểm-số-4" class="w-4 h-4 flex-shrink-0 ml-3 transition-transform" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd"/></svg>
+            </button>
+            <div id="ans-điểm-số-4" class="hidden pb-4 px-1 text-sm text-gray-600 leading-relaxed">Vào Hồ sơ → Thành tích học tập → Tải bảng điểm. Bảng điểm xuất dưới dạng PDF có chữ ký số và mã QR.</div>
+        </div>
+        <div class="border-b last:border-b-0">
+            <button onclick="toggleFaq('điểm-số-5')" class="w-full flex items-center justify-between text-left py-4 px-1 hover:text-blue-600">
+                <span class="font-medium text-gray-800">Điểm cập nhật sau nộp bài?</span>
+                <svg id="icon-điểm-số-5" class="w-4 h-4 flex-shrink-0 ml-3 transition-transform" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd"/></svg>
+            </button>
+            <div id="ans-điểm-số-5" class="hidden pb-4 px-1 text-sm text-gray-600 leading-relaxed">Bài trắc nghiệm cập nhật điểm ngay lập tức. Bài tự luận cần 1-5 ngày làm việc tùy theo lịch chấm bài của giảng viên.</div>
+        </div>
+        </div>
+    </section>
+    <section id="cat-giảng-viên" class="scroll-mt-24 mb-10">
+        <h2 class="text-xl font-bold text-gray-800 mb-3 flex items-center gap-2">👨‍🏫 Giảng Viên</h2>
+        <div class="bg-white rounded-xl shadow-sm border divide-y">
+            
+        <div class="border-b last:border-b-0">
+            <button onclick="toggleFaq('giảng-viên-0')" class="w-full flex items-center justify-between text-left py-4 px-1 hover:text-blue-600">
+                <span class="font-medium text-gray-800">Liên hệ với giảng viên?</span>
+                <svg id="icon-giảng-viên-0" class="w-4 h-4 flex-shrink-0 ml-3 transition-transform" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd"/></svg>
+            </button>
+            <div id="ans-giảng-viên-0" class="hidden pb-4 px-1 text-sm text-gray-600 leading-relaxed">Bạn có thể đặt câu hỏi trong phần Hỏi &amp; Đáp (Q&amp;A) của từng bài học, hoặc nhắn tin qua hệ thống tin nhắn nội bộ. Giảng viên thường phản hồi trong 24-48 giờ.</div>
+        </div>
+        <div class="border-b last:border-b-0">
+            <button onclick="toggleFaq('giảng-viên-1')" class="w-full flex items-center justify-between text-left py-4 px-1 hover:text-blue-600">
+                <span class="font-medium text-gray-800">Giảng viên trả lời câu hỏi bao lâu?</span>
+                <svg id="icon-giảng-viên-1" class="w-4 h-4 flex-shrink-0 ml-3 transition-transform" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd"/></svg>
+            </button>
+            <div id="ans-giảng-viên-1" class="hidden pb-4 px-1 text-sm text-gray-600 leading-relaxed">Giảng viên cam kết trả lời câu hỏi trong vòng 48 giờ làm việc.</div>
+        </div>
+        <div class="border-b last:border-b-0">
+            <button onclick="toggleFaq('giảng-viên-2')" class="w-full flex items-center justify-between text-left py-4 px-1 hover:text-blue-600">
+                <span class="font-medium text-gray-800">Xem hồ sơ giảng viên?</span>
+                <svg id="icon-giảng-viên-2" class="w-4 h-4 flex-shrink-0 ml-3 transition-transform" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd"/></svg>
+            </button>
+            <div id="ans-giảng-viên-2" class="hidden pb-4 px-1 text-sm text-gray-600 leading-relaxed">Nhấn vào tên giảng viên trên trang khóa học để xem hồ sơ đầy đủ gồm kinh nghiệm làm việc, bằng cấp, các khóa học đang giảng dạy.</div>
+        </div>
+        <div class="border-b last:border-b-0">
+            <button onclick="toggleFaq('giảng-viên-3')" class="w-full flex items-center justify-between text-left py-4 px-1 hover:text-blue-600">
+                <span class="font-medium text-gray-800">Đánh giá giảng viên?</span>
+                <svg id="icon-giảng-viên-3" class="w-4 h-4 flex-shrink-0 ml-3 transition-transform" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd"/></svg>
+            </button>
+            <div id="ans-giảng-viên-3" class="hidden pb-4 px-1 text-sm text-gray-600 leading-relaxed">Có! Sau khi hoàn thành khóa học, bạn có thể đánh giá sao (1-5) và viết nhận xét về chất lượng giảng dạy.</div>
+        </div>
+        <div class="border-b last:border-b-0">
+            <button onclick="toggleFaq('giảng-viên-4')" class="w-full flex items-center justify-between text-left py-4 px-1 hover:text-blue-600">
+                <span class="font-medium text-gray-800">Giảng viên không phản hồi?</span>
+                <svg id="icon-giảng-viên-4" class="w-4 h-4 flex-shrink-0 ml-3 transition-transform" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd"/></svg>
+            </button>
+            <div id="ans-giảng-viên-4" class="hidden pb-4 px-1 text-sm text-gray-600 leading-relaxed">Nếu chờ quá 72 giờ mà chưa có phản hồi, bạn gửi báo cáo qua Hỗ trợ. Đội ngũ quản lý sẽ liên hệ giảng viên.</div>
+        </div>
+        </div>
+    </section>
+    <section id="cat-lịch-học" class="scroll-mt-24 mb-10">
+        <h2 class="text-xl font-bold text-gray-800 mb-3 flex items-center gap-2">📅 Lịch Học</h2>
+        <div class="bg-white rounded-xl shadow-sm border divide-y">
+            
+        <div class="border-b last:border-b-0">
+            <button onclick="toggleFaq('lịch-học-0')" class="w-full flex items-center justify-between text-left py-4 px-1 hover:text-blue-600">
+                <span class="font-medium text-gray-800">Lịch học được sắp xếp như thế nào?</span>
+                <svg id="icon-lịch-học-0" class="w-4 h-4 flex-shrink-0 ml-3 transition-transform" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd"/></svg>
+            </button>
+            <div id="ans-lịch-học-0" class="hidden pb-4 px-1 text-sm text-gray-600 leading-relaxed">Nội dung được chia thành các tuần/chương có trình tự logic. Bạn có thể học theo thứ tự đề xuất hoặc nhảy qua lại tùy nhu cầu.</div>
+        </div>
+        <div class="border-b last:border-b-0">
+            <button onclick="toggleFaq('lịch-học-1')" class="w-full flex items-center justify-between text-left py-4 px-1 hover:text-blue-600">
+                <span class="font-medium text-gray-800">Học theo tốc độ của riêng mình?</span>
+                <svg id="icon-lịch-học-1" class="w-4 h-4 flex-shrink-0 ml-3 transition-transform" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd"/></svg>
+            </button>
+            <div id="ans-lịch-học-1" class="hidden pb-4 px-1 text-sm text-gray-600 leading-relaxed">Có! Hầu hết khóa học là dạng tự học (self-paced) — bạn học khi nào, ở đâu và với tốc độ nào cũng được.</div>
+        </div>
+        <div class="border-b last:border-b-0">
+            <button onclick="toggleFaq('lịch-học-2')" class="w-full flex items-center justify-between text-left py-4 px-1 hover:text-blue-600">
+                <span class="font-medium text-gray-800">Nhắc nhở lịch học tự động?</span>
+                <svg id="icon-lịch-học-2" class="w-4 h-4 flex-shrink-0 ml-3 transition-transform" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd"/></svg>
+            </button>
+            <div id="ans-lịch-học-2" class="hidden pb-4 px-1 text-sm text-gray-600 leading-relaxed">Có! Bạn có thể đặt mục tiêu học tập trong Cài đặt → Mục tiêu học tập. Hệ thống sẽ gửi nhắc nhở qua email.</div>
+        </div>
+        <div class="border-b last:border-b-0">
+            <button onclick="toggleFaq('lịch-học-3')" class="w-full flex items-center justify-between text-left py-4 px-1 hover:text-blue-600">
+                <span class="font-medium text-gray-800">Bỏ lỡ buổi học trực tuyến xem lại được không?</span>
+                <svg id="icon-lịch-học-3" class="w-4 h-4 flex-shrink-0 ml-3 transition-transform" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd"/></svg>
+            </button>
+            <div id="ans-lịch-học-3" class="hidden pb-4 px-1 text-sm text-gray-600 leading-relaxed">Hầu hết buổi live session được ghi lại và đăng tải trong vòng 24 giờ sau khi kết thúc.</div>
+        </div>
+        </div>
+    </section>
+    <section id="cat-hủy-khóa-học" class="scroll-mt-24 mb-10">
+        <h2 class="text-xl font-bold text-gray-800 mb-3 flex items-center gap-2">❌ Hủy Khóa Học</h2>
+        <div class="bg-white rounded-xl shadow-sm border divide-y">
+            
+        <div class="border-b last:border-b-0">
+            <button onclick="toggleFaq('hủy-khóa-học-0')" class="w-full flex items-center justify-between text-left py-4 px-1 hover:text-blue-600">
+                <span class="font-medium text-gray-800">Hủy đăng ký khóa học?</span>
+                <svg id="icon-hủy-khóa-học-0" class="w-4 h-4 flex-shrink-0 ml-3 transition-transform" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd"/></svg>
+            </button>
+            <div id="ans-hủy-khóa-học-0" class="hidden pb-4 px-1 text-sm text-gray-600 leading-relaxed">Có thể yêu cầu hủy trong thời hạn quy định (thường 7 ngày từ ngày mua và chưa xem quá 30% nội dung).</div>
+        </div>
+        <div class="border-b last:border-b-0">
+            <button onclick="toggleFaq('hủy-khóa-học-1')" class="w-full flex items-center justify-between text-left py-4 px-1 hover:text-blue-600">
+                <span class="font-medium text-gray-800">Thời hạn hủy khóa học được hoàn tiền?</span>
+                <svg id="icon-hủy-khóa-học-1" class="w-4 h-4 flex-shrink-0 ml-3 transition-transform" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd"/></svg>
+            </button>
+            <div id="ans-hủy-khóa-học-1" class="hidden pb-4 px-1 text-sm text-gray-600 leading-relaxed">Bạn có 7 ngày kể từ ngày thanh toán để yêu cầu hủy và hoàn tiền đầy đủ, với điều kiện đã xem dưới 30% nội dung.</div>
+        </div>
+        <div class="border-b last:border-b-0">
+            <button onclick="toggleFaq('hủy-khóa-học-2')" class="w-full flex items-center justify-between text-left py-4 px-1 hover:text-blue-600">
+                <span class="font-medium text-gray-800">Dữ liệu học tập sau khi hủy?</span>
+                <svg id="icon-hủy-khóa-học-2" class="w-4 h-4 flex-shrink-0 ml-3 transition-transform" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd"/></svg>
+            </button>
+            <div id="ans-hủy-khóa-học-2" class="hidden pb-4 px-1 text-sm text-gray-600 leading-relaxed">Nếu yêu cầu hoàn tiền được chấp thuận, quyền truy cập và dữ liệu học tập sẽ bị xóa.</div>
+        </div>
+        <div class="border-b last:border-b-0">
+            <button onclick="toggleFaq('hủy-khóa-học-3')" class="w-full flex items-center justify-between text-left py-4 px-1 hover:text-blue-600">
+                <span class="font-medium text-gray-800">Đăng ký lại sau khi hủy?</span>
+                <svg id="icon-hủy-khóa-học-3" class="w-4 h-4 flex-shrink-0 ml-3 transition-transform" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd"/></svg>
+            </button>
+            <div id="ans-hủy-khóa-học-3" class="hidden pb-4 px-1 text-sm text-gray-600 leading-relaxed">Có! Bạn có thể đăng ký lại bất cứ lúc nào. Tuy nhiên, tiến trình học cũ sẽ không được khôi phục.</div>
+        </div>
+        <div class="border-b last:border-b-0">
+            <button onclick="toggleFaq('hủy-khóa-học-4')" class="w-full flex items-center justify-between text-left py-4 px-1 hover:text-blue-600">
+                <span class="font-medium text-gray-800">Cách hủy khóa học?</span>
+                <svg id="icon-hủy-khóa-học-4" class="w-4 h-4 flex-shrink-0 ml-3 transition-transform" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd"/></svg>
+            </button>
+            <div id="ans-hủy-khóa-học-4" class="hidden pb-4 px-1 text-sm text-gray-600 leading-relaxed">Vào Tài khoản → Khóa học của tôi → chọn khóa muốn hủy → nhấn &#x27;Yêu cầu hủy đăng ký&#x27; → điền lý do và xác nhận.</div>
+        </div>
+        </div>
+    </section>
+    <section id="cat-hoàn-tiền" class="scroll-mt-24 mb-10">
+        <h2 class="text-xl font-bold text-gray-800 mb-3 flex items-center gap-2">💸 Hoàn Tiền</h2>
+        <div class="bg-white rounded-xl shadow-sm border divide-y">
+            
+        <div class="border-b last:border-b-0">
+            <button onclick="toggleFaq('hoàn-tiền-0')" class="w-full flex items-center justify-between text-left py-4 px-1 hover:text-blue-600">
+                <span class="font-medium text-gray-800">Chính sách hoàn tiền?</span>
+                <svg id="icon-hoàn-tiền-0" class="w-4 h-4 flex-shrink-0 ml-3 transition-transform" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd"/></svg>
+            </button>
+            <div id="ans-hoàn-tiền-0" class="hidden pb-4 px-1 text-sm text-gray-600 leading-relaxed">Chúng tôi áp dụng chính sách hoàn tiền 100% trong vòng 7 ngày nếu bạn không hài lòng và đã xem dưới 30% nội dung.</div>
+        </div>
+        <div class="border-b last:border-b-0">
+            <button onclick="toggleFaq('hoàn-tiền-1')" class="w-full flex items-center justify-between text-left py-4 px-1 hover:text-blue-600">
+                <span class="font-medium text-gray-800">Gửi yêu cầu hoàn tiền?</span>
+                <svg id="icon-hoàn-tiền-1" class="w-4 h-4 flex-shrink-0 ml-3 transition-transform" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd"/></svg>
+            </button>
+            <div id="ans-hoàn-tiền-1" class="hidden pb-4 px-1 text-sm text-gray-600 leading-relaxed">Vào Hỗ trợ → Yêu cầu hoàn tiền, điền mã đơn hàng và lý do yêu cầu, đính kèm bằng chứng nếu có, rồi nhấn Gửi.</div>
+        </div>
+        <div class="border-b last:border-b-0">
+            <button onclick="toggleFaq('hoàn-tiền-2')" class="w-full flex items-center justify-between text-left py-4 px-1 hover:text-blue-600">
+                <span class="font-medium text-gray-800">Tiền hoàn trả về đâu bao lâu?</span>
+                <svg id="icon-hoàn-tiền-2" class="w-4 h-4 flex-shrink-0 ml-3 transition-transform" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd"/></svg>
+            </button>
+            <div id="ans-hoàn-tiền-2" class="hidden pb-4 px-1 text-sm text-gray-600 leading-relaxed">Tiền được hoàn về phương thức thanh toán ban đầu: thẻ ngân hàng trong 5-7 ngày, ví điện tử trong 1-3 ngày.</div>
+        </div>
+        <div class="border-b last:border-b-0">
+            <button onclick="toggleFaq('hoàn-tiền-3')" class="w-full flex items-center justify-between text-left py-4 px-1 hover:text-blue-600">
+                <span class="font-medium text-gray-800">Đã xem 50% khóa học có được hoàn tiền không?</span>
+                <svg id="icon-hoàn-tiền-3" class="w-4 h-4 flex-shrink-0 ml-3 transition-transform" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd"/></svg>
+            </button>
+            <div id="ans-hoàn-tiền-3" class="hidden pb-4 px-1 text-sm text-gray-600 leading-relaxed">Theo chính sách tiêu chuẩn, đã xem trên 30% nội dung sẽ không đủ điều kiện hoàn tiền. Liên hệ hỗ trợ để được xem xét.</div>
+        </div>
+        <div class="border-b last:border-b-0">
+            <button onclick="toggleFaq('hoàn-tiền-4')" class="w-full flex items-center justify-between text-left py-4 px-1 hover:text-blue-600">
+                <span class="font-medium text-gray-800">Đổi khóa học thay vì hoàn tiền?</span>
+                <svg id="icon-hoàn-tiền-4" class="w-4 h-4 flex-shrink-0 ml-3 transition-transform" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd"/></svg>
+            </button>
+            <div id="ans-hoàn-tiền-4" class="hidden pb-4 px-1 text-sm text-gray-600 leading-relaxed">Có! Thay vì hoàn tiền, bạn có thể yêu cầu chuyển sang khóa học khác có cùng hoặc thấp hơn giá trị.</div>
+        </div>
+        </div>
+    </section>
+    <section id="cat-hỗ-trợ-kỹ-thuật" class="scroll-mt-24 mb-10">
+        <h2 class="text-xl font-bold text-gray-800 mb-3 flex items-center gap-2">🛠️ Hỗ Trợ Kỹ Thuật</h2>
+        <div class="bg-white rounded-xl shadow-sm border divide-y">
+            
+        <div class="border-b last:border-b-0">
+            <button onclick="toggleFaq('hỗ-trợ-kỹ-thuật-0')" class="w-full flex items-center justify-between text-left py-4 px-1 hover:text-blue-600">
+                <span class="font-medium text-gray-800">Video bị giật lag?</span>
+                <svg id="icon-hỗ-trợ-kỹ-thuật-0" class="w-4 h-4 flex-shrink-0 ml-3 transition-transform" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd"/></svg>
+            </button>
+            <div id="ans-hỗ-trợ-kỹ-thuật-0" class="hidden pb-4 px-1 text-sm text-gray-600 leading-relaxed">Thử giảm chất lượng video xuống 480p, đóng bớt các tab trình duyệt, và đảm bảo kết nối internet ổn định (tối thiểu 5 Mbps).</div>
+        </div>
+        <div class="border-b last:border-b-0">
+            <button onclick="toggleFaq('hỗ-trợ-kỹ-thuật-1')" class="w-full flex items-center justify-between text-left py-4 px-1 hover:text-blue-600">
+                <span class="font-medium text-gray-800">Cấu hình máy tính tốc độ internet yêu cầu?</span>
+                <svg id="icon-hỗ-trợ-kỹ-thuật-1" class="w-4 h-4 flex-shrink-0 ml-3 transition-transform" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd"/></svg>
+            </button>
+            <div id="ans-hỗ-trợ-kỹ-thuật-1" class="hidden pb-4 px-1 text-sm text-gray-600 leading-relaxed">Yêu cầu tối thiểu: RAM 4GB, trình duyệt Chrome/Firefox phiên bản mới nhất, tốc độ internet 5 Mbps để xem video HD.</div>
+        </div>
+        <div class="border-b last:border-b-0">
+            <button onclick="toggleFaq('hỗ-trợ-kỹ-thuật-2')" class="w-full flex items-center justify-between text-left py-4 px-1 hover:text-blue-600">
+                <span class="font-medium text-gray-800">Ứng dụng di động hỗ trợ hệ điều hành nào?</span>
+                <svg id="icon-hỗ-trợ-kỹ-thuật-2" class="w-4 h-4 flex-shrink-0 ml-3 transition-transform" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd"/></svg>
+            </button>
+            <div id="ans-hỗ-trợ-kỹ-thuật-2" class="hidden pb-4 px-1 text-sm text-gray-600 leading-relaxed">Ứng dụng hỗ trợ iOS 13.0 trở lên và Android 8.0 trở lên. Tải về miễn phí trên App Store và Google Play.</div>
+        </div>
+        <div class="border-b last:border-b-0">
+            <button onclick="toggleFaq('hỗ-trợ-kỹ-thuật-3')" class="w-full flex items-center justify-between text-left py-4 px-1 hover:text-blue-600">
+                <span class="font-medium text-gray-800">Tải video bài giảng xem offline?</span>
+                <svg id="icon-hỗ-trợ-kỹ-thuật-3" class="w-4 h-4 flex-shrink-0 ml-3 transition-transform" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd"/></svg>
+            </button>
+            <div id="ans-hỗ-trợ-kỹ-thuật-3" class="hidden pb-4 px-1 text-sm text-gray-600 leading-relaxed">Có! Ứng dụng di động cho phép tải video để xem offline. Nhấn biểu tượng Tải xuống cạnh bài học.</div>
+        </div>
+        <div class="border-b last:border-b-0">
+            <button onclick="toggleFaq('hỗ-trợ-kỹ-thuật-4')" class="w-full flex items-center justify-between text-left py-4 px-1 hover:text-blue-600">
+                <span class="font-medium text-gray-800">Phụ đề subtitle video?</span>
+                <svg id="icon-hỗ-trợ-kỹ-thuật-4" class="w-4 h-4 flex-shrink-0 ml-3 transition-transform" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd"/></svg>
+            </button>
+            <div id="ans-hỗ-trợ-kỹ-thuật-4" class="hidden pb-4 px-1 text-sm text-gray-600 leading-relaxed">Nhiều khóa học có phụ đề tiếng Việt và tiếng Anh. Nhấn biểu tượng CC trong trình phát video để bật/tắt phụ đề.</div>
+        </div>
+        <div class="border-b last:border-b-0">
+            <button onclick="toggleFaq('hỗ-trợ-kỹ-thuật-5')" class="w-full flex items-center justify-between text-left py-4 px-1 hover:text-blue-600">
+                <span class="font-medium text-gray-800">Xóa cache cookie?</span>
+                <svg id="icon-hỗ-trợ-kỹ-thuật-5" class="w-4 h-4 flex-shrink-0 ml-3 transition-transform" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd"/></svg>
+            </button>
+            <div id="ans-hỗ-trợ-kỹ-thuật-5" class="hidden pb-4 px-1 text-sm text-gray-600 leading-relaxed">Trên Chrome: nhấn Ctrl+Shift+Delete → chọn Cache và Cookie → nhấn Xóa dữ liệu. Sau đó làm mới trang.</div>
+        </div>
+        <div class="border-b last:border-b-0">
+            <button onclick="toggleFaq('hỗ-trợ-kỹ-thuật-6')" class="w-full flex items-center justify-between text-left py-4 px-1 hover:text-blue-600">
+                <span class="font-medium text-gray-800">Không nghe được âm thanh video?</span>
+                <svg id="icon-hỗ-trợ-kỹ-thuật-6" class="w-4 h-4 flex-shrink-0 ml-3 transition-transform" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd"/></svg>
+            </button>
+            <div id="ans-hỗ-trợ-kỹ-thuật-6" class="hidden pb-4 px-1 text-sm text-gray-600 leading-relaxed">Kiểm tra: âm lượng hệ thống, âm lượng trong trình phát video, cài đặt âm thanh trình duyệt. Thử tai nghe khác và làm mới trang.</div>
+        </div>
+        <div class="border-b last:border-b-0">
+            <button onclick="toggleFaq('hỗ-trợ-kỹ-thuật-7')" class="w-full flex items-center justify-between text-left py-4 px-1 hover:text-blue-600">
+                <span class="font-medium text-gray-800">Liên hệ hỗ trợ kỹ thuật?</span>
+                <svg id="icon-hỗ-trợ-kỹ-thuật-7" class="w-4 h-4 flex-shrink-0 ml-3 transition-transform" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd"/></svg>
+            </button>
+            <div id="ans-hỗ-trợ-kỹ-thuật-7" class="hidden pb-4 px-1 text-sm text-gray-600 leading-relaxed">Liên hệ qua live chat trên website hoặc email hỗ trợ. Hỗ trợ viên phục vụ từ 8:00-22:00 mỗi ngày.</div>
+        </div>
+        </div>
+    </section>
+    <section id="cat-chatbot-ai" class="scroll-mt-24 mb-10">
+        <h2 class="text-xl font-bold text-gray-800 mb-3 flex items-center gap-2">🤖 Chatbot AI</h2>
+        <div class="bg-white rounded-xl shadow-sm border divide-y">
+            
+        <div class="border-b last:border-b-0">
+            <button onclick="toggleFaq('chatbot-ai-0')" class="w-full flex items-center justify-between text-left py-4 px-1 hover:text-blue-600">
+                <span class="font-medium text-gray-800">Chatbot hỗ trợ được gì?</span>
+                <svg id="icon-chatbot-ai-0" class="w-4 h-4 flex-shrink-0 ml-3 transition-transform" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd"/></svg>
+            </button>
+            <div id="ans-chatbot-ai-0" class="hidden pb-4 px-1 text-sm text-gray-600 leading-relaxed">Chatbot có thể giúp bạn: tra cứu thông tin khóa học, hướng dẫn đăng ký, giải đáp câu hỏi thường gặp và theo dõi tiến trình học.</div>
+        </div>
+        <div class="border-b last:border-b-0">
+            <button onclick="toggleFaq('chatbot-ai-1')" class="w-full flex items-center justify-between text-left py-4 px-1 hover:text-blue-600">
+                <span class="font-medium text-gray-800">Chatbot hoạt động 24/7 không?</span>
+                <svg id="icon-chatbot-ai-1" class="w-4 h-4 flex-shrink-0 ml-3 transition-transform" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd"/></svg>
+            </button>
+            <div id="ans-chatbot-ai-1" class="hidden pb-4 px-1 text-sm text-gray-600 leading-relaxed">Có! Chatbot AI hoạt động 24 giờ/7 ngày không nghỉ, sẵn sàng hỗ trợ bạn bất kỳ lúc nào.</div>
+        </div>
+        <div class="border-b last:border-b-0">
+            <button onclick="toggleFaq('chatbot-ai-2')" class="w-full flex items-center justify-between text-left py-4 px-1 hover:text-blue-600">
+                <span class="font-medium text-gray-800">Chatbot hỗ trợ tiếng việt không?</span>
+                <svg id="icon-chatbot-ai-2" class="w-4 h-4 flex-shrink-0 ml-3 transition-transform" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd"/></svg>
+            </button>
+            <div id="ans-chatbot-ai-2" class="hidden pb-4 px-1 text-sm text-gray-600 leading-relaxed">Có! Chatbot được tối ưu hoàn toàn cho tiếng Việt, hiểu cả ngôn ngữ tự nhiên.</div>
+        </div>
+        <div class="border-b last:border-b-0">
+            <button onclick="toggleFaq('chatbot-ai-3')" class="w-full flex items-center justify-between text-left py-4 px-1 hover:text-blue-600">
+                <span class="font-medium text-gray-800">Chatbot giúp tìm khóa học phù hợp?</span>
+                <svg id="icon-chatbot-ai-3" class="w-4 h-4 flex-shrink-0 ml-3 transition-transform" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd"/></svg>
+            </button>
+            <div id="ans-chatbot-ai-3" class="hidden pb-4 px-1 text-sm text-gray-600 leading-relaxed">Có! Cho chatbot biết lĩnh vực quan tâm, trình độ hiện tại và mục tiêu. Chatbot sẽ đề xuất khóa học phù hợp nhất.</div>
+        </div>
+        </div>
+    </section>
+    <section id="cat-chứng-chỉ" class="scroll-mt-24 mb-10">
+        <h2 class="text-xl font-bold text-gray-800 mb-3 flex items-center gap-2">🎓 Chứng Chỉ</h2>
+        <div class="bg-white rounded-xl shadow-sm border divide-y">
+            
+        <div class="border-b last:border-b-0">
+            <button onclick="toggleFaq('chứng-chỉ-0')" class="w-full flex items-center justify-between text-left py-4 px-1 hover:text-blue-600">
+                <span class="font-medium text-gray-800">Cấp chứng chỉ khi nào?</span>
+                <svg id="icon-chứng-chỉ-0" class="w-4 h-4 flex-shrink-0 ml-3 transition-transform" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd"/></svg>
+            </button>
+            <div id="ans-chứng-chỉ-0" class="hidden pb-4 px-1 text-sm text-gray-600 leading-relaxed">Chứng chỉ được cấp sau khi bạn hoàn thành 100% khóa học và đạt điểm tối thiểu 70%. Vào Hồ sơ → Chứng chỉ để xem và tải về.</div>
+        </div>
+        <div class="border-b last:border-b-0">
+            <button onclick="toggleFaq('chứng-chỉ-1')" class="w-full flex items-center justify-between text-left py-4 px-1 hover:text-blue-600">
+                <span class="font-medium text-gray-800">Chứng chỉ có giá trị pháp lý không?</span>
+                <svg id="icon-chứng-chỉ-1" class="w-4 h-4 flex-shrink-0 ml-3 transition-transform" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd"/></svg>
+            </button>
+            <div id="ans-chứng-chỉ-1" class="hidden pb-4 px-1 text-sm text-gray-600 leading-relaxed">Chứng chỉ của chúng tôi là chứng nhận từ nền tảng, không tương đương bằng cấp nhà nước. Tuy nhiên, nhiều doanh nghiệp đối tác công nhận trong tuyển dụng.</div>
+        </div>
+        <div class="border-b last:border-b-0">
+            <button onclick="toggleFaq('chứng-chỉ-2')" class="w-full flex items-center justify-between text-left py-4 px-1 hover:text-blue-600">
+                <span class="font-medium text-gray-800">Tải chứng chỉ về máy?</span>
+                <svg id="icon-chứng-chỉ-2" class="w-4 h-4 flex-shrink-0 ml-3 transition-transform" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd"/></svg>
+            </button>
+            <div id="ans-chứng-chỉ-2" class="hidden pb-4 px-1 text-sm text-gray-600 leading-relaxed">Vào Hồ sơ → Chứng chỉ → chọn chứng chỉ cần tải → nhấn &#x27;Tải xuống PDF&#x27;. Chứng chỉ có mã QR xác thực.</div>
+        </div>
+        <div class="border-b last:border-b-0">
+            <button onclick="toggleFaq('chứng-chỉ-3')" class="w-full flex items-center justify-between text-left py-4 px-1 hover:text-blue-600">
+                <span class="font-medium text-gray-800">Chia sẻ chứng chỉ lên linkedin?</span>
+                <svg id="icon-chứng-chỉ-3" class="w-4 h-4 flex-shrink-0 ml-3 transition-transform" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd"/></svg>
+            </button>
+            <div id="ans-chứng-chỉ-3" class="hidden pb-4 px-1 text-sm text-gray-600 leading-relaxed">Mỗi chứng chỉ có nút &#x27;Chia sẻ lên LinkedIn&#x27; trực tiếp. Bạn cũng có thể copy link xác thực để đính kèm trong CV.</div>
+        </div>
+        </div>
+    </section>
+    <section id="cat-chính-sách" class="scroll-mt-24 mb-10">
+        <h2 class="text-xl font-bold text-gray-800 mb-3 flex items-center gap-2">📜 Chính Sách</h2>
+        <div class="bg-white rounded-xl shadow-sm border divide-y">
+            
+        <div class="border-b last:border-b-0">
+            <button onclick="toggleFaq('chính-sách-0')" class="w-full flex items-center justify-between text-left py-4 px-1 hover:text-blue-600">
+                <span class="font-medium text-gray-800">Chính sách bảo mật thông tin?</span>
+                <svg id="icon-chính-sách-0" class="w-4 h-4 flex-shrink-0 ml-3 transition-transform" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd"/></svg>
+            </button>
+            <div id="ans-chính-sách-0" class="hidden pb-4 px-1 text-sm text-gray-600 leading-relaxed">Thông tin của bạn được mã hóa SSL và lưu trữ theo tiêu chuẩn bảo mật. Chúng tôi không chia sẻ dữ liệu cho bên thứ ba.</div>
+        </div>
+        <div class="border-b last:border-b-0">
+            <button onclick="toggleFaq('chính-sách-1')" class="w-full flex items-center justify-between text-left py-4 px-1 hover:text-blue-600">
+                <span class="font-medium text-gray-800">Chống đạo văn gian lận thi cử?</span>
+                <svg id="icon-chính-sách-1" class="w-4 h-4 flex-shrink-0 ml-3 transition-transform" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd"/></svg>
+            </button>
+            <div id="ans-chính-sách-1" class="hidden pb-4 px-1 text-sm text-gray-600 leading-relaxed">Hệ thống sử dụng phần mềm phát hiện đạo văn. Hành vi gian lận sẽ bị điểm 0 và có thể dẫn đến đình chỉ tài khoản.</div>
+        </div>
+        <div class="border-b last:border-b-0">
+            <button onclick="toggleFaq('chính-sách-2')" class="w-full flex items-center justify-between text-left py-4 px-1 hover:text-blue-600">
+                <span class="font-medium text-gray-800">Chia sẻ tài khoản người khác?</span>
+                <svg id="icon-chính-sách-2" class="w-4 h-4 flex-shrink-0 ml-3 transition-transform" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd"/></svg>
+            </button>
+            <div id="ans-chính-sách-2" class="hidden pb-4 px-1 text-sm text-gray-600 leading-relaxed">Không! Tài khoản chỉ dành cho cá nhân đăng ký. Chia sẻ tài khoản vi phạm điều khoản và có thể bị khóa vĩnh viễn.</div>
+        </div>
+        <div class="border-b last:border-b-0">
+            <button onclick="toggleFaq('chính-sách-3')" class="w-full flex items-center justify-between text-left py-4 px-1 hover:text-blue-600">
+                <span class="font-medium text-gray-800">Quy định ngôn ngữ diễn đàn?</span>
+                <svg id="icon-chính-sách-3" class="w-4 h-4 flex-shrink-0 ml-3 transition-transform" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd"/></svg>
+            </button>
+            <div id="ans-chính-sách-3" class="hidden pb-4 px-1 text-sm text-gray-600 leading-relaxed">Học viên cần sử dụng ngôn ngữ lịch sự, tôn trọng, không spam. Vi phạm sẽ bị xóa nội dung và cảnh cáo.</div>
+        </div>
+        </div>
+    </section>
+    <div id="faq-empty" class="hidden text-center text-gray-400 py-16">
+        Không tìm thấy câu hỏi phù hợp. Thử từ khóa khác hoặc hỏi trực tiếp AI trợ lý ở góc màn hình 🤖
+    </div>
+</main>
+
+<footer class="bg-gray-900 text-white py-8 mt-10">
+    <div class="max-w-6xl mx-auto px-4 text-center text-sm text-gray-400">
+        Không tìm thấy câu trả lời? Hỏi ngay <button onclick="document.querySelector('[title=\'AI Trợ lý\']')?.click()" class="text-blue-400 hover:underline">AI trợ lý 🤖</button> hoặc liên hệ support@elearning.com
+    </div>
+</footer>
+
+<script>
+function initNav() {
+    const user = Auth.getUser();
+    const nav  = document.getElementById('nav-auth');
+    if (user) {
+        nav.innerHTML = `
+            <a href="my-courses.html" class="text-gray-600 hover:text-blue-600 text-sm font-medium">📚 Khóa học của tôi</a>
+            <button onclick="handleLogout()" class="px-3 py-1.5 text-red-500 border border-red-400 rounded-lg text-sm">Đăng xuất</button>`;
+    } else {
+        nav.innerHTML = `
+            <a href="login.html" class="px-4 py-2 text-blue-600 border border-blue-600 rounded-lg hover:bg-blue-50 text-sm">Đăng nhập</a>
+            <a href="register.html" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm">Đăng ký</a>`;
+    }
+}
+function handleLogout() {
+    API.post('/auth/logout/', { refresh: localStorage.getItem('refresh_token') }).catch(() => {});
+    Auth.logout();
+}
+function toggleFaq(id) {
+    const ans = document.getElementById('ans-' + id);
+    const icon = document.getElementById('icon-' + id);
+    ans.classList.toggle('hidden');
+    icon.classList.toggle('rotate-180');
+}
+
+function filterFaq() {
+    const term = document.getElementById('faq-search').value.trim().toLowerCase();
+    let anyVisible = false;
+    document.querySelectorAll('#faq-root section').forEach(section => {
+        let sectionHasMatch = false;
+        section.querySelectorAll('.border-b').forEach(item => {
+            const text = item.textContent.toLowerCase();
+            const match = !term || text.includes(term);
+            item.style.display = match ? '' : 'none';
+            if (match) sectionHasMatch = true;
+        });
+        section.style.display = sectionHasMatch ? '' : 'none';
+        if (sectionHasMatch) anyVisible = true;
+    });
+    document.getElementById('faq-empty').classList.toggle('hidden', anyVisible);
+}
+
+initNav();
+</script>
+<script src="js/chatbot.js"></script>
+</body>
+</html>

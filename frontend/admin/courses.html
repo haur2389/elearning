@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản lý khóa học - Admin</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100">
+<div class="flex h-screen">
+<aside class="w-64 bg-gray-900 text-white flex flex-col shrink-0">
+    <div class="p-4 border-b border-gray-700"><div class="text-xl font-bold text-blue-400">🎓 E-Learning</div><div class="text-xs text-gray-400 mt-1">Admin Panel</div></div>
+    <nav class="flex-1 p-4 space-y-1">
+        <a href="dashboard.html" class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-300 hover:bg-gray-700 text-sm">📊 Dashboard</a>
+        <a href="users.html" class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-300 hover:bg-gray-700 text-sm">👥 Người dùng</a>
+        <a href="courses.html" class="flex items-center gap-3 px-3 py-2 rounded-lg bg-blue-600 text-white text-sm">📚 Khóa học</a>
+        <a href="categories.html" class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-300 hover:bg-gray-700 text-sm">🏷️ Danh mục</a>
+        <a href="enrollments.html" class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-300 hover:bg-gray-700 text-sm">📋 Đăng ký</a>
+        <a href="payments.html" class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-300 hover:bg-gray-700 text-sm">💳 Thanh toán</a>
+        <a href="exam-results.html" class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-300 hover:bg-gray-700 text-sm">🏆 Điểm thi</a>
+    </nav>
+    <div class="p-4 border-t border-gray-700">
+        <div id="admin-name" class="text-sm text-gray-300 mb-2"></div>
+        <button onclick="Auth.logout()" class="text-red-400 text-sm">🚪 Đăng xuất</button>
+    </div>
+</aside>
+<div class="flex-1 overflow-y-auto">
+    <div class="bg-white shadow px-6 py-4 flex justify-between items-center">
+        <h1 class="text-xl font-bold text-gray-800">📚 Quản lý khóa học</h1>
+        <a href="../index.html" class="text-blue-600 text-sm hover:underline">← Xem trang chủ</a>
+    </div>
+    <div class="p-6">
+        <div class="bg-white rounded-xl shadow p-4 mb-6 flex gap-4">
+            <input type="text" id="search" placeholder="🔍 Tìm tên khóa học..." class="border rounded-lg px-3 py-2 text-sm flex-1 focus:outline-none focus:ring-2 focus:ring-blue-500" oninput="debounce()">
+            <select id="filter-status" onchange="loadCourses()" class="border rounded-lg px-3 py-2 text-sm focus:outline-none">
+                <option value="">Tất cả trạng thái</option>
+                <option value="published">Đã xuất bản</option>
+                <option value="draft">Bản nháp</option>
+                <option value="archived">Lưu trữ</option>
+            </select>
+            <select id="filter-level" onchange="loadCourses()" class="border rounded-lg px-3 py-2 text-sm focus:outline-none">
+                <option value="">Tất cả trình độ</option>
+                <option value="beginner">Cơ bản</option>
+                <option value="intermediate">Trung cấp</option>
+                <option value="advanced">Nâng cao</option>
+            </select>
+        </div>
+        <div class="bg-white rounded-xl shadow overflow-hidden">
+            <table class="w-full text-sm">
+                <thead class="bg-gray-50 border-b">
+                    <tr>
+                        <th class="text-left px-4 py-3 font-medium text-gray-600">ID</th>
+                        <th class="text-left px-4 py-3 font-medium text-gray-600">Tên khóa học</th>
+                        <th class="text-left px-4 py-3 font-medium text-gray-600">Giảng viên</th>
+                        <th class="text-left px-4 py-3 font-medium text-gray-600">Danh mục</th>
+                        <th class="text-left px-4 py-3 font-medium text-gray-600">Giá</th>
+                        <th class="text-left px-4 py-3 font-medium text-gray-600">Trình độ</th>
+                        <th class="text-left px-4 py-3 font-medium text-gray-600">Trạng thái</th>
+                        <th class="text-left px-4 py-3 font-medium text-gray-600">Học viên</th>
+                        <th class="text-left px-4 py-3 font-medium text-gray-600">Hành động</th>
+                    </tr>
+                </thead>
+                <tbody id="courses-tbody"><tr><td colspan="9" class="text-center py-8 text-gray-400">Đang tải...</td></tr></tbody>
+            </table>
+        </div>
+        <div id="pagination" class="mt-4 flex justify-center gap-2"></div>
+    </div>
+</div>
+</div>
+<script src="../js/config.js"></script>
+<script src="../js/notif-bell.js"></script>
+<script>
+if (!Auth.requireLogin()) {}
+if (Auth.getUser()?.role !== 'admin') { alert('Không có quyền!'); location.href='../index.html'; }
+document.getElementById('admin-name').textContent = Auth.getUser()?.full_name || 'Admin';
+
+let searchTimeout;
+function debounce() { clearTimeout(searchTimeout); searchTimeout = setTimeout(loadCourses, 400); }
+
+const statusMap = { published: ['Đã xuất bản','bg-green-100 text-green-700'], draft: ['Bản nháp','bg-yellow-100 text-yellow-700'], archived: ['Lưu trữ','bg-gray-100 text-gray-700'] };
+
+async function loadCourses(page = 1) {
+    const search = document.getElementById('search').value;
+    const status = document.getElementById('filter-status').value;
+    const level = document.getElementById('filter-level').value;
+    let url = `/courses/?page=${page}`;
+    if (search) url += `&search=${encodeURIComponent(search)}`;
+    if (status) url += `&status=${status}`;
+    if (level) url += `&level=${level}`;
+    try {
+        const data = await API.get(url);
+        const courses = data?.results || data || [];
+        const tbody = document.getElementById('courses-tbody');
+        if (!courses.length) { tbody.innerHTML = '<tr><td colspan="9" class="text-center py-8 text-gray-400">Không có khóa học</td></tr>'; return; }
+        tbody.innerHTML = courses.map(c => {
+            const [sLabel, sCls] = statusMap[c.status] || ['?',''];
+            return `<tr class="border-b hover:bg-gray-50">
+                <td class="px-4 py-3 text-gray-500">#${c.id}</td>
+                <td class="px-4 py-3 font-medium max-w-xs"><div class="line-clamp-2">${c.title}</div></td>
+                <td class="px-4 py-3 text-gray-600">${c.instructor_name}</td>
+                <td class="px-4 py-3 text-gray-500">${c.category_name || '—'}</td>
+                <td class="px-4 py-3">${c.price == 0 ? '<span class="text-green-600 font-medium">Miễn phí</span>' : parseInt(c.price).toLocaleString('vi-VN') + 'đ'}</td>
+                <td class="px-4 py-3">${UI.levelBadge(c.level)}</td>
+                <td class="px-4 py-3"><span class="px-2 py-1 rounded-full text-xs ${sCls}">${sLabel}</span></td>
+                <td class="px-4 py-3 text-center">${c.total_students}</td>
+                <td class="px-4 py-3 flex gap-2">
+                    <a href="../course-detail.html?id=${c.id}" class="text-blue-600 hover:underline text-xs">👁 Xem</a>
+                    <button onclick="toggleStatus(${c.id},'${c.status}')" class="text-xs ${c.status==='published' ? 'text-orange-500 hover:underline' : 'text-green-500 hover:underline'}">${c.status==='published' ? '📦 Ẩn' : '✅ Duyệt'}</button>
+                </td>
+            </tr>`;
+        }).join('');
+        if (data?.count) {
+            const total = Math.ceil(data.count / 10);
+            document.getElementById('pagination').innerHTML = Array.from({length: total}, (_,i) =>
+                `<button onclick="loadCourses(${i+1})" class="px-3 py-1 rounded border text-sm hover:bg-blue-50">${i+1}</button>`
+            ).join('');
+        }
+    } catch { document.getElementById('courses-tbody').innerHTML = '<tr><td colspan="9" class="text-center py-8 text-red-400">Lỗi tải dữ liệu</td></tr>'; }
+}
+
+async function toggleStatus(id, currentStatus) {
+    const newStatus = currentStatus === 'published' ? 'archived' : 'published';
+    const msg = newStatus === 'published' ? 'Duyệt xuất bản khóa học này?' : 'Ẩn khóa học này?';
+    if (!confirm(msg)) return;
+    try {
+        await API.patch(`/courses/${id}/update/`, { status: newStatus });
+        UI.showAlert('Cập nhật trạng thái thành công!', 'success');
+        loadCourses();
+    } catch { UI.showAlert('Lỗi cập nhật!', 'error'); }
+}
+loadCourses();
+</script>
+    <script src="../js/chatbot.js"></script>
+</body>
+</html>

@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - E-Learning</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body class="bg-gray-100">
+<div class="flex h-screen">
+<!-- Sidebar -->
+<aside class="w-64 bg-gray-900 text-white flex flex-col shrink-0">
+    <div class="p-4 border-b border-gray-700">
+        <div class="text-xl font-bold text-blue-400">🎓 E-Learning</div>
+        <div class="text-xs text-gray-400 mt-1">Admin Panel</div>
+    </div>
+    <nav class="flex-1 p-4 space-y-1">
+        <a href="dashboard.html" class="flex items-center gap-3 px-3 py-2 rounded-lg bg-blue-600 text-white text-sm">📊 Dashboard</a>
+        <a href="users.html" class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-300 hover:bg-gray-700 text-sm">👥 Người dùng</a>
+        <a href="courses.html" class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-300 hover:bg-gray-700 text-sm">📚 Khóa học</a>
+        <a href="categories.html" class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-300 hover:bg-gray-700 text-sm">🏷️ Danh mục</a>
+        <a href="enrollments.html" class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-300 hover:bg-gray-700 text-sm">📋 Đăng ký</a>
+        <a href="payments.html" class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-300 hover:bg-gray-700 text-sm">💳 Thanh toán</a>
+        <a href="exam-results.html" class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-300 hover:bg-gray-700 text-sm">🏆 Điểm thi</a>
+    </nav>
+    <div class="p-4 border-t border-gray-700">
+        <div id="admin-name" class="text-sm text-gray-300 mb-2"></div>
+        <button onclick="Auth.logout()" class="w-full text-left text-red-400 text-sm hover:text-red-300">🚪 Đăng xuất</button>
+    </div>
+</aside>
+<!-- Main -->
+<div class="flex-1 overflow-y-auto">
+    <div class="bg-white shadow px-6 py-4 flex justify-between items-center">
+        <h1 class="text-xl font-bold text-gray-800">📊 Dashboard Tổng quan</h1>
+        <a href="../index.html" class="text-blue-600 text-sm hover:underline">← Xem trang chủ</a>
+    </div>
+    <div class="p-6">
+        <!-- Stats cards -->
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
+            <div class="bg-white rounded-xl shadow p-5"><div class="text-3xl mb-1">👥</div><div id="stat-students" class="text-3xl font-bold text-blue-600">--</div><div class="text-gray-500 text-sm">Sinh viên</div></div>
+            <div class="bg-white rounded-xl shadow p-5"><div class="text-3xl mb-1">👨‍🏫</div><div id="stat-instructors" class="text-3xl font-bold text-green-600">--</div><div class="text-gray-500 text-sm">Giảng viên</div></div>
+            <div class="bg-white rounded-xl shadow p-5"><div class="text-3xl mb-1">📚</div><div id="stat-courses" class="text-3xl font-bold text-purple-600">--</div><div class="text-gray-500 text-sm">Khóa học</div></div>
+            <div class="bg-white rounded-xl shadow p-5"><div class="text-3xl mb-1">📋</div><div id="stat-enrollments" class="text-3xl font-bold text-orange-600">--</div><div class="text-gray-500 text-sm">Lượt đăng ký</div></div>
+        </div>
+        <!-- FIX: dashboard trước đây chỉ có 4 số liệu cơ bản dù hệ thống có
+        nhiều khu vực quản lý khác (thanh toán, chứng chỉ, kỳ thi, khóa học
+        chờ duyệt...) — bổ sung thêm hàng số liệu thứ 2 để phản ánh đúng quy
+        mô hệ thống, đồng bộ với dữ liệu backend đã trả về thêm. -->
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+            <div class="bg-white rounded-xl shadow p-5"><div class="text-3xl mb-1">💰</div><div id="stat-revenue" class="text-2xl font-bold text-emerald-600">--</div><div class="text-gray-500 text-sm">Doanh thu</div></div>
+            <div class="bg-white rounded-xl shadow p-5"><div class="text-3xl mb-1">⏳</div><div id="stat-pending-payments" class="text-3xl font-bold text-yellow-600">--</div><div class="text-gray-500 text-sm">GD chờ duyệt</div></div>
+            <div class="bg-white rounded-xl shadow p-5"><div class="text-3xl mb-1">🎓</div><div id="stat-certificates" class="text-3xl font-bold text-indigo-600">--</div><div class="text-gray-500 text-sm">Chứng chỉ đã cấp</div></div>
+            <div class="bg-white rounded-xl shadow p-5"><div class="text-3xl mb-1">📝</div><div id="stat-pass-rate" class="text-2xl font-bold text-pink-600">--</div><div class="text-gray-500 text-sm">Tỉ lệ đạt thi</div></div>
+        </div>
+        <!-- Quick links tới các mục quản lý khác -->
+        <div class="grid grid-cols-2 md:grid-cols-6 gap-3 mb-6">
+            <a href="users.html" class="bg-white rounded-xl shadow p-4 text-center hover:shadow-md transition-all"><div class="text-2xl mb-1">👥</div><div class="text-xs font-medium text-gray-600">Người dùng</div></a>
+            <a href="courses.html" class="bg-white rounded-xl shadow p-4 text-center hover:shadow-md transition-all"><div class="text-2xl mb-1">📚</div><div class="text-xs font-medium text-gray-600">Khóa học</div></a>
+            <a href="categories.html" class="bg-white rounded-xl shadow p-4 text-center hover:shadow-md transition-all"><div class="text-2xl mb-1">🏷️</div><div class="text-xs font-medium text-gray-600">Danh mục</div></a>
+            <a href="enrollments.html" class="bg-white rounded-xl shadow p-4 text-center hover:shadow-md transition-all"><div class="text-2xl mb-1">📋</div><div class="text-xs font-medium text-gray-600">Đăng ký</div></a>
+            <a href="payments.html" class="bg-white rounded-xl shadow p-4 text-center hover:shadow-md transition-all relative">
+                <div class="text-2xl mb-1">💳</div><div class="text-xs font-medium text-gray-600">Thanh toán</div>
+                <span id="pending-payment-badge" class="hidden absolute -top-1 -right-1 bg-red-500 text-white text-[10px] rounded-full w-5 h-5 flex items-center justify-center"></span>
+            </a>
+            <a href="exam-results.html" class="bg-white rounded-xl shadow p-4 text-center hover:shadow-md transition-all"><div class="text-2xl mb-1">🏆</div><div class="text-xs font-medium text-gray-600">Điểm thi</div></a>
+        </div>
+        <!-- Charts -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+            <div class="bg-white rounded-xl shadow p-6">
+                <h2 class="font-bold text-gray-800 mb-4">📚 Khóa học theo danh mục</h2>
+                <canvas id="categoryChart" height="200"></canvas>
+            </div>
+            <div class="bg-white rounded-xl shadow p-6">
+                <h2 class="font-bold text-gray-800 mb-4">👥 Phân bố người dùng</h2>
+                <canvas id="userChart" height="200"></canvas>
+            </div>
+        </div>
+        <!-- Recent users -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="bg-white rounded-xl shadow p-6">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="font-bold text-gray-800">👥 Người dùng gần đây</h2>
+                <a href="users.html" class="text-blue-600 text-sm hover:underline">Xem tất cả →</a>
+            </div>
+            <div id="recent-users" class="overflow-x-auto">
+                <table class="w-full text-sm">
+                    <thead><tr class="border-b text-gray-500"><th class="text-left py-2">Tên</th><th class="text-left py-2">Email</th><th class="text-left py-2">Vai trò</th><th class="text-left py-2">Trạng thái</th></tr></thead>
+                    <tbody id="users-tbody"><tr><td colspan="4" class="text-center py-4 text-gray-400">Đang tải...</td></tr></tbody>
+                </table>
+            </div>
+        </div>
+        <div class="bg-white rounded-xl shadow p-6">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="font-bold text-gray-800">💳 Giao dịch chờ duyệt</h2>
+                <a href="payments.html" class="text-blue-600 text-sm hover:underline">Xem tất cả →</a>
+            </div>
+            <div id="recent-payments"><div class="text-center py-4 text-gray-400 text-sm">Đang tải...</div></div>
+        </div>
+        </div>
+    </div>
+</div>
+</div>
+<script src="../js/config.js"></script>
+<script src="../js/notif-bell.js"></script>
+<script>
+if (!Auth.requireLogin()) {}
+if (Auth.getUser()?.role !== 'admin') { alert('Không có quyền truy cập!'); location.href='../index.html'; }
+document.getElementById('admin-name').textContent = Auth.getUser()?.full_name || 'Admin';
+
+async function loadDashboard() {
+    try {
+        const stats = await API.get('/auth/admin/dashboard/');
+        document.getElementById('stat-students').textContent = stats.total_students;
+        document.getElementById('stat-instructors').textContent = stats.total_instructors;
+        document.getElementById('stat-courses').textContent = stats.total_courses;
+        document.getElementById('stat-enrollments').textContent = stats.total_enrollments;
+        document.getElementById('stat-revenue').textContent = Number(stats.total_revenue || 0).toLocaleString() + 'đ';
+        document.getElementById('stat-pending-payments').textContent = stats.pending_payments ?? 0;
+        document.getElementById('stat-certificates').textContent = stats.total_certificates ?? 0;
+        document.getElementById('stat-pass-rate').textContent = (stats.pass_rate ?? 0) + '%';
+        if (stats.pending_payments > 0) {
+            const b = document.getElementById('pending-payment-badge');
+            b.textContent = stats.pending_payments;
+            b.classList.remove('hidden');
+        }
+
+        // User chart
+        new Chart(document.getElementById('userChart'), {
+            type: 'doughnut',
+            data: {
+                labels: ['Sinh viên', 'Giảng viên', 'Admin'],
+                datasets: [{ data: [stats.total_students, stats.total_instructors, 1], backgroundColor: ['#3b82f6','#10b981','#ef4444'] }]
+            },
+            options: { responsive: true, plugins: { legend: { position: 'bottom' } } }
+        });
+    } catch {}
+
+    try {
+        const catsRaw = await API.get('/courses/categories/');
+        const cats = Array.isArray(catsRaw) ? catsRaw : (catsRaw?.results || []);
+        new Chart(document.getElementById('categoryChart'), {
+            type: 'bar',
+            data: {
+                labels: cats.map(c => c.name),
+                datasets: [{ label: 'Số khóa học', data: cats.map(c => c.course_count), backgroundColor: '#3b82f6' }]
+            },
+            options: { responsive: true, plugins: { legend: { display: false } } }
+        });
+    } catch {}
+
+    try {
+        const users = await API.get('/auth/admin/users/?page_size=10');
+        const list = users?.results || users || [];
+        document.getElementById('users-tbody').innerHTML = list.slice(0,8).map(u => `
+            <tr class="border-b hover:bg-gray-50">
+                <td class="py-2 font-medium">${u.full_name || u.username}</td>
+                <td class="py-2 text-gray-500">${u.email}</td>
+                <td class="py-2">${UI.roleBadge(u.role)}</td>
+                <td class="py-2"><span class="px-2 py-1 rounded-full text-xs ${u.is_active?'bg-green-100 text-green-700':'bg-red-100 text-red-700'}">${u.is_active?'Hoạt động':'Bị khóa'}</span></td>
+            </tr>`).join('');
+    } catch {}
+
+    try {
+        const payments = await API.get('/enrollments/payments/admin/?status=pending');
+        const list = payments?.results || payments || [];
+        const box = document.getElementById('recent-payments');
+        if (!list.length) {
+            box.innerHTML = '<div class="text-center py-4 text-gray-400 text-sm">Không có giao dịch chờ duyệt nào 🎉</div>';
+            return;
+        }
+        box.innerHTML = list.slice(0,5).map(p => `
+            <div class="flex justify-between items-center py-2 border-b last:border-0">
+                <div>
+                    <div class="font-medium text-sm">${p.student_name}</div>
+                    <div class="text-xs text-gray-400">${p.course_title}</div>
+                </div>
+                <div class="text-right">
+                    <div class="font-bold text-sm text-blue-600">${Number(p.amount).toLocaleString()}đ</div>
+                    <div class="text-xs text-yellow-600">⏳ Chờ duyệt</div>
+                </div>
+            </div>`).join('');
+    } catch {}
+}
+loadDashboard();
+</script>
+    <script src="../js/chatbot.js"></script>
+</body>
+</html>

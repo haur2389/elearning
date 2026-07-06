@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thanh toán - Admin</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100">
+<div class="flex h-screen">
+<aside class="w-64 bg-gray-900 text-white flex flex-col shrink-0">
+    <div class="p-4 border-b border-gray-700"><div class="text-xl font-bold text-blue-400">🎓 E-Learning</div><div class="text-xs text-gray-400 mt-1">Admin Panel</div></div>
+    <nav class="flex-1 p-4 space-y-1">
+        <a href="dashboard.html" class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-300 hover:bg-gray-700 text-sm">📊 Dashboard</a>
+        <a href="users.html" class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-300 hover:bg-gray-700 text-sm">👥 Người dùng</a>
+        <a href="courses.html" class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-300 hover:bg-gray-700 text-sm">📚 Khóa học</a>
+        <a href="categories.html" class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-300 hover:bg-gray-700 text-sm">🏷️ Danh mục</a>
+        <a href="enrollments.html" class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-300 hover:bg-gray-700 text-sm">📋 Đăng ký</a>
+        <a href="payments.html" class="flex items-center gap-3 px-3 py-2 rounded-lg bg-blue-600 text-white text-sm">💳 Thanh toán</a>
+        <a href="exam-results.html" class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-300 hover:bg-gray-700 text-sm">🏆 Điểm thi</a>
+    </nav>
+    <div class="p-4 border-t border-gray-700">
+        <div id="admin-name" class="text-sm text-gray-300 mb-2"></div>
+        <button onclick="Auth.logout()" class="text-red-400 text-sm">🚪 Đăng xuất</button>
+    </div>
+</aside>
+<div class="flex-1 overflow-y-auto">
+    <div class="bg-white shadow px-6 py-4 flex justify-between items-center">
+        <h1 class="text-xl font-bold text-gray-800">💳 Quản lý thanh toán</h1>
+        <a href="../index.html" class="text-blue-600 text-sm hover:underline">← Xem trang chủ</a>
+    </div>
+    <div class="p-6">
+        <div class="bg-white rounded-xl shadow p-4 mb-6 flex gap-4">
+            <select id="filter-status" onchange="loadPayments()" class="border rounded-lg px-3 py-2 text-sm focus:outline-none">
+                <option value="">Tất cả trạng thái</option>
+                <option value="pending">Chờ thanh toán</option>
+                <option value="completed">Thành công</option>
+                <option value="failed">Thất bại</option>
+                <option value="refunded">Đã hoàn tiền</option>
+            </select>
+            <select id="filter-method" onchange="loadPayments()" class="border rounded-lg px-3 py-2 text-sm focus:outline-none">
+                <option value="">Tất cả phương thức</option>
+                <option value="bank_transfer">Chuyển khoản</option>
+                <option value="momo">MoMo</option>
+                <option value="vnpay">VNPay</option>
+                <option value="zalopay">ZaloPay</option>
+                <option value="free">Miễn phí</option>
+            </select>
+        </div>
+        <div class="bg-white rounded-xl shadow overflow-hidden">
+            <table class="w-full text-sm">
+                <thead class="bg-gray-50 border-b">
+                    <tr>
+                        <th class="text-left px-4 py-3 font-medium text-gray-600">ID</th>
+                        <th class="text-left px-4 py-3 font-medium text-gray-600">Sinh viên</th>
+                        <th class="text-left px-4 py-3 font-medium text-gray-600">Khóa học</th>
+                        <th class="text-left px-4 py-3 font-medium text-gray-600">Số tiền</th>
+                        <th class="text-left px-4 py-3 font-medium text-gray-600">Phương thức</th>
+                        <th class="text-left px-4 py-3 font-medium text-gray-600">Trạng thái</th>
+                        <th class="text-left px-4 py-3 font-medium text-gray-600">Ngày tạo</th>
+                        <th class="text-left px-4 py-3 font-medium text-gray-600">Hành động</th>
+                    </tr>
+                </thead>
+                <tbody id="payments-tbody"><tr><td colspan="8" class="text-center py-8 text-gray-400">Đang tải...</td></tr></tbody>
+            </table>
+        </div>
+    </div>
+</div>
+</div>
+<script src="../js/config.js"></script>
+<script src="../js/notif-bell.js"></script>
+<script>
+if (!Auth.requireLogin()) {}
+if (Auth.getUser()?.role !== 'admin') { alert('Không có quyền!'); location.href='../index.html'; }
+document.getElementById('admin-name').textContent = Auth.getUser()?.full_name || 'Admin';
+
+const STATUS_LABEL = { pending: '⏳ Chờ', completed: '✅ Thành công', failed: '❌ Thất bại', refunded: '↩️ Hoàn tiền' };
+const STATUS_CLASS = { pending: 'bg-yellow-100 text-yellow-700', completed: 'bg-green-100 text-green-700', failed: 'bg-red-100 text-red-700', refunded: 'bg-gray-200 text-gray-700' };
+
+async function loadPayments() {
+    const status = document.getElementById('filter-status').value;
+    const method = document.getElementById('filter-method').value;
+    let url = '/enrollments/payments/admin/?';
+    if (status) url += `status=${status}&`;
+    if (method) url += `method=${method}&`;
+    const tbody = document.getElementById('payments-tbody');
+    try {
+        const data = await API.get(url);
+        const payments = data?.results || data || [];
+        if (!payments.length) { tbody.innerHTML = '<tr><td colspan="8" class="text-center py-8 text-gray-400">Không có giao dịch nào</td></tr>'; return; }
+        tbody.innerHTML = payments.map(p => `
+            <tr class="border-b hover:bg-gray-50" id="row-${p.id}">
+                <td class="px-4 py-3 text-gray-500">#${p.id}</td>
+                <td class="px-4 py-3">
+                    <div class="font-medium">${p.student_name || '—'}</div>
+                    <div class="text-xs text-gray-400">${p.student_email || ''}</div>
+                </td>
+                <td class="px-4 py-3"><div class="max-w-xs truncate">${p.course_title || '—'}</div></td>
+                <td class="px-4 py-3 font-bold text-blue-600">${Number(p.amount).toLocaleString()}đ</td>
+                <td class="px-4 py-3 text-gray-500">${p.method_display || p.method}</td>
+                <td class="px-4 py-3">
+                    <span class="px-2 py-1 rounded-full text-xs font-medium ${STATUS_CLASS[p.status] || 'bg-gray-100 text-gray-600'}">${STATUS_LABEL[p.status] || p.status}</span>
+                </td>
+                <td class="px-4 py-3 text-gray-500 text-xs">${UI.formatDate(p.created_at || p.paid_at)}</td>
+                <td class="px-4 py-3">
+                    <select onchange="updateStatus(${p.id}, this.value)" class="border rounded-lg px-2 py-1 text-xs">
+                        <option value="">Đổi trạng thái...</option>
+                        <option value="completed">✅ Xác nhận thành công</option>
+                        <option value="failed">❌ Đánh dấu thất bại</option>
+                        <option value="refunded">↩️ Đã hoàn tiền</option>
+                        <option value="pending">⏳ Chờ thanh toán</option>
+                    </select>
+                </td>
+            </tr>`).join('');
+    } catch {
+        tbody.innerHTML = '<tr><td colspan="8" class="text-center py-8 text-red-400">Lỗi tải dữ liệu</td></tr>';
+    }
+}
+
+async function updateStatus(id, status) {
+    if (!status) return;
+    try {
+        await API.patch(`/enrollments/payments/${id}/update/`, { status });
+        UI.showAlert('Đã cập nhật trạng thái thanh toán!', 'success');
+        loadPayments();
+    } catch (err) {
+        UI.showAlert(err.data?.error || 'Lỗi cập nhật!', 'error');
+    }
+}
+
+loadPayments();
+</script>
+    <script src="../js/chatbot.js"></script>
+</body>
+</html>

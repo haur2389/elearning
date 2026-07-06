@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đăng ký - Smart E-Learning</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="min-h-screen bg-gradient-to-br from-blue-50 to-purple-50 py-8 px-4">
+<div class="max-w-2xl mx-auto">
+    <div class="text-center mb-6">
+        <a href="index.html" class="text-3xl font-bold text-blue-600">🎓 Smart E-Learning</a>
+        <p class="text-gray-500 mt-1">Tạo tài khoản học tập</p>
+    </div>
+
+    <!-- Steps indicator -->
+    <div class="flex items-center justify-center mb-6 gap-2">
+        <div id="step-dot-1" class="w-8 h-8 rounded-full bg-blue-600 text-white text-sm font-bold flex items-center justify-center">1</div>
+        <div class="h-1 w-16 bg-gray-200" id="step-line-1"></div>
+        <div id="step-dot-2" class="w-8 h-8 rounded-full bg-gray-200 text-gray-500 text-sm font-bold flex items-center justify-center">2</div>
+        <div class="h-1 w-16 bg-gray-200" id="step-line-2"></div>
+        <div id="step-dot-3" class="w-8 h-8 rounded-full bg-gray-200 text-gray-500 text-sm font-bold flex items-center justify-center">3</div>
+    </div>
+    <div class="flex justify-center gap-12 mb-6 text-xs text-gray-500">
+        <span id="step-label-1" class="text-blue-600 font-medium">Thông tin cá nhân</span>
+        <span id="step-label-2">Thông tin học tập</span>
+        <span id="step-label-3">Xác nhận & Thanh toán</span>
+    </div>
+
+    <div id="alert" class="hidden mb-4 p-3 rounded-lg text-sm"></div>
+
+    <div class="bg-white rounded-2xl shadow-xl p-8">
+
+        <!-- STEP 1: Thông tin cá nhân -->
+        <div id="step-1">
+            <h2 class="text-xl font-bold text-gray-800 mb-6">📋 Thông tin cá nhân</h2>
+            <div class="grid grid-cols-2 gap-4">
+                <div class="col-span-2 md:col-span-1">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Họ và tên <span class="text-red-500">*</span></label>
+                    <input type="text" id="full_name" placeholder="Nguyễn Văn A"
+                        class="w-full border rounded-lg px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                </div>
+                <div class="col-span-2 md:col-span-1">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Ngày sinh <span class="text-red-500">*</span></label>
+                    <input type="date" id="dob"
+                        class="w-full border rounded-lg px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                </div>
+                <div class="col-span-2">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Email <span class="text-red-500">*</span></label>
+                    <input type="email" id="email" placeholder="example@gmail.com"
+                        class="w-full border rounded-lg px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                </div>
+                <div class="col-span-2 md:col-span-1">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Số điện thoại <span class="text-red-500">*</span></label>
+                    <input type="tel" id="phone" placeholder="0901234567"
+                        class="w-full border rounded-lg px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                </div>
+                <div class="col-span-2 md:col-span-1">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">CMND/CCCD</label>
+                    <input type="text" id="id_card" placeholder="012345678901"
+                        class="w-full border rounded-lg px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                </div>
+                <div class="col-span-2">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Địa chỉ</label>
+                    <input type="text" id="address" placeholder="123 Đường ABC, Phường XYZ, TP.HCM"
+                        class="w-full border rounded-lg px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                </div>
+                <div class="col-span-2 md:col-span-1">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Mật khẩu <span class="text-red-500">*</span></label>
+                    <input type="password" id="password" placeholder="Ít nhất 8 ký tự"
+                        class="w-full border rounded-lg px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                </div>
+                <div class="col-span-2 md:col-span-1">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Xác nhận mật khẩu <span class="text-red-500">*</span></label>
+                    <input type="password" id="password2" placeholder="Nhập lại mật khẩu"
+                        class="w-full border rounded-lg px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                </div>
+                <div class="col-span-2">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Đăng ký với tư cách <span class="text-red-500">*</span></label>
+                    <div class="grid grid-cols-2 gap-3 mt-1">
+                        <label class="flex items-center gap-3 border-2 rounded-xl p-4 cursor-pointer hover:border-blue-500 transition-all" id="role-student-box">
+                            <input type="radio" name="role" value="student" checked onchange="selectRole('student')" class="text-blue-600">
+                            <div><div class="font-medium text-gray-800">👨‍🎓 Sinh viên</div><div class="text-xs text-gray-500">Tham gia học các khóa học</div></div>
+                        </label>
+                        <label class="flex items-center gap-3 border-2 rounded-xl p-4 cursor-pointer hover:border-blue-500 transition-all" id="role-instructor-box">
+                            <input type="radio" name="role" value="instructor" onchange="selectRole('instructor')" class="text-blue-600">
+                            <div><div class="font-medium text-gray-800">👨‍🏫 Giảng viên</div><div class="text-xs text-gray-500">Tạo và dạy khóa học</div></div>
+                        </label>
+                    </div>
+                </div>
+            </div>
+            <button onclick="goStep(2)" class="w-full mt-6 bg-blue-600 text-white py-3 rounded-xl font-bold hover:bg-blue-700 transition-all">
+                Tiếp theo →
+            </button>
+        </div>
+
+        <!-- STEP 2: Thông tin học tập -->
+        <div id="step-2" class="hidden">
+            <h2 class="text-xl font-bold text-gray-800 mb-6">🎓 Thông tin học tập</h2>
+            <div class="space-y-4">
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Trường / Đơn vị <span class="text-red-500">*</span></label>
+                        <input type="text" id="school" placeholder="ĐH Bình Dương"
+                            class="w-full border rounded-lg px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Khoa / Bộ môn</label>
+                        <input type="text" id="department" placeholder="Công nghệ thông tin"
+                            class="w-full border rounded-lg px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    </div>
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Lớp</label>
+                        <input type="text" id="class_name" placeholder="VD: CNTT22A"
+                            class="w-full border rounded-lg px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Khóa học (năm nhập học)</label>
+                        <select id="academic_year" class="w-full border rounded-lg px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            <option value="">-- Chọn khóa --</option>
+                            <option value="2025">Khóa 2025</option>
+                            <option value="2024">Khóa 2024</option>
+                            <option value="2023">Khóa 2023</option>
+                            <option value="2022">Khóa 2022</option>
+                            <option value="2021">Khóa 2021</option>
+                            <option value="2020">Khóa 2020</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Trình độ hiện tại</label>
+                        <select id="education_level" class="w-full border rounded-lg px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            <option value="">-- Chọn trình độ --</option>
+                            <option value="thpt">THPT</option>
+                            <option value="cao_dang">Cao đẳng</option>
+                            <option value="dai_hoc">Đại học</option>
+                            <option value="sau_dai_hoc">Sau đại học</option>
+                            <option value="di_lam">Đã đi làm</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Mục tiêu học tập</label>
+                        <select id="goal" class="w-full border rounded-lg px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            <option value="">-- Chọn mục tiêu --</option>
+                            <option value="hoc_them">Học thêm kỹ năng mới</option>
+                            <option value="tim_viec">Tìm kiếm việc làm</option>
+                            <option value="nang_cap">Nâng cấp kỹ năng</option>
+                            <option value="chung_chi">Lấy chứng chỉ</option>
+                            <option value="khac">Mục đích khác</option>
+                        </select>
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Bạn biết đến chúng tôi qua đâu?</label>
+                    <select id="source" class="w-full border rounded-lg px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <option value="">-- Chọn --</option>
+                        <option value="facebook">Facebook</option>
+                        <option value="google">Google</option>
+                        <option value="ban_be">Bạn bè giới thiệu</option>
+                        <option value="truong">Trường học</option>
+                        <option value="youtube">YouTube</option>
+                        <option value="khac">Khác</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Ghi chú thêm</label>
+                    <textarea id="note" rows="2" placeholder="Bạn muốn học những gì? Có câu hỏi gì không?"
+                        class="w-full border rounded-lg px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
+                </div>
+            </div>
+            <div class="flex gap-3 mt-6">
+                <button onclick="goStep(1)" class="flex-1 border border-gray-300 text-gray-600 py-3 rounded-xl font-medium hover:bg-gray-50">
+                    ← Quay lại
+                </button>
+                <button onclick="goStep(3)" class="flex-1 bg-blue-600 text-white py-3 rounded-xl font-bold hover:bg-blue-700">
+                    Tiếp theo →
+                </button>
+            </div>
+        </div>
+
+        <!-- STEP 3: Xác nhận & Thanh toán -->
+        <div id="step-3" class="hidden">
+            <h2 class="text-xl font-bold text-gray-800 mb-6">💳 Xác nhận & Thanh toán</h2>
+
+            <!-- Gói đăng ký -->
+            <div class="mb-6">
+                <label class="block text-sm font-medium text-gray-700 mb-3">Chọn gói đăng ký</label>
+                <div class="space-y-3">
+                    <label class="flex items-center gap-4 border-2 rounded-xl p-4 cursor-pointer hover:border-blue-500 transition-all" onclick="selectPlan('free')">
+                        <input type="radio" name="plan" value="free" checked class="text-blue-600">
+                        <div class="flex-1">
+                            <div class="font-bold text-gray-800">🆓 Gói Miễn phí</div>
+                            <div class="text-sm text-gray-500">Truy cập khóa học miễn phí, xem 1 bài preview mỗi khóa</div>
+                        </div>
+                        <div class="text-xl font-bold text-green-600">0đ</div>
+                    </label>
+                    <label class="flex items-center gap-4 border-2 rounded-xl p-4 cursor-pointer hover:border-blue-500 transition-all" onclick="selectPlan('basic')">
+                        <input type="radio" name="plan" value="basic" class="text-blue-600">
+                        <div class="flex-1">
+                            <div class="font-bold text-gray-800">⭐ Gói Cơ bản — 1 tháng</div>
+                            <div class="text-sm text-gray-500">Toàn quyền truy cập tất cả khóa học, thi không giới hạn</div>
+                        </div>
+                        <div class="text-xl font-bold text-blue-600">199.000đ</div>
+                    </label>
+                    <label class="flex items-center gap-4 border-2 rounded-xl p-4 cursor-pointer hover:border-blue-500 transition-all border-purple-500 bg-purple-50" onclick="selectPlan('pro')">
+                        <input type="radio" name="plan" value="pro" class="text-blue-600">
+                        <div class="flex-1">
+                            <div class="font-bold text-purple-700">👑 Gói Pro — 6 tháng <span class="text-xs bg-red-500 text-white px-2 py-0.5 rounded-full ml-1">HOT</span></div>
+                            <div class="text-sm text-gray-500">Toàn bộ tính năng + chứng chỉ hoàn thành + hỗ trợ 1-1</div>
+                        </div>
+                        <div class="text-xl font-bold text-purple-700">799.000đ</div>
+                    </label>
+                </div>
+            </div>
+
+            <!-- Phương thức thanh toán -->
+            <div id="payment-section" class="hidden">
+                <label class="block text-sm font-medium text-gray-700 mb-3">Phương thức thanh toán</label>
+                <div class="grid grid-cols-3 gap-3 mb-4">
+                    <button onclick="selectPayment('qr')" id="pay-qr" class="border-2 border-blue-500 rounded-xl p-3 text-center bg-blue-50">
+                        <div class="text-2xl">📱</div><div class="text-xs font-medium text-blue-600 mt-1">QR Code</div>
+                    </button>
+                    <button onclick="selectPayment('bank')" id="pay-bank" class="border-2 border-gray-200 rounded-xl p-3 text-center hover:border-blue-300">
+                        <div class="text-2xl">🏦</div><div class="text-xs font-medium text-gray-600 mt-1">Chuyển khoản</div>
+                    </button>
+                    <button onclick="selectPayment('cash')" id="pay-cash" class="border-2 border-gray-200 rounded-xl p-3 text-center hover:border-blue-300">
+                        <div class="text-2xl">💵</div><div class="text-xs font-medium text-gray-600 mt-1">Tiền mặt</div>
+                    </button>
+                </div>
+
+                <!-- QR CODE -->
+                <div id="payment-qr" class="bg-gray-50 rounded-xl p-4 text-center">
+                    <p class="text-sm font-medium text-gray-700 mb-3">Quét mã QR để thanh toán</p>
+                    <div class="inline-block bg-white p-3 rounded-xl shadow-md">
+                        <!-- QR placeholder - thực tế dùng VNPay/MoMo API -->
+                        <svg width="160" height="160" xmlns="http://www.w3.org/2000/svg">
+                            <rect width="160" height="160" fill="white"/>
+                            <!-- QR pattern giả lập -->
+                            <rect x="10" y="10" width="50" height="50" fill="none" stroke="#000" stroke-width="3"/>
+                            <rect x="18" y="18" width="34" height="34" fill="#000"/>
+                            <rect x="100" y="10" width="50" height="50" fill="none" stroke="#000" stroke-width="3"/>
+                            <rect x="108" y="18" width="34" height="34" fill="#000"/>
+                            <rect x="10" y="100" width="50" height="50" fill="none" stroke="#000" stroke-width="3"/>
+                            <rect x="18" y="108" width="34" height="34" fill="#000"/>
+                            <!-- dots -->
+                            <rect x="70" y="10" width="8" height="8" fill="#000"/>
+                            <rect x="82" y="10" width="8" height="8" fill="#000"/>
+                            <rect x="70" y="22" width="8" height="8" fill="#000"/>
+                            <rect x="70" y="70" width="8" height="8" fill="#000"/>
+                            <rect x="82" y="70" width="8" height="8" fill="#000"/>
+                            <rect x="82" y="82" width="8" height="8" fill="#000"/>
+                            <rect x="100" y="70" width="8" height="8" fill="#000"/>
+                            <rect x="112" y="70" width="8" height="8" fill="#000"/>
+                            <rect x="124" y="70" width="8" height="8" fill="#000"/>
+                            <rect x="100" y="82" width="8" height="8" fill="#000"/>
+                            <rect x="124" y="82" width="8" height="8" fill="#000"/>
+                            <rect x="100" y="94" width="8" height="8" fill="#000"/>
+                            <rect x="112" y="94" width="8" height="8" fill="#000"/>
+                            <rect x="70" y="100" width="8" height="8" fill="#000"/>
+                            <rect x="82" y="112" width="8" height="8" fill="#000"/>
+                            <rect x="70" y="124" width="8" height="8" fill="#000"/>
+                            <rect x="82" y="124" width="8" height="8" fill="#000"/>
+                            <rect x="100" y="112" width="8" height="8" fill="#000"/>
+                            <rect x="124" y="100" width="8" height="8" fill="#000"/>
+                            <rect x="112" y="112" width="8" height="8" fill="#000"/>
+                            <rect x="124" y="124" width="8" height="8" fill="#000"/>
+                            <rect x="136" y="112" width="8" height="8" fill="#000"/>
+                            <rect x="136" y="124" width="8" height="8" fill="#000"/>
+                            <text x="80" y="155" text-anchor="middle" font-size="9" fill="#666">E-Learning Payment</text>
+                        </svg>
+                    </div>
+                    <div class="mt-3 text-sm">
+                        <div class="font-medium text-gray-700">Ngân hàng: <span class="text-blue-600">Vietcombank</span></div>
+                        <div class="text-gray-600">STK: <span class="font-mono font-bold">1234 5678 9012</span></div>
+                        <div class="text-gray-600">Nội dung: <span class="font-mono font-bold" id="qr-content">DK-EMAIL-GOI</span></div>
+                    </div>
+                </div>
+
+                <!-- CHUYỂN KHOẢN -->
+                <div id="payment-bank" class="hidden bg-gray-50 rounded-xl p-4">
+                    <h4 class="font-medium text-gray-800 mb-3">Thông tin chuyển khoản</h4>
+                    <div class="space-y-2 text-sm">
+                        <div class="flex justify-between"><span class="text-gray-500">Ngân hàng:</span><span class="font-medium">Vietcombank (VCB)</span></div>
+                        <div class="flex justify-between"><span class="text-gray-500">Số tài khoản:</span><span class="font-mono font-bold text-blue-600">1234 5678 9012</span></div>
+                        <div class="flex justify-between"><span class="text-gray-500">Chủ tài khoản:</span><span class="font-medium">CONG TY ELEARNING</span></div>
+                        <div class="flex justify-between"><span class="text-gray-500">Nội dung CK:</span><span class="font-mono font-bold text-red-600" id="bank-content">DK-EMAIL-GOI</span></div>
+                        <div class="flex justify-between"><span class="text-gray-500">Số tiền:</span><span class="font-bold text-green-600" id="bank-amount">--</span></div>
+                    </div>
+                    <p class="text-xs text-gray-400 mt-3">⚠️ Vui lòng ghi đúng nội dung chuyển khoản để hệ thống tự xác nhận.</p>
+                </div>
+
+                <!-- TIỀN MẶT -->
+                <div id="payment-cash" class="hidden bg-gray-50 rounded-xl p-4">
+                    <h4 class="font-medium text-gray-800 mb-3">Thanh toán tiền mặt tại văn phòng</h4>
+                    <div class="space-y-2 text-sm text-gray-600">
+                        <div>📍 <strong>Địa chỉ:</strong> 504 Bình Dương Ave, Thủ Dầu Một, Bình Dương</div>
+                        <div>⏰ <strong>Giờ làm việc:</strong> Thứ 2 – Thứ 6, 8:00 – 17:00</div>
+                        <div>📞 <strong>Hotline:</strong> 1900 1234</div>
+                        <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-3 mt-2">
+                            💡 Mang theo CMND/CCCD và báo mã đăng ký: <strong id="cash-code">--</strong>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Điều khoản -->
+            <label class="flex items-start gap-2 mt-4 cursor-pointer">
+                <input type="checkbox" id="agree" class="mt-1 rounded">
+                <span class="text-sm text-gray-600">Tôi đồng ý với <a href="#" class="text-blue-600 hover:underline">Điều khoản dịch vụ</a>, <a href="#" class="text-blue-600 hover:underline">Chính sách bảo mật</a> và xác nhận thông tin đã nhập là chính xác.</span>
+            </label>
+
+            <div class="flex gap-3 mt-6">
+                <button onclick="goStep(2)" class="flex-1 border border-gray-300 text-gray-600 py-3 rounded-xl font-medium hover:bg-gray-50">
+                    ← Quay lại
+                </button>
+                <button onclick="submitRegister()" id="submit-btn"
+                    class="flex-1 bg-blue-600 text-white py-3 rounded-xl font-bold hover:bg-blue-700 transition-all">
+                    ✅ Hoàn tất đăng ký
+                </button>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="text-center mt-4 text-gray-600 text-sm">
+        Đã có tài khoản? <a href="login.html" class="text-blue-600 font-medium hover:underline">Đăng nhập ngay</a>
+    </div>
+</div>
+
+<script src="js/config.js"></script>
+<script>
+let currentStep = 1;
+let selectedPlan = 'free';
+let selectedPayment = 'qr';
+
+const planPrices = { free: 0, basic: 199000, pro: 799000 };
+const planNames = { free: 'Miễn phí', basic: 'Cơ bản 1 tháng', pro: 'Pro 6 tháng' };
+
+function showAlert(msg, type='error') {
+    const el = document.getElementById('alert');
+    el.className = `mb-4 p-3 rounded-lg text-sm ${type==='success'?'bg-green-50 text-green-700 border border-green-200':'bg-red-50 text-red-700 border border-red-200'}`;
+    el.textContent = msg; el.classList.remove('hidden');
+    setTimeout(()=>el.classList.add('hidden'),4000);
+}
+
+function goStep(n) {
+    if (n === 2 && !validateStep1()) return;
+    if (n === 3) updatePaymentInfo();
+    document.getElementById(`step-${currentStep}`).classList.add('hidden');
+    currentStep = n;
+    document.getElementById(`step-${n}`).classList.remove('hidden');
+    updateStepUI(n);
+    window.scrollTo(0,0);
+}
+
+function updateStepUI(n) {
+    for (let i=1;i<=3;i++) {
+        const dot = document.getElementById(`step-dot-${i}`);
+        const label = document.getElementById(`step-label-${i}`);
+        if (i < n) { dot.className='w-8 h-8 rounded-full bg-green-500 text-white text-sm font-bold flex items-center justify-center'; dot.textContent='✓'; }
+        else if (i === n) { dot.className='w-8 h-8 rounded-full bg-blue-600 text-white text-sm font-bold flex items-center justify-center'; dot.textContent=i; label.className='text-blue-600 font-medium'; }
+        else { dot.className='w-8 h-8 rounded-full bg-gray-200 text-gray-500 text-sm font-bold flex items-center justify-center'; dot.textContent=i; label.className='text-gray-400'; }
+    }
+    if (n>1) document.getElementById('step-line-1').style.background='#22c55e';
+    if (n>2) document.getElementById('step-line-2').style.background='#22c55e';
+}
+
+function validateStep1() {
+    const name = document.getElementById('full_name').value.trim();
+    const email = document.getElementById('email').value.trim();
+    const phone = document.getElementById('phone').value.trim();
+    const pass = document.getElementById('password').value;
+    const pass2 = document.getElementById('password2').value;
+    if (!name) { showAlert('Vui lòng nhập họ và tên!'); return false; }
+    if (!email || !email.includes('@')) { showAlert('Email không hợp lệ!'); return false; }
+    if (!phone) { showAlert('Vui lòng nhập số điện thoại!'); return false; }
+    if (pass.length < 8) { showAlert('Mật khẩu phải có ít nhất 8 ký tự!'); return false; }
+    if (pass !== pass2) { showAlert('Mật khẩu xác nhận không khớp!'); return false; }
+    return true;
+}
+
+function selectRole(role) {
+    document.getElementById('role-student-box').classList.toggle('border-blue-500', role==='student');
+    document.getElementById('role-student-box').classList.toggle('bg-blue-50', role==='student');
+    document.getElementById('role-instructor-box').classList.toggle('border-blue-500', role==='instructor');
+    document.getElementById('role-instructor-box').classList.toggle('bg-blue-50', role==='instructor');
+    const radio = document.querySelector(`input[name="role"][value="${role}"]`);
+    if (radio) radio.checked = true;
+}
+// FIX: đọc ?role=instructor trên URL (dùng khi bấm "Dành cho giảng viên" từ menu
+// "Giải pháp" ở trang chủ) để tự chọn sẵn đúng vai trò, thay vì luôn mặc định student.
+const preselectRole = new URLSearchParams(location.search).get('role');
+selectRole(preselectRole === 'instructor' ? 'instructor' : 'student');
+
+function selectPlan(plan) {
+    selectedPlan = plan;
+    const paySection = document.getElementById('payment-section');
+    if (plan === 'free') { paySection.classList.add('hidden'); }
+    else { paySection.classList.remove('hidden'); updatePaymentInfo(); }
+}
+
+function selectPayment(method) {
+    selectedPayment = method;
+    ['qr','bank','cash'].forEach(m => {
+        document.getElementById(`pay-${m}`).className = m===method
+            ? 'border-2 border-blue-500 rounded-xl p-3 text-center bg-blue-50'
+            : 'border-2 border-gray-200 rounded-xl p-3 text-center hover:border-blue-300';
+        document.getElementById(`payment-${m}`).classList.toggle('hidden', m!==method);
+    });
+}
+
+function updatePaymentInfo() {
+    const email = document.getElementById('email').value || 'email';
+    const plan = selectedPlan;
+    const code = `DK-${email.split('@')[0].toUpperCase()}-${plan.toUpperCase()}`;
+    const amount = planPrices[plan].toLocaleString('vi-VN') + 'đ';
+    document.getElementById('qr-content').textContent = code;
+    document.getElementById('bank-content').textContent = code;
+    document.getElementById('bank-amount').textContent = amount;
+    document.getElementById('cash-code').textContent = code;
+}
+
+async function submitRegister() {
+    if (!document.getElementById('agree').checked) { showAlert('Vui lòng đồng ý với điều khoản dịch vụ!'); return; }
+    const btn = document.getElementById('submit-btn');
+    btn.disabled = true; btn.textContent = '⏳ Đang xử lý...';
+    const email = document.getElementById('email').value;
+    const username = email.split('@')[0] + Math.floor(Math.random()*1000);
+    const role = document.querySelector('input[name="role"]:checked').value;
+    // Lưu thêm thông tin học tập vào bio
+    const extraInfo = [
+        document.getElementById('school').value,
+        document.getElementById('department').value,
+        document.getElementById('class_name').value,
+        document.getElementById('academic_year').value,
+    ].filter(Boolean).join(' | ');
+    try {
+        const data = await API.post('/auth/register/', {
+            email, username,
+            full_name: document.getElementById('full_name').value,
+            phone: document.getElementById('phone').value,
+            role,
+            password: document.getElementById('password').value,
+            password2: document.getElementById('password2').value,
+            bio: extraInfo,
+        });
+        if (data) {
+            Auth.login(data.tokens, data.user);
+            if (selectedPlan !== 'free') {
+                showAlert(`Đăng ký thành công! Vui lòng hoàn tất thanh toán gói ${planNames[selectedPlan]}.`, 'success');
+                setTimeout(() => location.href='index.html', 3000);
+            } else {
+                showAlert('Đăng ký thành công! Đang chuyển hướng...', 'success');
+                setTimeout(() => location.href='index.html', 1500);
+            }
+        }
+    } catch(err) {
+        const msg = err.data?.email?.[0] || err.data?.error || 'Email đã tồn tại hoặc thông tin không hợp lệ.';
+        showAlert(msg);
+        btn.disabled = false; btn.textContent = '✅ Hoàn tất đăng ký';
+    }
+}
+</script>
+    <script src="js/chatbot.js"></script>
+</body>
+</html>

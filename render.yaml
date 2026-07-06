@@ -1,0 +1,24 @@
+services:
+  - type: web
+    name: elearning-backend
+    runtime: python
+    rootDir: backend
+    buildCommand: "pip install -r requirements.txt && python manage.py collectstatic --noinput"
+    startCommand: "python manage.py migrate && python manage.py seed_data && python manage.py seed_courses_full && gunicorn core.wsgi:application --bind 0.0.0.0:$PORT --workers 2 --timeout 120"
+    envVars:
+      - key: SECRET_KEY
+        value: django-insecure-elearning-binh-duong-2026-cwh
+      - key: DEBUG
+        value: "False"
+      - key: PYTHON_VERSION
+        value: "3.11.0"
+      - key: DATABASE_URL
+        fromDatabase:
+          name: elearning-db
+          property: connectionString
+
+databases:
+  - name: elearning-db
+    databaseName: elearning_db
+    user: elearning_user
+    plan: free

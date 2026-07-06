@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kết quả thi - Giảng viên</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50">
+<nav class="bg-white shadow-md sticky top-0 z-40">
+    <div class="max-w-7xl mx-auto px-4 flex items-center justify-between h-16">
+        <a href="../index.html" class="text-2xl font-bold text-blue-600">🎓 E-Learning</a>
+        <div class="flex gap-3">
+            <a href="javascript:history.back()" class="text-gray-600 hover:text-blue-600">← Quay lại</a>
+            <button onclick="Auth.logout()" class="px-4 py-2 text-red-500 border border-red-500 rounded-lg text-sm">Đăng xuất</button>
+        </div>
+    </div>
+</nav>
+<div class="max-w-5xl mx-auto px-4 py-8">
+    <h1 class="text-2xl font-bold text-gray-800 mb-6">📊 Kết quả bài thi</h1>
+    <!-- Stats -->
+    <div class="grid grid-cols-4 gap-4 mb-6">
+        <div class="bg-white rounded-xl shadow p-4 text-center"><div id="stat-total" class="text-2xl font-bold text-blue-600">--</div><div class="text-gray-500 text-sm">Tổng bài nộp</div></div>
+        <div class="bg-white rounded-xl shadow p-4 text-center"><div id="stat-passed" class="text-2xl font-bold text-green-600">--</div><div class="text-gray-500 text-sm">Đạt</div></div>
+        <div class="bg-white rounded-xl shadow p-4 text-center"><div id="stat-failed" class="text-2xl font-bold text-red-500">--</div><div class="text-gray-500 text-sm">Chưa đạt</div></div>
+        <div class="bg-white rounded-xl shadow p-4 text-center"><div id="stat-avg" class="text-2xl font-bold text-purple-600">--</div><div class="text-gray-500 text-sm">Điểm TB</div></div>
+    </div>
+    <div class="bg-white rounded-xl shadow overflow-hidden">
+        <table class="w-full text-sm">
+            <thead class="bg-gray-50 border-b">
+                <tr>
+                    <th class="text-left px-4 py-3 font-medium text-gray-600">Sinh viên</th>
+                    <th class="text-left px-4 py-3 font-medium text-gray-600">Điểm</th>
+                    <th class="text-left px-4 py-3 font-medium text-gray-600">Kết quả</th>
+                    <th class="text-left px-4 py-3 font-medium text-gray-600">Thời gian làm</th>
+                    <th class="text-left px-4 py-3 font-medium text-gray-600">Ngày nộp</th>
+                </tr>
+            </thead>
+            <tbody id="results-tbody"><tr><td colspan="5" class="text-center py-8 text-gray-400">Đang tải...</td></tr></tbody>
+        </table>
+    </div>
+</div>
+<script src="../js/config.js"></script>
+<script src="../js/notif-bell.js"></script>
+<script>
+if (!Auth.requireLogin()) {}
+const examId = new URLSearchParams(location.search).get('exam');
+if (!examId) history.back();
+async function loadResults() {
+    try {
+        const data = await API.get(`/exams/${examId}/results/`);
+        const results = data?.results || data || [];
+        document.getElementById('stat-total').textContent = results.length;
+        const passed = results.filter(r => r.is_passed);
+        document.getElementById('stat-passed').textContent = passed.length;
+        document.getElementById('stat-failed').textContent = results.length - passed.length;
+        const avg = results.length ? (results.reduce((s,r) => s+r.score, 0) / results.length).toFixed(1) : '--';
+        document.getElementById('stat-avg').textContent = avg + (results.length ? '%' : '');
+        const tbody = document.getElementById('results-tbody');
+        if (!results.length) { tbody.innerHTML = '<tr><td colspan="5" class="text-center py-8 text-gray-400">Chưa có bài nộp nào</td></tr>'; return; }
+        tbody.innerHTML = results.map(r => `
+            <tr class="border-b hover:bg-gray-50">
+                <td class="px-4 py-3 font-medium">${r.student_name}</td>
+                <td class="px-4 py-3 font-bold text-lg ${r.is_passed ? 'text-green-600' : 'text-red-500'}">${r.score}%</td>
+                <td class="px-4 py-3"><span class="px-2 py-1 rounded-full text-xs ${r.is_passed ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}">${r.is_passed ? '🏆 ĐẠT' : '❌ CHƯA ĐẠT'}</span></td>
+                <td class="px-4 py-3 text-gray-500">${Math.floor(r.time_spent/60)}:${String(r.time_spent%60).padStart(2,'0')}</td>
+                <td class="px-4 py-3 text-gray-500">${UI.formatDate(r.submitted_at)}</td>
+            </tr>`).join('');
+    } catch { document.getElementById('results-tbody').innerHTML = '<tr><td colspan="5" class="text-center py-8 text-red-400">Lỗi tải dữ liệu</td></tr>'; }
+}
+loadResults();
+</script>
+    <script src="../js/chatbot.js"></script>
+</body>
+</html>
