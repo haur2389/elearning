@@ -53,6 +53,7 @@ const API = {
     patch:    (ep, data) => API.request('PATCH',  ep, data),
     delete:   (ep)       => API.request('DELETE', ep),
     postForm: (ep, fd)   => API.request('POST',   ep, fd, true),
+    patchForm: (ep, fd)  => API.request('PATCH',  ep, fd, true),
 };
 
 // ── AUTH HELPER ───────────────────────────────────────────────────────
@@ -211,4 +212,4 @@ const UI = {
     document.querySelectorAll('.nav-link[data-page]').forEach(a => {
         if (a.dataset.page === page) a.classList.add('active');
     });
-})(); 
+})();

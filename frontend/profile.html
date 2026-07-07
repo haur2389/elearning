@@ -76,10 +76,6 @@
                 </div>
             </form>
         </div>
-        <!-- FIX: trước đây hệ thống có API cấp/xem chứng chỉ ở backend nhưng
-        KHÔNG có nơi nào trên frontend hiển thị cho học viên xem — nên dù có
-        được cấp chứng chỉ cũng không thấy ở đâu cả. Thêm mục "Chứng chỉ của
-        tôi" ngay tại trang Hồ sơ như FAQ đã mô tả (Hồ sơ → Chứng chỉ). -->
         <div class="md:col-span-3 bg-white rounded-xl shadow p-6">
             <h2 class="text-lg font-bold mb-4">🎓 Chứng chỉ của tôi</h2>
             <div id="certificates-list" class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -142,7 +138,9 @@ document.getElementById('profile-form').addEventListener('submit', async (e) => 
     const avatar = document.getElementById('avatar-input').files[0];
     if (avatar) fd.append('avatar', avatar);
     try {
-        const data = await API.postForm('/auth/profile/', fd);
+        // FIX: backend không chấp nhận POST cho /auth/profile/ (chỉ GET/PATCH/PUT)
+        // -> đổi từ postForm sang patchForm
+        const data = await API.patchForm('/auth/profile/', fd);
         localStorage.setItem('user', JSON.stringify(data.user));
         showAlert('Cập nhật thông tin thành công!');
     } catch { showAlert('Có lỗi xảy ra.', 'error'); }
