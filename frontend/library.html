@@ -3,9 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Liên hệ - E-Learning</title>
+    <title>Thư viện tài liệu - E-Learning</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="css/style.css">
+    <style>
+        .book-card:hover{transform:translateY(-4px);box-shadow:0 12px 24px rgba(0,0,0,.12)}
+        .book-card{transition:all .25s ease}
+        .book-cover{aspect-ratio:3/4;object-fit:cover;background:#e5e7eb}
+    </style>
 </head>
 <body class="bg-gray-50">
 
@@ -28,9 +33,9 @@
                     <a href="courses.html" class="block px-4 py-2 text-sm font-medium text-blue-600 hover:bg-gray-50">Xem tất cả khóa học →</a>
                 </div>
             </div>
-            <a href="library.html" data-page="library.html" class="nav-link">Thư viện</a>
+            <a href="library.html" data-page="library.html" class="nav-link active">Thư viện</a>
             <a href="about.html" data-page="about.html" class="nav-link">Giới thiệu</a>
-            <a href="contact.html" data-page="contact.html" class="nav-link active">Liên hệ</a>
+            <a href="contact.html" data-page="contact.html" class="nav-link">Liên hệ</a>
             <a href="my-certificates.html" data-page="my-certificates.html" class="nav-link">Chứng chỉ</a>
         </div>
         <div id="nav-guest" class="flex gap-2">
@@ -75,79 +80,75 @@
 </nav>
 
 <!-- HERO -->
-<section style="background:linear-gradient(135deg,#0f2864 0%,#1d4ed8 100%)" class="text-white py-20 px-4 text-center">
-    <h1 class="text-4xl font-extrabold mb-4">Liên hệ với chúng tôi</h1>
-    <p class="max-w-2xl mx-auto text-blue-100 text-lg">Có thắc mắc về khóa học, thanh toán hay tài khoản? Gửi tin nhắn cho chúng tôi, đội ngũ hỗ trợ sẽ phản hồi sớm nhất có thể.</p>
+<section style="background:linear-gradient(135deg,#0f2864 0%,#1d4ed8 100%)" class="text-white py-16 px-4 text-center">
+    <h1 class="text-4xl font-extrabold mb-3">📖 Thư viện tài liệu</h1>
+    <p class="max-w-2xl mx-auto text-blue-100">Kho sách & tài liệu tham khảo — <b>xem hoàn toàn miễn phí</b>, không cần đăng ký khóa học.</p>
 </section>
 
-<section class="max-w-6xl mx-auto px-4 py-16 grid md:grid-cols-5 gap-10">
-    <!-- Thông tin liên hệ -->
-    <div class="md:col-span-2 space-y-5">
-        <div class="bg-white rounded-2xl shadow p-6 flex items-start gap-4">
-            <div class="text-3xl">📧</div>
+<div class="max-w-7xl mx-auto px-4 py-10 flex gap-6">
+
+    <!-- SIDEBAR -->
+    <aside class="w-64 shrink-0 hidden md:block">
+        <div class="bg-white rounded-xl shadow p-5 sticky top-20">
+            <h3 class="font-bold text-gray-800 mb-4">🔍 Tìm tài liệu</h3>
+            <div class="mb-4">
+                <input type="text" id="search-input" placeholder="Tên sách, tác giả..."
+                    class="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    oninput="debounceSearch()">
+            </div>
             <div>
-                <div class="font-bold text-gray-800">Email</div>
-                <div class="text-gray-500 text-sm">support@elearning.com</div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Danh mục</label>
+                <div id="category-list" class="space-y-1 text-sm">
+                    <button onclick="selectCategory('')" class="cat-btn w-full text-left px-3 py-2 rounded-lg bg-blue-50 text-blue-600 font-medium" data-cat="">Tất cả</button>
+                </div>
             </div>
         </div>
-        <div class="bg-white rounded-2xl shadow p-6 flex items-start gap-4">
-            <div class="text-3xl">📞</div>
-            <div>
-                <div class="font-bold text-gray-800">Hotline</div>
-                <div class="text-gray-500 text-sm">0367 626 072</div>
-            </div>
+    </aside>
+
+    <!-- MAIN -->
+    <div class="flex-1">
+        <!-- Mobile search -->
+        <div class="md:hidden mb-4">
+            <input type="text" id="search-input-mobile" placeholder="Tìm sách, tác giả..."
+                class="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                oninput="document.getElementById('search-input').value=this.value;debounceSearch()">
         </div>
-        <div class="bg-white rounded-2xl shadow p-6 flex items-start gap-4">
-            <div class="text-3xl">📍</div>
-            <div>
-                <div class="font-bold text-gray-800">Địa chỉ</div>
-                <div class="text-gray-500 text-sm">TP. Hồ Chí Minh, Việt Nam</div>
-            </div>
+        <div id="books-grid" class="grid grid-cols-2 md:grid-cols-3 gap-6">
+            <div class="col-span-full text-center py-20 text-gray-400"><div class="text-5xl mb-4">⏳</div>Đang tải...</div>
         </div>
-        <div class="bg-white rounded-2xl shadow p-6 flex items-start gap-4">
-            <div class="text-3xl">🕐</div>
+        <div id="pagination" class="mt-8 flex justify-center gap-2"></div>
+    </div>
+</div>
+
+<!-- Modal xem sách -->
+<div id="book-modal" class="hidden fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl max-w-4xl w-full max-h-[90vh] overflow-hidden flex flex-col">
+        <div class="flex justify-between items-start px-6 py-4 border-b">
             <div>
-                <div class="font-bold text-gray-800">Giờ hỗ trợ</div>
-                <div class="text-gray-500 text-sm">Thứ 2 - Thứ 7, 8:00 - 21:00</div>
+                <h3 id="modal-title" class="font-bold text-gray-800 text-lg"></h3>
+                <div id="modal-author" class="text-sm text-gray-500"></div>
+            </div>
+            <button onclick="closeBookModal()" class="text-gray-400 hover:text-gray-700 text-2xl leading-none">✕</button>
+        </div>
+        <div class="p-6 overflow-y-auto flex-1">
+            <div class="flex flex-col md:flex-row gap-6">
+                <img id="modal-cover" class="book-cover w-40 rounded-lg shadow shrink-0 mx-auto md:mx-0" src="" alt="">
+                <div class="flex-1">
+                    <div class="flex flex-wrap gap-2 mb-3">
+                        <span id="modal-category" class="px-3 py-1 bg-blue-50 text-blue-600 rounded-full text-xs font-medium"></span>
+                        <span class="px-3 py-1 bg-green-50 text-green-600 rounded-full text-xs font-medium">✅ Miễn phí</span>
+                        <span id="modal-pages" class="px-3 py-1 bg-gray-100 text-gray-600 rounded-full text-xs font-medium"></span>
+                    </div>
+                    <p id="modal-description" class="text-gray-600 text-sm leading-relaxed mb-6"></p>
+                    <a id="modal-open-link" href="#" target="_blank" rel="noopener"
+                        class="inline-block bg-blue-600 text-white px-6 py-3 rounded-xl font-bold hover:bg-blue-700">
+                        📖 Đọc / Mở tài liệu
+                    </a>
+                </div>
             </div>
         </div>
     </div>
-
-    <!-- Form liên hệ -->
-    <div class="md:col-span-3 bg-white rounded-2xl shadow p-8">
-        <h2 class="text-xl font-bold text-gray-800 mb-1">Gửi tin nhắn cho chúng tôi</h2>
-        <p class="text-gray-500 text-sm mb-6">Điền thông tin bên dưới, chúng tôi sẽ phản hồi qua email của bạn.</p>
-        <div id="alert" class="hidden mb-4 p-3 rounded-lg text-sm"></div>
-        <div class="space-y-4">
-            <div class="grid md:grid-cols-2 gap-4">
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Họ tên</label>
-                    <input type="text" id="c-name" placeholder="Nguyễn Văn A"
-                        class="w-full border rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500">
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
-                    <input type="email" id="c-email" placeholder="ban@email.com"
-                        class="w-full border rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500">
-                </div>
-            </div>
-            <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Chủ đề</label>
-                <input type="text" id="c-subject" placeholder="Vd: Hỏi về thanh toán khóa học"
-                    class="w-full border rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500">
-            </div>
-            <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Nội dung</label>
-                <textarea id="c-message" rows="5" placeholder="Nhập nội dung bạn muốn gửi..."
-                    class="w-full border rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
-            </div>
-            <button onclick="sendContact()" id="c-submit-btn"
-                class="w-full bg-blue-600 text-white py-3 rounded-lg font-bold hover:bg-blue-700">
-                ✉️ Gửi tin nhắn
-            </button>
-        </div>
-    </div>
-</section>
+</div>
 
 <!-- FOOTER -->
 <footer class="bg-gray-900 text-white py-12">
@@ -160,7 +161,7 @@
             <div class="font-bold mb-3">Khám phá</div>
             <div class="space-y-2 text-gray-400 text-sm">
                 <a href="courses.html" class="block hover:text-white">Tất cả khóa học</a>
-                <a href="courses.html?level=beginner" class="block hover:text-white">Khóa học cơ bản</a>
+                <a href="library.html" class="block hover:text-white">Thư viện tài liệu</a>
                 <a href="courses.html?level=advanced" class="block hover:text-white">Khóa học nâng cao</a>
             </div>
         </div>
@@ -201,9 +202,6 @@ function initNavbar() {
         if (user.role === 'admin')      document.getElementById('link-admin').classList.remove('hidden');
         if (user.role === 'instructor') document.getElementById('link-instructor').classList.remove('hidden');
         loadNotifCount();
-        // Điền sẵn tên/email nếu đã đăng nhập, đỡ phải gõ lại
-        document.getElementById('c-name').value = user.full_name || '';
-        document.getElementById('c-email').value = user.email || '';
     }
 }
 async function loadNotifCount() {
@@ -248,31 +246,6 @@ function handleLogout() {
     API.post('/auth/logout/', { refresh: localStorage.getItem('refresh_token') }).catch(() => {});
     Auth.logout();
 }
-function showAlert(msg, type='success') {
-    const el = document.getElementById('alert');
-    el.className = `mb-4 p-3 rounded-lg text-sm ${type==='success'?'bg-green-50 text-green-600 border border-green-200':'bg-red-50 text-red-600 border border-red-200'}`;
-    el.textContent = msg; el.classList.remove('hidden');
-}
-async function sendContact() {
-    const name = document.getElementById('c-name').value.trim();
-    const email = document.getElementById('c-email').value.trim();
-    const subject = document.getElementById('c-subject').value.trim();
-    const message = document.getElementById('c-message').value.trim();
-    if (!name || !email || !message) { showAlert('Vui lòng điền đầy đủ Họ tên, Email và Nội dung.', 'error'); return; }
-
-    const btn = document.getElementById('c-submit-btn');
-    btn.disabled = true; btn.textContent = 'Đang gửi...';
-    try {
-        const res = await API.post('/auth/contact/', { name, email, subject, message });
-        showAlert(res?.message || 'Cảm ơn bạn đã liên hệ! Chúng tôi sẽ phản hồi sớm nhất có thể.', 'success');
-        document.getElementById('c-subject').value = '';
-        document.getElementById('c-message').value = '';
-    } catch (err) {
-        showAlert(err?.data?.error || 'Gửi liên hệ thất bại, vui lòng thử lại sau.', 'error');
-    } finally {
-        btn.disabled = false; btn.textContent = '✉️ Gửi tin nhắn';
-    }
-}
 async function loadCategoriesForNav() {
     try {
         const cats = await API.get('/courses/categories/');
@@ -283,8 +256,95 @@ async function loadCategoriesForNav() {
         box.innerHTML = withCourses.map(c => `<a href="courses.html?category=${c.id}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">${c.name}</a>`).join('');
     } catch {}
 }
+
+// ── Thư viện sách ─────────────────────────────────────────────────────
+let searchTimeout;
+let currentCategory = '';
+let allBooks = [];
+const DEFAULT_COVER = 'https://ui-avatars.com/api/?background=1d4ed8&color=fff&size=300&name=';
+
+function debounceSearch() {
+    clearTimeout(searchTimeout);
+    searchTimeout = setTimeout(() => loadBooks(), 400);
+}
+function selectCategory(cat) {
+    currentCategory = cat;
+    document.querySelectorAll('.cat-btn').forEach(b => {
+        b.className = 'cat-btn w-full text-left px-3 py-2 rounded-lg text-sm ' +
+            (b.dataset.cat === cat ? 'bg-blue-50 text-blue-600 font-medium' : 'text-gray-600 hover:bg-gray-50');
+    });
+    loadBooks();
+}
+async function loadCategoryFilters() {
+    try {
+        const cats = await API.get('/library/categories/');
+        const box = document.getElementById('category-list');
+        cats.forEach(c => {
+            const btn = document.createElement('button');
+            btn.className = 'cat-btn w-full text-left px-3 py-2 rounded-lg text-sm text-gray-600 hover:bg-gray-50';
+            btn.dataset.cat = c.category;
+            btn.textContent = `${c.category} (${c.book_count})`;
+            btn.onclick = () => selectCategory(c.category);
+            box.appendChild(btn);
+        });
+    } catch {}
+}
+async function loadBooks(page = 1) {
+    const search = document.getElementById('search-input').value;
+    let url = `/library/?page=${page}`;
+    if (search) url += `&search=${encodeURIComponent(search)}`;
+    if (currentCategory) url += `&category=${encodeURIComponent(currentCategory)}`;
+    const grid = document.getElementById('books-grid');
+    try {
+        const data = await API.get(url);
+        allBooks = data?.results || data || [];
+        if (!allBooks.length) {
+            grid.innerHTML = '<div class="col-span-full text-center py-20 text-gray-400"><div class="text-5xl mb-4">📭</div>Không tìm thấy tài liệu nào.</div>';
+            document.getElementById('pagination').innerHTML = '';
+            return;
+        }
+        grid.innerHTML = allBooks.map((b, i) => `
+            <div class="book-card bg-white rounded-xl shadow overflow-hidden cursor-pointer" onclick="openBookModal(${i})">
+                <img class="book-cover w-full" src="${b.cover_url || DEFAULT_COVER + encodeURIComponent(b.title)}" alt="${b.title}"
+                    onerror="this.src='${DEFAULT_COVER}'+encodeURIComponent('${b.title.replace(/'/g,"")}')">
+                <div class="p-3">
+                    <div class="font-bold text-gray-800 text-sm line-clamp-2 mb-1">${b.title}</div>
+                    <div class="text-xs text-gray-500 mb-2">${b.author || 'Không rõ tác giả'}</div>
+                    <span class="inline-block px-2 py-0.5 bg-green-50 text-green-600 rounded-full text-xs font-medium">✅ Miễn phí</span>
+                </div>
+            </div>`).join('');
+
+        if (data?.count) {
+            const total = Math.ceil(data.count / 10);
+            document.getElementById('pagination').innerHTML = Array.from({length: Math.min(total,10)}, (_,i) =>
+                `<button onclick="loadBooks(${i+1})" class="px-3 py-1 rounded border text-sm hover:bg-blue-50">${i+1}</button>`
+            ).join('');
+        } else {
+            document.getElementById('pagination').innerHTML = '';
+        }
+    } catch {
+        grid.innerHTML = '<div class="col-span-full text-center py-20 text-red-400">Không thể tải danh sách tài liệu.</div>';
+    }
+}
+function openBookModal(i) {
+    const b = allBooks[i];
+    document.getElementById('modal-title').textContent = b.title;
+    document.getElementById('modal-author').textContent = b.author ? `✍️ ${b.author}` : '';
+    document.getElementById('modal-cover').src = b.cover_url || (DEFAULT_COVER + encodeURIComponent(b.title));
+    document.getElementById('modal-category').textContent = b.category || 'Tài liệu tham khảo';
+    document.getElementById('modal-pages').textContent = b.pages ? `${b.pages} trang` : '';
+    document.getElementById('modal-description').textContent = b.description || 'Chưa có mô tả.';
+    document.getElementById('modal-open-link').href = b.file_url;
+    document.getElementById('book-modal').classList.remove('hidden');
+}
+function closeBookModal() {
+    document.getElementById('book-modal').classList.add('hidden');
+}
+
 initNavbar();
 loadCategoriesForNav();
+loadCategoryFilters();
+loadBooks();
 </script>
     <script src="js/chatbot.js"></script>
 </body>

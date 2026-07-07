@@ -19,8 +19,10 @@
         <a href="users.html" class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-300 hover:bg-gray-700 text-sm">👥 Người dùng</a>
         <a href="courses.html" class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-300 hover:bg-gray-700 text-sm">📚 Khóa học</a>
         <a href="categories.html" class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-300 hover:bg-gray-700 text-sm">🏷️ Danh mục</a>
+        <a href="library.html" class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-300 hover:bg-gray-700 text-sm">📖 Thư viện</a>
         <a href="enrollments.html" class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-300 hover:bg-gray-700 text-sm">📋 Đăng ký</a>
         <a href="payments.html" class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-300 hover:bg-gray-700 text-sm">💳 Thanh toán</a>
+                <a href="certificates.html" class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-300 hover:bg-gray-700 text-sm">🎓 Chứng chỉ</a>
         <a href="exam-results.html" class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-300 hover:bg-gray-700 text-sm">🏆 Điểm thi</a>
     </nav>
     <div class="p-4 border-t border-gray-700">
@@ -32,7 +34,10 @@
 <div class="flex-1 overflow-y-auto">
     <div class="bg-white shadow px-6 py-4 flex justify-between items-center">
         <h1 class="text-xl font-bold text-gray-800">📊 Dashboard Tổng quan</h1>
-        <a href="../index.html" class="text-blue-600 text-sm hover:underline">← Xem trang chủ</a>
+        <div class="flex items-center gap-4">
+            <button onclick="loadDashboard()" class="text-blue-600 text-sm hover:underline">🔄 Làm mới số liệu</button>
+            <a href="../index.html" class="text-blue-600 text-sm hover:underline">← Xem trang chủ</a>
+        </div>
     </div>
     <div class="p-6">
         <!-- Stats cards -->
@@ -182,6 +187,15 @@ async function loadDashboard() {
     } catch {}
 }
 loadDashboard();
+
+// FIX: khi admin duyệt thanh toán ở payments.html rồi bấm nút "←" (Back) của
+// trình duyệt để quay lại Dashboard, một số trình duyệt phục hồi lại trang
+// CŨ từ bộ nhớ đệm (bfcache) mà KHÔNG chạy lại loadDashboard() — khiến số
+// liệu (doanh thu, GD chờ duyệt...) vẫn hiện giá trị cũ trước khi duyệt.
+// Lắng nghe sự kiện 'pageshow' để phát hiện và tải lại dữ liệu mới nhất.
+window.addEventListener('pageshow', (e) => {
+    if (e.persisted) loadDashboard();
+});
 </script>
     <script src="../js/chatbot.js"></script>
 </body>

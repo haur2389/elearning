@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thư viện - Admin</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100">
+<div class="flex h-screen">
+<aside class="w-64 bg-gray-900 text-white flex flex-col shrink-0">
+    <div class="p-4 border-b border-gray-700"><div class="text-xl font-bold text-blue-400">🎓 E-Learning</div><div class="text-xs text-gray-400 mt-1">Admin Panel</div></div>
+    <nav class="flex-1 p-4 space-y-1">
+        <a href="dashboard.html" class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-300 hover:bg-gray-700 text-sm">📊 Dashboard</a>
+        <a href="users.html" class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-300 hover:bg-gray-700 text-sm">👥 Người dùng</a>
+        <a href="courses.html" class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-300 hover:bg-gray-700 text-sm">📚 Khóa học</a>
+        <a href="categories.html" class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-300 hover:bg-gray-700 text-sm">🏷️ Danh mục</a>
+        <a href="library.html" class="flex items-center gap-3 px-3 py-2 rounded-lg bg-blue-600 text-white text-sm">📖 Thư viện</a>
+        <a href="enrollments.html" class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-300 hover:bg-gray-700 text-sm">📋 Đăng ký</a>
+        <a href="payments.html" class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-300 hover:bg-gray-700 text-sm">💳 Thanh toán</a>
+        <a href="certificates.html" class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-300 hover:bg-gray-700 text-sm">🎓 Chứng chỉ</a>
+        <a href="exam-results.html" class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-300 hover:bg-gray-700 text-sm">🏆 Điểm thi</a>
+    </nav>
+    <div class="p-4 border-t border-gray-700">
+        <div id="admin-name" class="text-sm text-gray-300 mb-2"></div>
+        <button onclick="Auth.logout()" class="text-red-400 text-sm">🚪 Đăng xuất</button>
+    </div>
+</aside>
+<div class="flex-1 overflow-y-auto">
+    <div class="bg-white shadow px-6 py-4 flex justify-between items-center">
+        <h1 class="text-xl font-bold text-gray-800">📖 Quản lý Thư viện tài liệu</h1>
+        <button onclick="openBookForm()" class="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700">+ Thêm sách/tài liệu</button>
+    </div>
+    <div class="p-6">
+        <div class="bg-white rounded-xl shadow p-4 mb-6 flex gap-4">
+            <input type="text" id="search-input" placeholder="Tìm theo tên sách, tác giả..."
+                class="flex-1 border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                oninput="debounceSearch()">
+        </div>
+        <div class="bg-white rounded-xl shadow overflow-hidden">
+            <table class="w-full text-sm">
+                <thead class="bg-gray-50 border-b">
+                    <tr>
+                        <th class="text-left px-4 py-3 font-medium text-gray-600">Ảnh bìa</th>
+                        <th class="text-left px-4 py-3 font-medium text-gray-600">Tên sách</th>
+                        <th class="text-left px-4 py-3 font-medium text-gray-600">Tác giả</th>
+                        <th class="text-left px-4 py-3 font-medium text-gray-600">Danh mục</th>
+                        <th class="text-left px-4 py-3 font-medium text-gray-600">Ngày thêm</th>
+                        <th class="text-right px-4 py-3 font-medium text-gray-600">Hành động</th>
+                    </tr>
+                </thead>
+                <tbody id="book-tbody"><tr><td colspan="6" class="text-center py-8 text-gray-400">Đang tải...</td></tr></tbody>
+            </table>
+        </div>
+        <div id="pagination" class="mt-4 flex justify-center gap-2"></div>
+    </div>
+</div>
+</div>
+
+<!-- Modal thêm/sửa sách -->
+<div id="book-form-modal" class="hidden fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl max-w-lg w-full max-h-[90vh] overflow-y-auto">
+        <div class="flex justify-between items-center px-6 py-4 border-b">
+            <h3 id="form-title" class="font-bold text-gray-800">Thêm sách/tài liệu</h3>
+            <button onclick="closeBookForm()" class="text-gray-400 hover:text-gray-700 text-xl">✕</button>
+        </div>
+        <div class="p-6 space-y-4">
+            <input type="hidden" id="f-id">
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Tên sách *</label>
+                <input type="text" id="f-title" class="w-full border rounded-lg px-3 py-2 text-sm">
+            </div>
+            <div class="grid grid-cols-2 gap-3">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Tác giả</label>
+                    <input type="text" id="f-author" class="w-full border rounded-lg px-3 py-2 text-sm">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Danh mục</label>
+                    <input type="text" id="f-category" placeholder="Vd: Lập trình" class="w-full border rounded-lg px-3 py-2 text-sm">
+                </div>
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Mô tả</label>
+                <textarea id="f-description" rows="3" class="w-full border rounded-lg px-3 py-2 text-sm"></textarea>
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">URL ảnh bìa</label>
+                <input type="text" id="f-cover" placeholder="https://..." class="w-full border rounded-lg px-3 py-2 text-sm">
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">URL tài liệu để đọc (bắt buộc) *</label>
+                <input type="text" id="f-file" placeholder="Link PDF hoặc trang đọc online" class="w-full border rounded-lg px-3 py-2 text-sm">
+                <p class="text-xs text-gray-400 mt-1">Chỉ dùng link hợp pháp, được phép chia sẻ miễn phí (trang chính chủ, sách mở, tài liệu tự soạn...).</p>
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Số trang</label>
+                <input type="number" id="f-pages" class="w-full border rounded-lg px-3 py-2 text-sm">
+            </div>
+            <div id="form-alert" class="hidden p-3 rounded-lg text-sm bg-red-50 text-red-600 border border-red-200"></div>
+            <button onclick="saveBook()" id="f-submit-btn" class="w-full bg-blue-600 text-white py-2.5 rounded-lg font-bold hover:bg-blue-700">Lưu</button>
+        </div>
+    </div>
+</div>
+
+<script src="../js/config.js"></script>
+<script>
+if (!Auth.requireLogin()) {}
+if (Auth.getUser()?.role !== 'admin') { alert('Không có quyền!'); location.href='../index.html'; }
+document.getElementById('admin-name').textContent = Auth.getUser()?.full_name || 'Admin';
+
+let searchTimeout;
+let allBooks = [];
+function debounceSearch() { clearTimeout(searchTimeout); searchTimeout = setTimeout(() => loadBooks(), 400); }
+
+async function loadBooks(page = 1) {
+    const search = document.getElementById('search-input').value;
+    let url = `/library/admin/?page=${page}`;
+    if (search) url += `&search=${encodeURIComponent(search)}`;
+    const tbody = document.getElementById('book-tbody');
+    try {
+        const data = await API.get(url);
+        allBooks = data?.results || data || [];
+        if (!allBooks.length) { tbody.innerHTML = '<tr><td colspan="6" class="text-center py-8 text-gray-400">Chưa có tài liệu nào</td></tr>'; return; }
+        tbody.innerHTML = allBooks.map((b, i) => `
+            <tr class="border-b hover:bg-gray-50">
+                <td class="px-4 py-3"><img src="${b.cover_url || 'https://ui-avatars.com/api/?background=1d4ed8&color=fff&name='+encodeURIComponent(b.title)}" class="w-10 h-14 object-cover rounded"></td>
+                <td class="px-4 py-3 font-medium max-w-xs truncate">${b.title}</td>
+                <td class="px-4 py-3 text-gray-500">${b.author || '—'}</td>
+                <td class="px-4 py-3"><span class="px-2 py-1 bg-blue-50 text-blue-600 rounded-full text-xs">${b.category || '—'}</span></td>
+                <td class="px-4 py-3 text-gray-500">${UI.formatDate(b.created_at)}</td>
+                <td class="px-4 py-3 text-right space-x-2">
+                    <button onclick="openBookForm(${i})" class="text-blue-600 hover:underline text-xs">Sửa</button>
+                    <button onclick="deleteBook(${b.id})" class="text-red-500 hover:underline text-xs">Xóa</button>
+                </td>
+            </tr>`).join('');
+
+        if (data?.count) {
+            const total = Math.ceil(data.count / 10);
+            document.getElementById('pagination').innerHTML = Array.from({length: Math.min(total,10)}, (_,i) =>
+                `<button onclick="loadBooks(${i+1})" class="px-3 py-1 rounded border text-sm hover:bg-blue-50">${i+1}</button>`
+            ).join('');
+        } else { document.getElementById('pagination').innerHTML = ''; }
+    } catch { tbody.innerHTML = '<tr><td colspan="6" class="text-center py-8 text-red-400">Lỗi tải dữ liệu</td></tr>'; }
+}
+
+function openBookForm(i) {
+    document.getElementById('form-alert').classList.add('hidden');
+    if (i === undefined) {
+        document.getElementById('form-title').textContent = 'Thêm sách/tài liệu';
+        document.getElementById('f-id').value = '';
+        ['f-title','f-author','f-category','f-description','f-cover','f-file','f-pages'].forEach(id => document.getElementById(id).value = '');
+    } else {
+        const b = allBooks[i];
+        document.getElementById('form-title').textContent = 'Sửa thông tin sách';
+        document.getElementById('f-id').value = b.id;
+        document.getElementById('f-title').value = b.title || '';
+        document.getElementById('f-author').value = b.author || '';
+        document.getElementById('f-category').value = b.category || '';
+        document.getElementById('f-description').value = b.description || '';
+        document.getElementById('f-cover').value = b.cover_url || '';
+        document.getElementById('f-file').value = b.file_url || '';
+        document.getElementById('f-pages').value = b.pages || '';
+    }
+    document.getElementById('book-form-modal').classList.remove('hidden');
+}
+function closeBookForm() { document.getElementById('book-form-modal').classList.add('hidden'); }
+
+async function saveBook() {
+    const id = document.getElementById('f-id').value;
+    const title = document.getElementById('f-title').value.trim();
+    const file_url = document.getElementById('f-file').value.trim();
+    if (!title || !file_url) {
+        const a = document.getElementById('form-alert');
+        a.textContent = 'Vui lòng nhập Tên sách và URL tài liệu.'; a.classList.remove('hidden');
+        return;
+    }
+    const payload = {
+        title,
+        author: document.getElementById('f-author').value.trim(),
+        category: document.getElementById('f-category').value.trim(),
+        description: document.getElementById('f-description').value.trim(),
+        cover_url: document.getElementById('f-cover').value.trim(),
+        file_url,
+        pages: document.getElementById('f-pages').value || null,
+    };
+    const btn = document.getElementById('f-submit-btn');
+    btn.disabled = true; btn.textContent = 'Đang lưu...';
+    try {
+        if (id) await API.patch(`/library/admin/${id}/`, payload);
+        else await API.post('/library/admin/', payload);
+        closeBookForm();
+        loadBooks();
+    } catch (err) {
+        const a = document.getElementById('form-alert');
+        a.textContent = UI.parseApiError(err, 'Lưu thất bại.'); a.classList.remove('hidden');
+    } finally { btn.disabled = false; btn.textContent = 'Lưu'; }
+}
+
+async function deleteBook(id) {
+    if (!confirm('Xóa tài liệu này khỏi thư viện?')) return;
+    try { await API.delete(`/library/admin/${id}/`); loadBooks(); }
+    catch { alert('Xóa thất bại.'); }
+}
+
+loadBooks();
+</script>
+</body>
+</html>
