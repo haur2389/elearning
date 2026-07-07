@@ -1,2 +1,11 @@
 .line-clamp-2 { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
 .line-clamp-3 { display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+
+/* ── Navbar dùng chung cho toàn bộ trang (Trang chủ/Khóa học/Thư viện/
+   Giới thiệu/Liên hệ/Chứng chỉ) ─────────────────────────────────────── */
+.nav-link{position:relative;color:#4b5563;font-weight:500;padding:6px 2px;transition:color .2s;white-space:nowrap}
+.nav-link:hover{color:#2563eb}
+.nav-link::after{content:'';position:absolute;left:0;bottom:-2px;width:0;height:2px;background:#2563eb;border-radius:2px;transition:width .25s ease}
+.nav-link:hover::after{width:100%}
+.nav-link.active{color:#2563eb;font-weight:700}
+.nav-link.active::after{width:100%}

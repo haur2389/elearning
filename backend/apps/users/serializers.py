@@ -78,6 +78,13 @@ class ChangePasswordSerializer(serializers.Serializer):
         return attrs
 
 
+class ContactMessageSerializer(serializers.Serializer):
+    name = serializers.CharField(max_length=150)
+    email = serializers.EmailField()
+    subject = serializers.CharField(max_length=200, required=False, allow_blank=True)
+    message = serializers.CharField(max_length=3000)
+
+
 class ForgotPasswordSerializer(serializers.Serializer):
     email = serializers.EmailField()
 

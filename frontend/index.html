@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Smart E-Learning - Học Trực Tuyến Thông Minh</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="css/style.css">
     <style>
         .line-clamp-2{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
         .course-card:hover{transform:translateY(-4px);box-shadow:0 12px 24px rgba(0,0,0,.12)}
@@ -17,9 +18,11 @@
 <nav class="bg-white shadow-md sticky top-0 z-40">
     <div class="max-w-7xl mx-auto px-4 flex items-center justify-between h-16">
         <a href="index.html" class="text-2xl font-bold text-blue-600">🎓 E-Learning</a>
-        <div class="hidden md:flex items-center gap-6">
+        <div class="hidden md:flex items-center gap-7">
+            <a href="index.html" data-page="index.html" class="nav-link active">Trang chủ</a>
+
             <div class="relative group h-16 flex items-center">
-                <a href="courses.html" class="text-gray-600 hover:text-blue-600 font-medium flex items-center gap-1">
+                <a href="courses.html" data-page="courses.html" class="nav-link flex items-center gap-1">
                     Khóa học
                     <svg class="w-3.5 h-3.5 mt-0.5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd"/></svg>
                 </a>
@@ -35,68 +38,10 @@
                 </div>
             </div>
 
-            <!-- FIX: thêm 3 mục menu "Giải pháp / Thư viện / Blogs" dạng mega-menu
-            (icon + tiêu đề + mô tả) theo đúng phong cách tham khảo, nhưng mỗi mục đều
-            trỏ tới trang/anh chức năng THẬT đang có sẵn trong hệ thống (không phải link
-            rỗng): courses.html, register.html?role=..., faq.html#cat-... -->
-            <div class="relative group h-16 flex items-center">
-                <span class="text-gray-600 hover:text-blue-600 font-medium flex items-center gap-1 cursor-pointer">
-                    Giải pháp
-                    <svg class="w-3.5 h-3.5 mt-0.5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd"/></svg>
-                </span>
-                <div class="hidden group-hover:block absolute left-0 top-full bg-white shadow-xl rounded-xl w-80 py-2 z-50 border">
-                    <a href="courses.html" class="flex items-start gap-3 px-4 py-3 hover:bg-gray-50">
-                        <span class="text-2xl">🎓</span>
-                        <span><span class="block font-semibold text-gray-800">Dành cho học viên</span>
-                        <span class="block text-xs text-gray-500">Học theo tốc độ riêng, làm đề thi thực chiến, nhận chứng chỉ</span></span>
-                    </a>
-                    <a href="register.html?role=instructor" onclick="return goInstructorArea(this, 'instructor/courses.html')" class="flex items-start gap-3 px-4 py-3 hover:bg-gray-50">
-                        <span class="text-2xl">👨‍🏫</span>
-                        <span><span class="block font-semibold text-gray-800">Dành cho giảng viên</span>
-                        <span class="block text-xs text-gray-500">Tạo khóa học, ra đề thi, theo dõi tiến trình học viên</span></span>
-                    </a>
-                </div>
-            </div>
-
-            <div class="relative group h-16 flex items-center">
-                <span class="text-gray-600 hover:text-blue-600 font-medium flex items-center gap-1 cursor-pointer">
-                    Thư viện
-                    <svg class="w-3.5 h-3.5 mt-0.5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd"/></svg>
-                </span>
-                <div class="hidden group-hover:block absolute left-0 top-full bg-white shadow-xl rounded-xl w-80 py-2 z-50 border">
-                    <a href="courses.html" class="flex items-start gap-3 px-4 py-3 hover:bg-gray-50">
-                        <span class="text-2xl">📚</span>
-                        <span><span class="block font-semibold text-gray-800">Thư viện khóa học</span>
-                        <span class="block text-xs text-gray-500">Toàn bộ khóa học đang mở, lọc theo danh mục, cấp độ, học phí</span></span>
-                    </a>
-                    <a href="index.html#danh-muc-khoa-hoc" class="flex items-start gap-3 px-4 py-3 hover:bg-gray-50">
-                        <span class="text-2xl">🏷️</span>
-                        <span><span class="block font-semibold text-gray-800">Danh mục khóa học</span>
-                        <span class="block text-xs text-gray-500">Duyệt khóa học theo từng lĩnh vực chuyên môn</span></span>
-                    </a>
-                </div>
-            </div>
-
-            <a href="faq.html" class="text-gray-600 hover:text-blue-600 font-medium">Hướng dẫn</a>
-
-            <div class="relative group h-16 flex items-center">
-                <span class="text-gray-600 hover:text-blue-600 font-medium flex items-center gap-1 cursor-pointer">
-                    Blogs
-                    <svg class="w-3.5 h-3.5 mt-0.5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd"/></svg>
-                </span>
-                <div class="hidden group-hover:block absolute left-0 top-full bg-white shadow-xl rounded-xl w-80 py-2 z-50 border">
-                    <a href="register.html?role=instructor" onclick="return goInstructorArea(this, 'instructor/exams.html')" class="flex items-start gap-3 px-4 py-3 hover:bg-gray-50">
-                        <span class="text-2xl">👨‍🏫</span>
-                        <span><span class="block font-semibold text-gray-800">Dành cho giảng viên</span>
-                        <span class="block text-xs text-gray-500">Kinh nghiệm giảng dạy, quản lý lớp, ra đề hiệu quả</span></span>
-                    </a>
-                    <a href="faq.html#cat-chứng-chỉ" class="flex items-start gap-3 px-4 py-3 hover:bg-gray-50">
-                        <span class="text-2xl">🎓</span>
-                        <span><span class="block font-semibold text-gray-800">Dành cho học viên</span>
-                        <span class="block text-xs text-gray-500">Bí quyết học tập, ôn thi và đạt chứng chỉ</span></span>
-                    </a>
-                </div>
-            </div>
+            <a href="courses.html?view=library" class="nav-link">Thư viện</a>
+            <a href="about.html" data-page="about.html" class="nav-link">Giới thiệu</a>
+            <a href="contact.html" data-page="contact.html" class="nav-link">Liên hệ</a>
+            <a href="my-certificates.html" data-page="my-certificates.html" class="nav-link">Chứng chỉ</a>
         </div>
         <!-- Guest -->
         <div id="nav-guest" class="flex gap-2">
@@ -372,9 +317,10 @@
         <div>
             <div class="font-bold mb-3">Hỗ trợ</div>
             <div class="space-y-2 text-gray-400 text-sm">
-                <a href="#" class="block hover:text-white">Trung tâm hỗ trợ</a>
-                <a href="#" class="block hover:text-white">Chính sách hoàn tiền</a>
-                <a href="#" class="block hover:text-white">Điều khoản dịch vụ</a>
+                <a href="about.html" class="block hover:text-white">Giới thiệu</a>
+                <a href="contact.html" class="block hover:text-white">Liên hệ</a>
+                <a href="my-certificates.html" class="block hover:text-white">Chứng chỉ của tôi</a>
+                <a href="faq.html" class="block hover:text-white">Câu hỏi thường gặp</a>
             </div>
         </div>
         <div>

@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Giới thiệu - E-Learning</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .value-card:hover{transform:translateY(-4px);box-shadow:0 12px 24px rgba(0,0,0,.12)}
+        .value-card{transition:all .25s ease}
+    </style>
+</head>
+<body class="bg-gray-50">
+
+<!-- NAVBAR -->
+<nav class="bg-white shadow-md sticky top-0 z-40">
+    <div class="max-w-7xl mx-auto px-4 flex items-center justify-between h-16">
+        <a href="index.html" class="text-2xl font-bold text-blue-600">🎓 E-Learning</a>
+        <div class="hidden md:flex items-center gap-7">
+            <a href="index.html" data-page="index.html" class="nav-link">Trang chủ</a>
+            <div class="relative group h-16 flex items-center">
+                <a href="courses.html" data-page="courses.html" class="nav-link flex items-center gap-1">
+                    Khóa học
+                    <svg class="w-3.5 h-3.5 mt-0.5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd"/></svg>
+                </a>
+                <div class="hidden group-hover:block absolute left-0 top-full bg-white shadow-xl rounded-xl w-64 py-2 z-50 border">
+                    <div id="nav-categories-dropdown" class="max-h-96 overflow-y-auto">
+                        <div class="px-4 py-3 text-sm text-gray-400">Đang tải danh mục...</div>
+                    </div>
+                    <hr class="my-1">
+                    <a href="courses.html" class="block px-4 py-2 text-sm font-medium text-blue-600 hover:bg-gray-50">Xem tất cả khóa học →</a>
+                </div>
+            </div>
+            <a href="courses.html?view=library" class="nav-link">Thư viện</a>
+            <a href="about.html" data-page="about.html" class="nav-link active">Giới thiệu</a>
+            <a href="contact.html" data-page="contact.html" class="nav-link">Liên hệ</a>
+            <a href="my-certificates.html" data-page="my-certificates.html" class="nav-link">Chứng chỉ</a>
+        </div>
+        <div id="nav-guest" class="flex gap-2">
+            <a href="login.html" class="px-4 py-2 text-blue-600 border border-blue-600 rounded-lg hover:bg-blue-50 text-sm font-medium">Đăng nhập</a>
+            <a href="register.html" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm font-medium">Đăng ký</a>
+        </div>
+        <div id="nav-user" class="hidden flex items-center gap-4">
+            <div class="relative">
+                <a href="#" id="nav-bell" class="relative text-gray-500 hover:text-blue-600 block">
+                    🔔<span id="notif-badge" class="hidden absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">0</span>
+                </a>
+                <div id="notif-dropdown" class="hidden absolute right-0 mt-2 w-80 bg-white rounded-xl shadow-2xl border z-50 max-h-96 overflow-y-auto">
+                    <div class="p-3 border-b font-semibold text-gray-700 flex justify-between items-center">
+                        <span>Thông báo</span>
+                        <button onclick="markAllNotifRead()" class="text-xs text-blue-600 hover:underline">Đánh dấu đã đọc</button>
+                    </div>
+                    <div id="notif-list" class="divide-y"><div class="p-4 text-center text-gray-400 text-sm">Đang tải...</div></div>
+                </div>
+            </div>
+            <div class="relative group">
+                <button class="flex items-center gap-2">
+                    <img id="nav-avatar" src="https://ui-avatars.com/api/?name=User&background=3b82f6&color=fff" class="w-8 h-8 rounded-full object-cover">
+                    <span id="nav-name" class="font-medium text-gray-700 text-sm"></span>▾
+                </button>
+                <div class="hidden group-hover:block absolute right-0 mt-1 bg-white shadow-xl rounded-xl w-52 py-2 z-50 border">
+                    <a href="profile.html"    class="block px-4 py-2 text-sm hover:bg-gray-50">👤 Hồ sơ cá nhân</a>
+                    <div id="link-student">
+                        <a href="my-courses.html" class="block px-4 py-2 text-sm hover:bg-gray-50">📚 Khóa học của tôi</a>
+                        <a href="my-exams.html"   class="block px-4 py-2 text-sm hover:bg-gray-50">📝 Kết quả thi</a>
+                    </div>
+                    <div id="link-admin" class="hidden"><hr class="my-1"><a href="admin/dashboard.html" class="block px-4 py-2 text-sm text-red-600 hover:bg-gray-50">⚙️ Admin Panel</a></div>
+                    <div id="link-instructor" class="hidden"><hr class="my-1">
+                        <a href="instructor/courses.html" class="block px-4 py-2 text-sm text-blue-600 hover:bg-gray-50">📖 Quản lý khóa học</a>
+                        <a href="instructor/exams.html" class="block px-4 py-2 text-sm text-blue-600 hover:bg-gray-50">📝 Quản lý đề thi</a>
+                    </div>
+                    <hr class="my-1">
+                    <button onclick="handleLogout()" class="w-full text-left px-4 py-2 text-sm text-red-500 hover:bg-gray-50">🚪 Đăng xuất</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>
+
+<!-- HERO -->
+<section style="background:linear-gradient(135deg,#0f2864 0%,#1d4ed8 100%)" class="text-white py-20 px-4 text-center">
+    <h1 class="text-4xl font-extrabold mb-4">Về E-Learning</h1>
+    <p class="max-w-2xl mx-auto text-blue-100 text-lg">Nền tảng học trực tuyến thông minh, đồng hành cùng bạn trên hành trình
+        nâng cao kỹ năng — mọi lúc, mọi nơi, với chi phí hợp lý nhất.</p>
+</section>
+
+<!-- SỨ MỆNH / TẦM NHÌN -->
+<section class="max-w-6xl mx-auto px-4 py-16 grid md:grid-cols-2 gap-10">
+    <div class="bg-white rounded-2xl shadow p-8">
+        <div class="text-4xl mb-4">🎯</div>
+        <h2 class="text-2xl font-bold text-gray-800 mb-3">Sứ mệnh</h2>
+        <p class="text-gray-600 leading-relaxed">Chúng tôi tin rằng giáo dục chất lượng cao không nên bị giới hạn bởi
+            khoảng cách địa lý hay chi phí. E-Learning ra đời để kết nối học viên với những khóa học thực chiến,
+            giảng viên giàu kinh nghiệm và hệ thống kiểm tra - đánh giá minh bạch, giúp mỗi người học tự tin làm chủ
+            kỹ năng của mình.</p>
+    </div>
+    <div class="bg-white rounded-2xl shadow p-8">
+        <div class="text-4xl mb-4">🚀</div>
+        <h2 class="text-2xl font-bold text-gray-800 mb-3">Tầm nhìn</h2>
+        <p class="text-gray-600 leading-relaxed">Trở thành nền tảng học trực tuyến được tin tưởng hàng đầu tại Việt Nam,
+            nơi bất kỳ ai cũng có thể học, thi và nhận chứng chỉ có giá trị thực tiễn — hoàn toàn thông qua một
+            trải nghiệm số hiện đại, thân thiện và dễ tiếp cận.</p>
+    </div>
+</section>
+
+<!-- CON SỐ -->
+<section class="bg-white border-y">
+    <div class="max-w-6xl mx-auto px-4 py-14 grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
+        <div>
+            <div class="text-3xl font-extrabold text-blue-600" id="about-stat-courses">--</div>
+            <div class="text-gray-500 text-sm mt-1">Khóa học</div>
+        </div>
+        <div>
+            <div class="text-3xl font-extrabold text-blue-600" id="about-stat-students">--</div>
+            <div class="text-gray-500 text-sm mt-1">Học viên</div>
+        </div>
+        <div>
+            <div class="text-3xl font-extrabold text-blue-600" id="about-stat-instructors">--</div>
+            <div class="text-gray-500 text-sm mt-1">Giảng viên</div>
+        </div>
+        <div>
+            <div class="text-3xl font-extrabold text-blue-600">100%</div>
+            <div class="text-gray-500 text-sm mt-1">Học online</div>
+        </div>
+    </div>
+</section>
+
+<!-- GIÁ TRỊ CỐT LÕI -->
+<section class="max-w-6xl mx-auto px-4 py-16">
+    <h2 class="text-3xl font-bold text-center text-gray-800 mb-10">Giá trị cốt lõi</h2>
+    <div class="grid md:grid-cols-3 gap-6">
+        <div class="value-card bg-white rounded-xl shadow p-6 text-center">
+            <div class="text-4xl mb-3">📚</div>
+            <h3 class="font-bold text-gray-800 mb-2">Chất lượng thực chiến</h3>
+            <p class="text-gray-500 text-sm">Nội dung được xây dựng bởi giảng viên có kinh nghiệm thực tế, cập nhật liên tục.</p>
+        </div>
+        <div class="value-card bg-white rounded-xl shadow p-6 text-center">
+            <div class="text-4xl mb-3">🏆</div>
+            <h3 class="font-bold text-gray-800 mb-2">Chứng chỉ minh bạch</h3>
+            <p class="text-gray-500 text-sm">Chứng chỉ được cấp dựa trên tiến độ học và kết quả thi thực tế, có mã xác thực riêng.</p>
+        </div>
+        <div class="value-card bg-white rounded-xl shadow p-6 text-center">
+            <div class="text-4xl mb-3">💬</div>
+            <h3 class="font-bold text-gray-800 mb-2">Hỗ trợ tận tâm</h3>
+            <p class="text-gray-500 text-sm">Đội ngũ hỗ trợ luôn sẵn sàng đồng hành, giải đáp thắc mắc trong suốt quá trình học.</p>
+        </div>
+    </div>
+</section>
+
+<!-- CTA -->
+<section style="background:linear-gradient(135deg,#0f2864 0%,#1d4ed8 100%)" class="text-white text-center py-14 px-4">
+    <h2 class="text-2xl md:text-3xl font-bold mb-4">Sẵn sàng bắt đầu hành trình học tập?</h2>
+    <a href="register.html" class="inline-block bg-white text-blue-700 font-bold px-8 py-3 rounded-full hover:bg-blue-50">Đăng ký miễn phí ngay</a>
+</section>
+
+<!-- FOOTER -->
+<footer class="bg-gray-900 text-white py-12">
+    <div class="max-w-7xl mx-auto px-4 grid grid-cols-1 md:grid-cols-4 gap-8">
+        <div>
+            <div class="text-2xl font-bold mb-3">🎓 E-Learning</div>
+            <p class="text-gray-400 text-sm">Nền tảng học trực tuyến thông minh, giúp bạn nâng cao kỹ năng mọi lúc mọi nơi.</p>
+        </div>
+        <div>
+            <div class="font-bold mb-3">Khám phá</div>
+            <div class="space-y-2 text-gray-400 text-sm">
+                <a href="courses.html" class="block hover:text-white">Tất cả khóa học</a>
+                <a href="courses.html?level=beginner" class="block hover:text-white">Khóa học cơ bản</a>
+                <a href="courses.html?level=advanced" class="block hover:text-white">Khóa học nâng cao</a>
+            </div>
+        </div>
+        <div>
+            <div class="font-bold mb-3">Hỗ trợ</div>
+            <div class="space-y-2 text-gray-400 text-sm">
+                <a href="about.html" class="block hover:text-white">Giới thiệu</a>
+                <a href="contact.html" class="block hover:text-white">Liên hệ</a>
+                <a href="my-certificates.html" class="block hover:text-white">Chứng chỉ của tôi</a>
+                <a href="faq.html" class="block hover:text-white">Câu hỏi thường gặp</a>
+            </div>
+        </div>
+        <div>
+            <div class="font-bold mb-3">Liên hệ</div>
+            <div class="space-y-2 text-gray-400 text-sm">
+                <div>📧 support@elearning.com</div>
+                <div>📞 0367 626 072</div>
+                <div>📍 TP. Hồ Chí Minh</div>
+            </div>
+        </div>
+    </div>
+    <div class="text-center text-gray-500 text-sm mt-8 pt-8 border-t border-gray-800">
+        © 2026 Smart E-Learning System. All rights reserved.
+    </div>
+</footer>
+
+<script src="js/config.js"></script>
+<script>
+function initNavbar() {
+    const user = Auth.getUser();
+    if (user) {
+        document.getElementById('nav-guest').classList.add('hidden');
+        document.getElementById('nav-user').classList.remove('hidden');
+        document.getElementById('nav-name').textContent = user.full_name || user.email;
+        if (user.avatar_url || user.avatar) document.getElementById('nav-avatar').src = user.avatar_url || user.avatar;
+        else document.getElementById('nav-avatar').src = `https://ui-avatars.com/api/?name=${encodeURIComponent(user.full_name||'U')}&background=3b82f6&color=fff`;
+        if (user.role !== 'student') document.getElementById('link-student').classList.add('hidden');
+        if (user.role === 'admin')      document.getElementById('link-admin').classList.remove('hidden');
+        if (user.role === 'instructor') document.getElementById('link-instructor').classList.remove('hidden');
+        loadNotifCount();
+    }
+}
+async function loadNotifCount() {
+    try {
+        const data = await API.get('/notifications/unread/');
+        if (data && data.unread_count > 0) {
+            const b = document.getElementById('notif-badge');
+            b.textContent = data.unread_count; b.classList.remove('hidden');
+        }
+    } catch {}
+}
+document.getElementById('nav-bell')?.addEventListener('click', async (e) => {
+    e.preventDefault();
+    const dd = document.getElementById('notif-dropdown');
+    const willOpen = dd.classList.contains('hidden');
+    dd.classList.toggle('hidden');
+    if (willOpen) await loadNotifList();
+});
+document.addEventListener('click', (e) => {
+    const dd = document.getElementById('notif-dropdown');
+    if (dd && !dd.classList.contains('hidden') && !dd.contains(e.target) && e.target.id !== 'nav-bell') dd.classList.add('hidden');
+});
+async function loadNotifList() {
+    const box = document.getElementById('notif-list');
+    try {
+        const list = await API.get('/notifications/');
+        const items = Array.isArray(list) ? list : (list?.results || []);
+        if (!items.length) { box.innerHTML = '<div class="p-4 text-center text-gray-400 text-sm">Không có thông báo nào</div>'; return; }
+        box.innerHTML = items.map(n => `
+            <a href="${n.link || '#'}" onclick="markNotifRead(${n.id})" class="block p-3 hover:bg-gray-50 ${n.is_read ? '' : 'bg-blue-50'}">
+                <div class="font-medium text-sm text-gray-800">${n.title}</div>
+                <div class="text-xs text-gray-500 mt-0.5">${n.message}</div>
+                <div class="text-xs text-gray-400 mt-1">${UI.formatDate(n.created_at)}</div>
+            </a>`).join('');
+    } catch { box.innerHTML = '<div class="p-4 text-center text-red-400 text-sm">Lỗi tải thông báo</div>'; }
+}
+async function markNotifRead(id) { try { await API.post(`/notifications/${id}/read/`); } catch {} }
+async function markAllNotifRead() {
+    try { await API.post('/notifications/mark-read/'); document.getElementById('notif-badge').classList.add('hidden'); await loadNotifList(); } catch {}
+}
+function handleLogout() {
+    API.post('/auth/logout/', { refresh: localStorage.getItem('refresh_token') }).catch(() => {});
+    Auth.logout();
+}
+async function loadAboutStats() {
+    try {
+        const c = await API.get('/courses/?status=published&page_size=1');
+        document.getElementById('about-stat-courses').textContent = (c?.count || 0) + '+';
+    } catch { document.getElementById('about-stat-courses').textContent = '18+'; }
+    try {
+        const data = await API.get('/auth/admin/dashboard/');
+        if (data) {
+            document.getElementById('about-stat-students').textContent = (data.total_students || 0) + '+';
+            document.getElementById('about-stat-instructors').textContent = (data.total_instructors || 0) + '+';
+        }
+    } catch {
+        document.getElementById('about-stat-students').textContent = '500+';
+        document.getElementById('about-stat-instructors').textContent = '20+';
+    }
+}
+initNavbar();
+loadAboutStats();
+async function loadCategoriesForNav() {
+    try {
+        const cats = await API.get('/courses/categories/');
+        const list = Array.isArray(cats) ? cats : (cats?.results || []);
+        const box = document.getElementById('nav-categories-dropdown');
+        const withCourses = list.filter(c => (c.course_count || 0) > 0);
+        if (!withCourses.length) { box.innerHTML = '<div class="px-4 py-3 text-sm text-gray-400">Chưa có danh mục</div>'; return; }
+        box.innerHTML = withCourses.map(c => `<a href="courses.html?category=${c.id}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">${c.name}</a>`).join('');
+    } catch {}
+}
+loadCategoriesForNav();
+</script>
+    <script src="js/chatbot.js"></script>
+</body>
+</html>

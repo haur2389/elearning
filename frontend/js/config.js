@@ -204,3 +204,11 @@ const UI = {
         return this.getCourseImage(title, categoryName);
     },
 };
+
+// ── Auto highlight mục navbar đang ở trang hiện tại ─────────────────────
+(function highlightActiveNav() {
+    const page = location.pathname.split('/').pop() || 'index.html';
+    document.querySelectorAll('.nav-link[data-page]').forEach(a => {
+        if (a.dataset.page === page) a.classList.add('active');
+    });
+})();

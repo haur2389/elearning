@@ -35,7 +35,7 @@ def send_email_via_brevo(to_email, subject, text_content):
                 'api-key': settings.BREVO_API_KEY,
                 'Content-Type': 'application/json',
                 'Accept': 'application/json',
-            }, 
+            },
             json={
                 'sender': {
                     'name': settings.BREVO_SENDER_NAME,
@@ -58,7 +58,7 @@ from .serializers import (
     CustomTokenObtainPairSerializer, RegisterSerializer,
     UserProfileSerializer, UpdateProfileSerializer,
     ChangePasswordSerializer, ForgotPasswordSerializer,
-    ResetPasswordSerializer, AdminUserSerializer
+    ResetPasswordSerializer, AdminUserSerializer, ContactMessageSerializer
 )
 from .permissions import IsAdmin, IsAdminOrInstructor
 
@@ -177,6 +177,38 @@ class ResetPasswordView(APIView):
             return Response({'message': 'Đặt lại mật khẩu thành công!'})
         except User.DoesNotExist:
             return Response({'error': 'Email không tồn tại.'}, status=404)
+
+
+class ContactMessageView(APIView):
+    """Nhận tin nhắn từ trang Liên hệ (contact.html) và gửi tới email hỗ trợ qua Brevo."""
+    permission_classes = [permissions.AllowAny]
+
+    def post(self, request):
+        serializer = ContactMessageSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        data = serializer.validated_data
+
+        subject = f"[Liên hệ website] {data.get('subject') or 'Không có tiêu đề'}"
+        content = (
+            f"Họ tên: {data['name']}\n"
+            f"Email: {data['email']}\n\n"
+            f"Nội dung:\n{data['message']}"
+        )
+
+        ok, err = send_email_via_brevo(
+            to_email=settings.SUPPORT_EMAIL,
+            subject=subject,
+            text_content=content,
+        )
+        if ok:
+            logger.info(f"[CONTACT] Gui thanh cong tu {data['email']}")
+            print(f"[CONTACT] Gui thanh cong tu {data['email']}", flush=True)
+        else:
+            print(f"[CONTACT][LOI GUI MAIL - BREVO] {err}", flush=True)
+            logger.error(f"[CONTACT] Gui that bai tu {data['email']}: {err}")
+            return Response({'error': 'Gửi liên hệ thất bại, vui lòng thử lại sau.'}, status=502)
+
+        return Response({'message': 'Cảm ơn bạn đã liên hệ! Chúng tôi sẽ phản hồi sớm nhất có thể.'})
 
 
 class LogoutView(APIView):
