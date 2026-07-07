@@ -156,13 +156,20 @@ CSRF_TRUSTED_ORIGINS = [
     'http://localhost:8000',
 ]
 
-# ── Email ─────────────────────────────────────────────────────────────
+# ── Email (SMTP - giữ lại để dự phòng, KHÔNG dùng được trên Render free) ──
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = os.environ.get('EMAIL_HOST', 'smtp.gmail.com')
 EMAIL_PORT = int(os.environ.get('EMAIL_PORT', 587))
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER', '')
 EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD', '')
+
+# ── Brevo API (gửi email qua HTTPS, không bị Render free chặn) ───────────
+# Lấy API Key tại: Brevo -> SMTP & API -> API Keys
+BREVO_API_KEY      = os.environ.get('BREVO_API_KEY', '')
+# Phải trùng với email sender đã "Verified" trong Brevo -> Senders
+BREVO_SENDER_EMAIL = os.environ.get('BREVO_SENDER_EMAIL', 'mrchen892003@gmail.com')
+BREVO_SENDER_NAME  = os.environ.get('BREVO_SENDER_NAME', 'E-Learning')
 
 # ── Groq AI (chatbot tư vấn) ──────────────────────────────────────────
 # Lấy API key miễn phí tại: https://console.groq.com/keys

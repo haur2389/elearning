@@ -13,9 +13,45 @@ import random
 import string
 import logging
 import traceback
+import requests
 from datetime import timedelta
 
 logger = logging.getLogger(__name__)
+
+
+def send_email_via_brevo(to_email, subject, text_content):
+    """
+    Gửi email qua Brevo HTTP API (cổng 443) thay vì SMTP (cổng 587)
+    vì Render free tier chặn traffic ra ngoài ở các cổng SMTP.
+    Trả về (True, None) nếu thành công, (False, "lý do lỗi") nếu thất bại.
+    """
+    if not settings.BREVO_API_KEY:
+        return False, 'Thiếu BREVO_API_KEY trong biến môi trường.'
+
+    try:
+        resp = requests.post(
+            'https://api.brevo.com/v3/smtp/email',
+            headers={
+                'api-key': settings.BREVO_API_KEY,
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+            },
+            json={
+                'sender': {
+                    'name': settings.BREVO_SENDER_NAME,
+                    'email': settings.BREVO_SENDER_EMAIL,
+                },
+                'to': [{'email': to_email}],
+                'subject': subject,
+                'textContent': text_content,
+            },
+            timeout=15,
+        )
+        if resp.status_code in (200, 201):
+            return True, None
+        return False, f'Brevo tra ve status {resp.status_code}: {resp.text}'
+    except Exception as e:
+        return False, str(e)
 
 from .models import User
 from .serializers import (
@@ -104,21 +140,18 @@ class ForgotPasswordView(APIView):
             user.otp_expiry = timezone.now() + timedelta(minutes=10)
             user.save()
 
-            try:
-                sent_count = send_mail(
-                    subject='Mã OTP đặt lại mật khẩu - E-Learning',
-                    message=f'Mã OTP của bạn là: {otp}\nMã có hiệu lực trong 10 phút.',
-                    from_email=settings.EMAIL_HOST_USER,
-                    recipient_list=[email],
-                    fail_silently=False,
-                )
-                logger.info(f'[OTP] send_mail tra ve {sent_count} cho {email}')
-                print(f'[OTP] send_mail tra ve {sent_count} cho {email}', flush=True)
-            except Exception as mail_error:
+            ok, err = send_email_via_brevo(
+                to_email=email,
+                subject='Mã OTP đặt lại mật khẩu - E-Learning',
+                text_content=f'Mã OTP của bạn là: {otp}\nMã có hiệu lực trong 10 phút.',
+            )
+            if ok:
+                logger.info(f'[OTP] Gui thanh cong qua Brevo cho {email}')
+                print(f'[OTP] Gui thanh cong qua Brevo cho {email}', flush=True)
+            else:
                 # In lỗi thật ra Render Logs để debug thay vì nuốt lỗi im lặng
-                print(f'[OTP][LOI GUI MAIL] {mail_error}', flush=True)
-                print(traceback.format_exc(), flush=True)
-                logger.error(f'[OTP] Gui mail that bai cho {email}: {mail_error}')
+                print(f'[OTP][LOI GUI MAIL - BREVO] {err}', flush=True)
+                logger.error(f'[OTP] Gui mail that bai cho {email}: {err}')
         except User.DoesNotExist:
             pass  # Không tiết lộ email tồn tại hay không
 
