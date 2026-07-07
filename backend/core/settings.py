@@ -87,10 +87,10 @@ else:
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.postgresql',
-            'NAME': os.environ.get('DB_NAME', 'elearning_db'),
+            'NAME': os.environ.get('DB_NAME', 'elearning_db39da'),
             'USER': os.environ.get('DB_USER', 'postgres'),
-            'PASSWORD': os.environ.get('DB_PASSWORD', 'cwh@8923'),
-            'HOST': os.environ.get('DB_HOST', 'localhost'),
+            'PASSWORD': os.environ.get('DB_PASSWORD', 'yhB3dwQZ2aZu5FN7LqYpQin13b0XIwY4'),
+            'HOST': os.environ.get('DB_HOST', 'dpg-d8sk75uq1p3s73bpnhig-a'),
             'PORT': os.environ.get('DB_PORT', '5432'),
         }
     }
