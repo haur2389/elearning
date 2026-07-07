@@ -5,8 +5,11 @@ Hỗ trợ: Local (Docker) + Render Cloud
 from pathlib import Path
 from datetime import timedelta
 import os
+from dotenv import load_dotenv
 
 BASE_DIR = Path(__file__).resolve().parent.parent
+
+load_dotenv(BASE_DIR / ".env")
 
 SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-elearning-secret-key-2025')
 DEBUG = os.environ.get('DEBUG', 'True') == 'True'
@@ -87,10 +90,10 @@ else:
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.postgresql',
-            'NAME': os.environ.get('DB_NAME', 'elearning_db39da'),
+            'NAME': os.environ.get('DB_NAME', 'elearning_db'),
             'USER': os.environ.get('DB_USER', 'postgres'),
-            'PASSWORD': os.environ.get('DB_PASSWORD', ''),
-            'HOST': os.environ.get('DB_HOST', ''),
+            'PASSWORD': os.environ.get('DB_PASSWORD', 'postgres123'),
+            'HOST': os.environ.get('DB_HOST', 'localhost'),
             'PORT': os.environ.get('DB_PORT', '5432'),
         }
     }
