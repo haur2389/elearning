@@ -211,4 +211,4 @@ const UI = {
     document.querySelectorAll('.nav-link[data-page]').forEach(a => {
         if (a.dataset.page === page) a.classList.add('active');
     });
-})();
+})(); 
