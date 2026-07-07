@@ -90,7 +90,7 @@ else:
             'NAME': os.environ.get('DB_NAME', 'elearning_db39da'),
             'USER': os.environ.get('DB_USER', 'postgres'),
             'PASSWORD': os.environ.get('DB_PASSWORD', 'yhB3dwQZ2aZu5FN7LqYpQin13b0XIwY4'),
-            'HOST': os.environ.get('DB_HOST', 'dpg-d8sk75uq1p3s73bpnhig-a'),
+            'HOST': os.environ.get('DB_HOST', 'postgresql://postgre:yhB3dwQZ2aZu5FN7LqYpQin13b0XIwY4@dpg-d8sk75uq1p3s73bpnhig-a.singapore-postgres.render.com/elearning_db_39da'),
             'PORT': os.environ.get('DB_PORT', '5432'),
         }
     }
