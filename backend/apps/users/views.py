@@ -35,7 +35,7 @@ def send_email_via_brevo(to_email, subject, text_content):
                 'api-key': settings.BREVO_API_KEY,
                 'Content-Type': 'application/json',
                 'Accept': 'application/json',
-            },
+            }, 
             json={
                 'sender': {
                     'name': settings.BREVO_SENDER_NAME,
